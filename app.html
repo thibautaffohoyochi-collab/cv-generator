@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Generator Pro — Thibaut A. Hoyochi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Raleway:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="templates/template1.css" />
+  <link rel="stylesheet" href="templates/template2.css" />
+  <link rel="stylesheet" href="templates/template3.css" />
+  <link rel="stylesheet" href="templates/template4.css" />
+  <style>
+    /* ── PREMIUM INLINE OVERRIDES ── */
+    .qa-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .qa-btn { display:flex; flex-direction:column; align-items:center; gap:8px; padding:18px 8px; background:var(--bg-input); border:1.5px solid var(--border); border-radius:14px; cursor:pointer; transition:all 0.2s; font-size:11px; font-weight:600; color:var(--text-secondary); font-family:var(--font); }
+    .qa-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); transform:translateY(-3px); box-shadow:0 6px 16px rgba(37,99,235,0.18); }
+    [data-theme="dark"] .qa-btn:hover { background:rgba(37,99,235,0.12); }
+    .qa-btn i { font-size:20px; }
+    .welcome-banner { background:linear-gradient(135deg,#dbeafe 0%,#ede9fe 100%); border-radius:16px; padding:24px 28px; margin-bottom:24px; border:1px solid rgba(37,99,235,0.12); display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    [data-theme="dark"] .welcome-banner { background:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(124,58,237,0.1)); border-color:rgba(37,99,235,0.2); }
+    .welcome-banner h2 { font-size:22px; font-weight:800; letter-spacing:-0.03em; margin-bottom:6px; }
+    .welcome-banner p { font-size:13px; color:var(--text-secondary); }
+    .welcome-actions { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .section-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin:0 0 14px; display:flex; align-items:center; gap:8px; }
+    .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+    .dash-grid { display:grid; grid-template-columns:1fr 360px; gap:24px; align-items:start; }
+    .mini-preview-wrap { background:#2d3035; border-radius:14px; overflow:hidden; }
+    .mini-preview-bar { background:#1e2025; padding:10px 14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .mini-dot { width:10px; height:10px; border-radius:50%; }
+    .mini-preview-body { padding:20px; display:flex; justify-content:center; background:#3a3d42; min-height:220px; overflow:hidden; }
+    .mini-preview-body > div { transform:scale(0.45); transform-origin:top center; pointer-events:none; }
+    .stat-num { font-size:28px; font-weight:800; letter-spacing:-0.04em; color:var(--text); }
+    .stat-lbl { font-size:11px; color:var(--text-secondary); font-weight:500; margin-top:2px; }
+    .page-hdr { margin-bottom:28px; }
+    .page-hdr h2 { font-size:20px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+    .page-hdr p { font-size:13px; color:var(--text-secondary); }
+    .dash-action-btn { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 8px; background:var(--bg-input); border:1.5px solid var(--border); border-radius:14px; cursor:pointer; transition:all 0.2s; font-size:11px; font-weight:600; color:var(--text-secondary); font-family:var(--font); }
+    .dash-action-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); transform:translateY(-2px); }
+    .dash-action-btn i { font-size:18px; }
+    [data-theme="dark"] .dash-action-btn:hover { background:rgba(37,99,235,0.1); }
+    .nav-section { font-size:9px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); padding:0 10px; margin:18px 0 6px; opacity:0.6; }
+    .tips-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px; }
+    .tips-card h4 { font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+    .tip-row { display:flex; gap:9px; padding:9px 11px; background:var(--bg-input); border-radius:9px; border-left:3px solid var(--primary); margin-bottom:8px; font-size:12px; color:var(--text-secondary); line-height:1.6; }
+    .tip-row:last-child { margin-bottom:0; }
+    .checklist-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:14px; }
+    .checklist-item { display:flex; align-items:center; gap:7px; font-size:12px; padding:4px 0; }
+    [data-theme="dark"] .welcome-banner h2, [data-theme="dark"] .welcome-banner p { color:var(--text); }
+
+    /* ── CROP MODAL ── */
+    #cropContainer { touch-action: none; }
+    #cropContainer:active { cursor: grabbing; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px">
+        <div class="sidebar-logo-icon"><i class="fas fa-file-alt"></i></div>
+        <div class="sidebar-logo-text">
+          <h1>CV Generator <span style="font-weight:300;opacity:.7">Pro</span></h1>
+          <p>Créateur professionnel</p>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Principal</div>
+      <button class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
+        <i class="fas fa-home"></i> Tableau de bord
+      </button>
+      <button class="nav-item" data-page="builder" onclick="showPage('builder',this)">
+        <i class="fas fa-edit"></i> Créer mon CV
+      </button>
+      <button class="nav-item" data-page="preview" onclick="showPage('preview',this)">
+        <i class="fas fa-eye"></i> Aperçu du CV
+      </button>
+      <button class="nav-item" data-page="cover-letter" onclick="showPage('cover-letter',this)">
+        <i class="fas fa-envelope-open-text"></i> Lettre de motivation
+      </button>
+
+      <div class="nav-section" style="margin-top:8px">Analyse & Outils</div>
+      <button class="nav-item" data-page="score" onclick="showPage('score',this)">
+        <i class="fas fa-chart-bar"></i> Score CV
+        <span class="nav-badge" style="background:var(--warning)">NEW</span>
+      </button>
+      <button class="nav-item" data-page="match" onclick="showPage('match',this)">
+        <i class="fas fa-search"></i> Match Offre
+      </button>
+      <button class="nav-item" data-page="linkedin" onclick="showPage('linkedin',this)">
+        <i class="fab fa-linkedin"></i> Posts LinkedIn
+      </button>
+      <button class="nav-item" data-page="translate" onclick="showPage('translate',this)">
+        <i class="fas fa-language"></i> Traduction EN
+      </button>
+
+      <div class="nav-section" style="margin-top:8px">Export & Plus</div>
+      <button class="nav-item" data-page="export" onclick="showPage('export',this)">
+        <i class="fas fa-download"></i> Exporter
+      </button>
+      <button class="nav-item" data-page="present" onclick="showPage('present',this)">
+        <i class="fas fa-tv"></i> Présentation
+      </button>
+      <button class="nav-item" data-page="portfolio" onclick="showPage('portfolio',this)">
+        <i class="fas fa-globe"></i> Portfolio Web
+      </button>
+      <button class="nav-item" data-page="qrcode" onclick="showPage('qrcode',this)">
+        <i class="fas fa-qrcode"></i> QR Code
+      </button>
+      <button class="nav-item" data-page="history" onclick="showPage('history',this)">
+        <i class="fas fa-history"></i> Historique
+      </button>
+      <button class="nav-item" data-page="import-cv" onclick="showPage('import-cv',this)">
+        <i class="fas fa-file-import"></i> Importer un CV
+        <span class="nav-badge" style="background:#e11d48">NEW</span>
+      </button>
+      <button class="nav-item" data-page="settings" onclick="showPage('settings',this)">
+        <i class="fas fa-sliders-h"></i> Apparence
+      </button>
+      <button class="nav-item" data-page="tips" onclick="showPage('tips',this)">
+        <i class="fas fa-lightbulb"></i> Conseils CV
+      </button>
+    </nav>
+
+    <div class="sidebar-completion">
+      <p>Complétion <span id="sidebarCompletion">0%</span></p>
+      <div class="completion-bar"><div class="completion-fill" id="sidebarCompletionBar" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-footer">
+      <a href="index.html" style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);text-decoration:none;padding:8px 12px;border-radius:8px;transition:background .2s;margin-bottom:8px" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+        <i class="fas fa-arrow-left"></i> Retour à l'accueil
+      </a>
+      <div class="save-status" id="saveStatus">
+        <i class="fas fa-circle-check"></i><span>Sauvegardé automatiquement</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="topbar-title" id="topbarTitle">
+        <i class="fas fa-home"></i><span>Tableau de bord</span>
+      </div>
+      <div class="topbar-actions">
+        <label class="toggle-switch" title="Mode sombre / clair">
+          <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
+          <div class="toggle-track"></div>
+          <span class="toggle-label"><i class="fas fa-moon" id="themeIcon"></i></span>
+        </label>
+        <button class="btn btn-primary btn-sm" onclick="exportPDF()">
+          <i class="fas fa-download"></i> Exporter PDF
+        </button>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════
+         PAGE: DASHBOARD
+         ════════════════════════════════════════ -->
+    <section class="page active" id="page-dashboard">
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div>
+          <h2>Bonjour 👋</h2>
+          <p>Votre CV professionnel est prêt. Modifiez, analysez ou exportez.</p>
+          <div class="welcome-actions">
+            <button class="btn btn-primary" onclick="showPage('builder',document.querySelector('[data-page=builder]'))">
+              <i class="fas fa-edit"></i> Modifier le CV
+            </button>
+            <button class="btn btn-secondary" onclick="showPage('preview',document.querySelector('[data-page=preview]'))">
+              <i class="fas fa-eye"></i> Voir l'aperçu
+            </button>
+            <button class="btn btn-secondary" onclick="exportPDF()">
+              <i class="fas fa-file-pdf"></i> Exporter PDF
+            </button>
+          </div>
+        </div>
+        <img src="https://illustrations.popsy.co/amber/designer.svg" alt="" style="height:120px;opacity:.85" onerror="this.style.display='none'">
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid" style="margin-bottom:24px">
+        <div class="stat-card card-lift">
+          <div class="stat-icon blue"><i class="fas fa-user-tie"></i></div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-name">Thibaut</div>
+            <div class="stat-lbl">Nom du profil</div>
+          </div>
+        </div>
+        <div class="stat-card card-lift">
+          <div class="stat-icon green"><i class="fas fa-briefcase"></i></div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-exp">0</div>
+            <div class="stat-lbl">Expériences</div>
+          </div>
+        </div>
+        <div class="stat-card card-lift">
+          <div class="stat-icon purple"><i class="fas fa-tools"></i></div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-skills">0</div>
+            <div class="stat-lbl">Compétences</div>
+          </div>
+        </div>
+        <div class="stat-card card-lift">
+          <div class="stat-icon orange"><i class="fas fa-graduation-cap"></i></div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-edu">0</div>
+            <div class="stat-lbl">Formations</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main dashboard grid -->
+      <div class="dash-grid">
+        <!-- Left column -->
+        <div>
+          <!-- Completion card -->
+          <div class="card mb-16">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-pie"></i> Complétion du profil</h3>
+              <span id="dashCompletionBadge" class="btn btn-sm btn-success">0%</span>
+            </div>
+            <div class="card-body">
+              <div class="progress-bar-wrapper">
+                <p><span>Progression globale</span><span id="dashCompletionPct">0%</span></p>
+                <div class="progress-bar"><div class="progress-fill" id="dashCompletionBar" style="width:0%"></div></div>
+              </div>
+              <div class="checklist-grid" id="completionChecklist"></div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="card mb-16">
+            <div class="card-header"><h3><i class="fas fa-bolt"></i> Actions rapides</h3></div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+                <button class="dash-action-btn" onclick="showPage('builder',document.querySelector('[data-page=builder]'))">
+                  <i class="fas fa-edit"></i><span>Modifier CV</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('preview',document.querySelector('[data-page=preview]'))">
+                  <i class="fas fa-eye"></i><span>Aperçu CV</span>
+                </button>
+                <button class="dash-action-btn" onclick="exportPDF()">
+                  <i class="fas fa-file-pdf"></i><span>Exporter PDF</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('cover-letter',document.querySelector('[data-page=cover-letter]'))">
+                  <i class="fas fa-envelope"></i><span>Lettre motiv.</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('score',document.querySelector('[data-page=score]'))">
+                  <i class="fas fa-chart-bar"></i><span>Score CV</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('linkedin',document.querySelector('[data-page=linkedin]'))">
+                  <i class="fab fa-linkedin"></i><span>Post LinkedIn</span>
+                </button>
+                <button class="dash-action-btn" onclick="exportJSON()">
+                  <i class="fas fa-database"></i><span>Sauvegarder</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('import-cv',document.querySelector('[data-page=import-cv]'))">
+                  <i class="fas fa-file-import"></i><span>Importer CV</span>
+                </button>
+                <input type="file" id="importInput" accept=".json" style="display:none" onchange="importJSON(event)" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div>
+          <!-- Mini CV preview -->
+          <div class="card mb-16">
+            <div class="card-header">
+              <h3><i class="fas fa-file-alt"></i> Aperçu rapide</h3>
+              <button class="btn btn-sm btn-ghost" onclick="showPage('preview',document.querySelector('[data-page=preview]'))">
+                <i class="fas fa-expand"></i> Plein écran
+              </button>
+            </div>
+            <div class="mini-preview-wrap">
+              <div class="mini-preview-bar">
+                <div class="mini-dot" style="background:#ff5f57"></div>
+                <div class="mini-dot" style="background:#ffbd2e"></div>
+                <div class="mini-dot" style="background:#28ca41"></div>
+                <span style="font-size:10px;color:rgba(255,255,255,.35);margin-left:8px">CV Preview</span>
+              </div>
+              <div class="mini-preview-body">
+                <div id="dashCvPreview"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div class="tips-card">
+            <h4><i class="fas fa-lightbulb" style="color:var(--warning)"></i> Conseils express</h4>
+            <div class="tip-row"><i class="fas fa-check-circle" style="color:var(--primary);flex-shrink:0;margin-top:2px"></i>Adaptez votre CV à chaque offre en mettant en avant les compétences demandées.</div>
+            <div class="tip-row"><i class="fas fa-check-circle" style="color:var(--primary);flex-shrink:0;margin-top:2px"></i>Utilisez des verbes d'action : "géré", "conçu", "développé", "optimisé"...</div>
+            <div class="tip-row"><i class="fas fa-check-circle" style="color:var(--primary);flex-shrink:0;margin-top:2px"></i>Ajoutez des chiffres : "formé 30+ apprenants", "géré 5 réseaux sociaux".</div>
+            <div class="tip-row"><i class="fas fa-check-circle" style="color:var(--primary);flex-shrink:0;margin-top:2px"></i>Votre profil doit tenir en 2-3 lignes ciblant le poste visé.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         PAGE: BUILDER
+         ════════════════════════════════════════ -->
+    <section class="page" id="page-builder">
+      <div class="page-hdr">
+        <h2>Créer mon CV</h2>
+        <p>Remplissez les informations étape par étape — votre aperçu se met à jour en temps réel.</p>
+      </div>
+
+      <!-- Wizard -->
+      <div class="wizard-steps" id="wizardSteps">
+        <div class="wizard-step active" data-step="1" onclick="goToStep(1)">
+          <div class="wizard-step-circle">1</div>
+          <div class="wizard-step-label">Infos perso</div>
+        </div>
+        <div class="wizard-step" data-step="2" onclick="goToStep(2)">
+          <div class="wizard-step-circle">2</div>
+          <div class="wizard-step-label">Expériences</div>
+        </div>
+        <div class="wizard-step" data-step="3" onclick="goToStep(3)">
+          <div class="wizard-step-circle">3</div>
+          <div class="wizard-step-label">Formation</div>
+        </div>
+        <div class="wizard-step" data-step="4" onclick="goToStep(4)">
+          <div class="wizard-step-circle">4</div>
+          <div class="wizard-step-label">Compétences</div>
+        </div>
+        <div class="wizard-step" data-step="5" onclick="goToStep(5)">
+          <div class="wizard-step-circle"><i class="fas fa-eye" style="font-size:11px"></i></div>
+          <div class="wizard-step-label">Aperçu</div>
+        </div>
+      </div>
+
+      <div class="progress-bar-wrapper">
+        <p><span>Étape <span id="currentStepLabel">1</span> / 5</span><span id="builderProgressPct">20%</span></p>
+        <div class="progress-bar"><div class="progress-fill" id="builderProgressBar" style="width:20%"></div></div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step-content active" id="step-1">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-user"></i> Informations personnelles</h3></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Photo de profil</label>
+              <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                <div class="photo-preview" id="photoPreview"><i class="fas fa-user"></i></div>
+                <div class="photo-upload-info">
+                  <h4>Cliquer pour télécharger</h4>
+                  <p>JPG, PNG · Max 2MB · Images uniquement</p>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group mb-0">
+                <label>Nom complet *</label>
+                <input type="text" class="form-control" id="f-name" placeholder="Ex: Jean Dupont" oninput="autosave()" />
+              </div>
+              <div class="form-group mb-0">
+                <label>Titre professionnel *</label>
+                <input type="text" class="form-control" id="f-title" placeholder="Ex: Graphiste Designer" oninput="autosave()" />
+              </div>
+            </div>
+            <div class="form-row mt-16">
+              <div class="form-group mb-0">
+                <label>Email *</label>
+                <input type="email" class="form-control" id="f-email" placeholder="email@exemple.com" oninput="autosave()" />
+              </div>
+              <div class="form-group mb-0">
+                <label>Téléphone</label>
+                <input type="tel" class="form-control" id="f-phone" placeholder="+229 01 XX XX XX" oninput="autosave()" />
+              </div>
+            </div>
+            <div class="form-row mt-16">
+              <div class="form-group mb-0">
+                <label>Adresse</label>
+                <input type="text" class="form-control" id="f-address" placeholder="Ville, Pays" oninput="autosave()" />
+              </div>
+              <div class="form-group mb-0">
+                <label>LinkedIn</label>
+                <input type="url" class="form-control" id="f-linkedin" placeholder="linkedin.com/in/..." oninput="autosave()" />
+              </div>
+            </div>
+            <div class="form-row mt-16">
+              <div class="form-group mb-0">
+                <label>Portfolio / Site web</label>
+                <input type="url" class="form-control" id="f-portfolio" placeholder="https://monsite.com" oninput="autosave()" />
+              </div>
+              <div class="form-group mb-0"></div>
+            </div>
+            <div class="form-group mt-16">
+              <label>Profil / Résumé professionnel *</label>
+              <textarea class="form-control" id="f-profile" rows="4" maxlength="600" placeholder="Décrivez-vous en 3-4 phrases..." oninput="autosave();updateCharCount(this,'profileCounter',600)"></textarea>
+              <div class="char-counter" id="profileCounter">0 / 600</div>
+            </div>
+          </div>
+        </div>
+        <div class="step-nav">
+          <span></span>
+          <button class="btn btn-primary" onclick="goToStep(2)">Suivant : Expériences <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-content" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-briefcase"></i> Expériences professionnelles</h3>
+            <button class="btn btn-sm btn-primary" onclick="addExperience()"><i class="fas fa-plus"></i> Ajouter</button>
+          </div>
+          <div class="card-body"><div class="dynamic-list" id="experienceList"></div></div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Retour</button>
+          <button class="btn btn-primary" onclick="goToStep(3)">Suivant : Formation <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-content" id="step-3">
+        <div class="card mb-16">
+          <div class="card-header">
+            <h3><i class="fas fa-graduation-cap"></i> Formations académiques</h3>
+            <button class="btn btn-sm btn-primary" onclick="addEducation()"><i class="fas fa-plus"></i> Ajouter</button>
+          </div>
+          <div class="card-body"><div class="dynamic-list" id="educationList"></div></div>
+        </div>
+        <div class="card mb-16">
+          <div class="card-header">
+            <h3><i class="fas fa-certificate"></i> Certifications & Attestations</h3>
+            <button class="btn btn-sm btn-primary" onclick="addCertification()"><i class="fas fa-plus"></i> Ajouter</button>
+          </div>
+          <div class="card-body"><div class="dynamic-list" id="certificationList"></div></div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Retour</button>
+          <button class="btn btn-primary" onclick="goToStep(4)">Suivant : Compétences <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-content" id="step-4">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-star"></i> Compétences</h3><button class="btn btn-sm btn-primary" onclick="addSkill()"><i class="fas fa-plus"></i></button></div>
+            <div class="card-body"><div id="skillsList"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-tools"></i> Outils & Logiciels</h3><button class="btn btn-sm btn-primary" onclick="addTool()"><i class="fas fa-plus"></i></button></div>
+            <div class="card-body"><div id="toolsList"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-language"></i> Langues</h3><button class="btn btn-sm btn-primary" onclick="addLanguage()"><i class="fas fa-plus"></i></button></div>
+            <div class="card-body"><div id="languagesList"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-heart"></i> Centres d'intérêt</h3><button class="btn btn-sm btn-primary" onclick="addInterest()"><i class="fas fa-plus"></i></button></div>
+            <div class="card-body"><div id="interestsList"></div></div>
+          </div>
+        </div>
+        <div class="card mt-16">
+          <div class="card-header"><h3><i class="fas fa-address-card"></i> Références</h3><button class="btn btn-sm btn-primary" onclick="addReference()"><i class="fas fa-plus"></i></button></div>
+          <div class="card-body"><div class="dynamic-list" id="referencesList"></div></div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Retour</button>
+          <button class="btn btn-primary" onclick="goToStep(5)">Aperçu final <i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-content" id="step-5">
+        <div class="card mb-16">
+          <div class="card-header"><h3><i class="fas fa-palette"></i> Apparence du CV</h3></div>
+          <div class="card-body">
+            <label>Modèle</label>
+            <div class="template-grid" id="templateGrid"></div>
+            <label>Couleur d'accentuation</label>
+            <div class="color-picker-row" id="colorPickerRow"></div>
+          </div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-toolbar">
+            <p><i class="fas fa-file-alt"></i> Aperçu en temps réel</p>
+            <div class="preview-scale-btns">
+              <button class="preview-scale-btn active" onclick="setPreviewScale(0.65,this)">65%</button>
+              <button class="preview-scale-btn" onclick="setPreviewScale(0.80,this)">80%</button>
+              <button class="preview-scale-btn" onclick="setPreviewScale(1,this)">100%</button>
+            </div>
+          </div>
+          <div class="preview-viewport">
+            <div class="preview-scale-wrapper" id="builderPreviewScale" style="transform:scale(0.65)">
+              <div id="builderCvPreview"></div>
+            </div>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(4)"><i class="fas fa-arrow-left"></i> Retour</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Exporter PDF</button>
+            <button class="btn btn-primary" onclick="showPage('cover-letter',document.querySelector('[data-page=cover-letter]'))"><i class="fas fa-envelope"></i> Lettre de motivation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: PREVIEW ════ -->
+    <section class="page" id="page-preview">
+      <div class="page-hdr"><h2>Aperçu du CV</h2><p>Visualisez et choisissez votre template avant d'exporter.</p></div>
+      <div class="card mb-16">
+        <div class="card-header">
+          <h3><i class="fas fa-palette"></i> Apparence</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-secondary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-sm btn-secondary" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copier texte</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div><label>Modèle</label><div class="template-grid" id="templateGridPreview"></div></div>
+            <div><label>Couleur</label><div class="color-picker-row" id="colorPickerPreview"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-panel">
+        <div class="preview-toolbar">
+          <p><i class="fas fa-file-alt"></i> Aperçu CV complet</p>
+          <div class="preview-scale-btns">
+            <button class="preview-scale-btn active" onclick="setPreviewScale2(0.65,this)">65%</button>
+            <button class="preview-scale-btn" onclick="setPreviewScale2(0.80,this)">80%</button>
+            <button class="preview-scale-btn" onclick="setPreviewScale2(1,this)">100%</button>
+          </div>
+        </div>
+        <div class="preview-viewport">
+          <div class="preview-scale-wrapper" id="previewScale" style="transform:scale(0.65)">
+            <div id="mainCvPreview"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: COVER LETTER ════ -->
+    <section class="page" id="page-cover-letter">
+      <div class="page-hdr"><h2>Lettre de motivation</h2><p>Générez une lettre personnalisée adaptée à chaque offre.</p></div>
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-sliders"></i> Paramètres</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>Poste visé *</label><input type="text" class="form-control" id="cl-poste" placeholder="Ex: Graphiste Designer Senior" /></div>
+            <div class="form-group"><label>Nom de l'entreprise *</label><input type="text" class="form-control" id="cl-entreprise" placeholder="Ex: Agence Créative XYZ" /></div>
+            <div class="form-group"><label>Nom du recruteur</label><input type="text" class="form-control" id="cl-recruteur" placeholder="Ex: M. Martin" /></div>
+            <div class="form-group"><label>Ville</label><input type="text" class="form-control" id="cl-ville" placeholder="Ex: Cotonou" /></div>
+            <div class="form-group"><label>Ton de la lettre</label>
+              <select class="form-control" id="cl-ton">
+                <option value="formel">Formel & Professionnel</option>
+                <option value="dynamique">Dynamique & Motivé</option>
+                <option value="creatif">Créatif & Original</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Variation</label>
+              <select class="form-control" id="cl-variation">
+                <option value="1">Variation 1 — Standard</option>
+                <option value="2">Variation 2 — Points forts mis en avant</option>
+                <option value="3">Variation 3 — Storytelling</option>
+              </select>
+            </div>
+            <button class="btn btn-primary w-100" onclick="generateCoverLetter()"><i class="fas fa-magic"></i> Générer la lettre</button>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn btn-sm btn-secondary w-100" onclick="exportCoverLetterPDF()"><i class="fas fa-file-pdf"></i> Exporter PDF</button>
+              <button class="btn btn-sm btn-ghost w-100" onclick="copyCoverLetter()"><i class="fas fa-copy"></i> Copier</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-eye"></i> Aperçu / Édition</h3></div>
+          <div class="card-body">
+            <textarea class="cover-letter-output" id="coverLetterText" rows="24" placeholder="Remplissez le formulaire et cliquez sur 'Générer'..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: SCORE CV ════ -->
+    <section class="page" id="page-score">
+      <div class="page-hdr"><h2>Score CV</h2><p>Analysez la qualité de votre CV et obtenez des recommandations.</p></div>
+      <div class="score-hero">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--primary)" stroke-width="10"
+              stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+              id="scoreRingCircle" style="transition:stroke-dashoffset 1.2s ease;transform:rotate(-90deg);transform-origin:60px 60px"/>
+          </svg>
+          <div class="score-ring-label"><span id="scoreValue">0</span><small>/100</small></div>
+        </div>
+        <div class="score-hero-info">
+          <h2 id="scoreTitle">Cliquez sur Analyser</h2>
+          <p id="scoreSubtitle" style="color:var(--text-secondary);font-size:13px">Obtenez votre score sur 100 avec recommandations personnalisées</p>
+          <button class="btn btn-primary btn-lg" onclick="analyzeCV()" style="margin-top:16px"><i class="fas fa-chart-bar"></i> Analyser mon CV</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px" id="scoreCriteria"></div>
+      <div class="card mt-16" id="scoreRecommendations" style="display:none">
+        <div class="card-header"><h3><i class="fas fa-magic"></i> Recommandations personnalisées</h3></div>
+        <div class="card-body" id="scoreRecList"></div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: MATCH OFFRE ════ -->
+    <section class="page" id="page-match">
+      <div class="page-hdr"><h2>Match avec l'offre</h2><p>Analysez la compatibilité de votre CV avec une offre d'emploi.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-paste"></i> Coller l'offre d'emploi</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>Titre du poste ciblé</label><input type="text" class="form-control" id="match-title" placeholder="Ex: Graphiste Senior" /></div>
+            <div class="form-group"><label>Texte de l'offre d'emploi *</label><textarea class="form-control" id="match-offer" rows="12" placeholder="Collez ici le texte complet de l'offre..."></textarea></div>
+            <button class="btn btn-primary w-100" onclick="matchOffer()"><i class="fas fa-search"></i> Analyser la compatibilité</button>
+          </div>
+        </div>
+        <div>
+          <div class="card mb-16" id="matchResultCard" style="display:none">
+            <div class="card-header"><h3><i class="fas fa-percentage"></i> Score de compatibilité</h3></div>
+            <div class="card-body" style="text-align:center">
+              <div class="match-score-display">
+                <div class="match-score-circle" id="matchScoreCircle"><span id="matchScorePct">0%</span></div>
+                <p id="matchScoreLabel" style="margin-top:12px;font-weight:600;font-size:15px"></p>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-16" id="matchKeywordsCard" style="display:none">
+            <div class="card-header"><h3><i class="fas fa-check-circle" style="color:var(--success)"></i> Mots-clés présents</h3></div>
+            <div class="card-body"><div id="matchFoundKeywords" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
+          </div>
+          <div class="card" id="matchMissingCard" style="display:none">
+            <div class="card-header"><h3><i class="fas fa-times-circle" style="color:var(--danger)"></i> Mots-clés manquants</h3></div>
+            <div class="card-body"><div id="matchMissingKeywords" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: LINKEDIN ════ -->
+    <section class="page" id="page-linkedin">
+      <div class="page-hdr"><h2>Posts LinkedIn</h2><p>Générez des posts professionnels basés sur votre profil.</p></div>
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-sliders"></i> Paramètres</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>Type de post</label>
+              <select class="form-control" id="li-type">
+                <option value="intro">🙋 Présentation professionnelle</option>
+                <option value="competence">🎯 Mise en avant d'une compétence</option>
+                <option value="experience">💼 Partage d'expérience</option>
+                <option value="recherche">🔍 Recherche d'emploi / mission</option>
+                <option value="conseil">💡 Conseil / Tip professionnel</option>
+                <option value="milestone">🏆 Célébration d'une réalisation</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Sujet spécifique</label><input type="text" class="form-control" id="li-sujet" placeholder="Ex: mon expérience en IA, branding..." /></div>
+            <div class="form-group"><label>Hashtags</label><input type="text" class="form-control" id="li-hashtags" value="#GraphismeDesign #CommunityManager #IA #Benin" /></div>
+            <button class="btn btn-primary w-100" onclick="generateLinkedInPost()"><i class="fas fa-magic"></i> Générer le post</button>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn btn-sm btn-secondary w-100" onclick="copyLinkedInPost()"><i class="fas fa-copy"></i> Copier</button>
+              <button class="btn btn-sm btn-ghost w-100" onclick="regenerateLinkedInPost()"><i class="fas fa-redo"></i> Variante</button>
+            </div>
+            <div style="margin-top:16px"><label>Hashtags suggérés</label>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+                <span onclick="addHashtag('#GraphismeDesign')" style="cursor:pointer;background:var(--primary);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600">#GraphismeDesign</span>
+                <span onclick="addHashtag('#CommunityManager')" style="cursor:pointer;background:var(--primary);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600">#CommunityManager</span>
+                <span onclick="addHashtag('#IA')" style="cursor:pointer;background:var(--secondary);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600">#IA</span>
+                <span onclick="addHashtag('#Branding')" style="cursor:pointer;background:var(--secondary);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600">#Branding</span>
+                <span onclick="addHashtag('#Freelance')" style="cursor:pointer;background:var(--success);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600">#Freelance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fab fa-linkedin"></i> Aperçu du post</h3>
+            <span class="btn btn-sm btn-ghost" id="li-char-count" style="color:var(--text-muted)">0 / 3000</span>
+          </div>
+          <div class="card-body">
+            <div class="li-post-preview">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">T</div>
+                <div>
+                  <div style="font-weight:700;font-size:13px" id="li-preview-name">Thibaut A. Hoyochi</div>
+                  <div style="font-size:11px;color:var(--text-secondary)" id="li-preview-title">Graphiste Designer & Community Manager</div>
+                  <div style="font-size:10px;color:var(--text-muted)">Maintenant</div>
+                </div>
+              </div>
+              <div class="li-post-text" id="liPostText" style="color:var(--text-secondary);font-size:13px">
+                Remplissez le formulaire et cliquez sur "Générer" pour créer votre post LinkedIn...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: EXPORT ════ -->
+    <section class="page" id="page-export">
+      <div class="page-hdr"><h2>Exporter</h2><p>Téléchargez votre CV dans le format de votre choix.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-file-pdf"></i> PDF haute qualité</h3></div>
+          <div class="card-body" style="text-align:center">
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Format A4, couleurs préservées, prêt à envoyer aux recruteurs.</p>
+            <button class="btn btn-primary w-100 btn-lg" onclick="exportPDF()"><i class="fas fa-print"></i> Imprimer / PDF</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-file-word"></i> Export Word / RTF</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>Format</label>
+              <select class="form-control" id="word-format">
+                <option value="docx">Word (.doc) — via HTML</option>
+                <option value="rtf">Rich Text (.rtf)</option>
+                <option value="txt">Texte brut (.txt)</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Langue</label>
+              <select class="form-control" id="word-lang">
+                <option value="fr">Français</option>
+                <option value="en">Anglais (traduit)</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary w-100" onclick="exportWord()"><i class="fas fa-download"></i> Télécharger</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-database"></i> Sauvegarde JSON</h3></div>
+          <div class="card-body" style="text-align:center">
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Sauvegardez toutes vos données pour les restaurer plus tard.</p>
+            <button class="btn btn-secondary w-100" onclick="exportJSON()" style="margin-bottom:10px"><i class="fas fa-download"></i> Exporter JSON</button>
+            <button class="btn btn-ghost w-100" onclick="document.getElementById('importInput2').click()"><i class="fas fa-upload"></i> Importer JSON</button>
+            <input type="file" id="importInput2" accept=".json" style="display:none" onchange="importJSON(event)" />
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-clipboard"></i> Copier le texte</h3></div>
+          <div class="card-body" style="text-align:center">
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Copiez le contenu texte du CV dans le presse-papiers.</p>
+            <button class="btn btn-secondary w-100" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copier texte</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-trash"></i> Réinitialiser</h3></div>
+          <div class="card-body" style="text-align:center">
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Effacez toutes les données et recommencez à zéro.</p>
+            <button class="btn btn-danger w-100" onclick="confirmReset()"><i class="fas fa-trash-alt"></i> Réinitialiser</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: TRADUCTION EN ════ -->
+    <section class="page" id="page-translate">
+      <div class="page-hdr"><h2>Traduction Anglais</h2><p>Traduisez automatiquement votre CV en anglais pour vos candidatures internationales.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-flag"></i> CV en Français</h3><span style="font-size:11px;color:var(--text-muted)">Source</span></div>
+          <div class="card-body"><div id="translate-fr-preview" style="font-size:12px;line-height:1.7;max-height:500px;overflow-y:auto;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg-input)">Cliquez sur "Traduire" pour voir la version française...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-flag-usa"></i> CV en Anglais</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm btn-secondary" onclick="copyTranslated()"><i class="fas fa-copy"></i> Copier</button>
+              <button class="btn btn-sm btn-secondary" onclick="exportTranslatedPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+          </div>
+          <div class="card-body"><div id="translate-en-preview" style="font-size:12px;line-height:1.7;max-height:500px;overflow-y:auto;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg-input)">La traduction apparaîtra ici...</div></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <button class="btn btn-primary btn-lg" onclick="translateCV()"><i class="fas fa-language"></i> Traduire mon CV en Anglais</button>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:8px">Traduction automatique basée sur votre profil</p>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: PRÉSENTATION ════ -->
+    <section class="page" id="page-present">
+      <div class="page-hdr"><h2>Mode Présentation</h2><p>Présentez votre parcours en mode plein écran avec navigation clavier.</p></div>
+      <div class="card mb-16">
+        <div class="card-header">
+          <h3><i class="fas fa-tv"></i> Slideshow</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-secondary" id="present-prev-btn" onclick="presentPrev()" disabled><i class="fas fa-chevron-left"></i></button>
+            <span class="btn btn-sm btn-ghost" id="present-counter">1 / 1</span>
+            <button class="btn btn-sm btn-secondary" id="present-next-btn" onclick="presentNext()"><i class="fas fa-chevron-right"></i></button>
+            <button class="btn btn-sm btn-primary" onclick="launchFullscreen()"><i class="fas fa-expand"></i> Plein écran</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;background:#525659;min-height:480px;display:flex;align-items:center;justify-content:center;border-radius:0 0 12px 12px">
+          <div id="presentSlide" style="background:#fff;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.3);transform:scale(0.65);transform-origin:top center;min-width:210mm"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-list"></i> Slides</h3></div>
+        <div class="card-body"><div id="presentThumbs" style="display:flex;gap:12px;flex-wrap:wrap"></div></div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: PORTFOLIO ════ -->
+    <section class="page" id="page-portfolio">
+      <div class="page-hdr"><h2>Portfolio Web</h2><p>Exportez un mini-site HTML présentant votre parcours et réalisations.</p></div>
+      <div class="card mb-16">
+        <div class="card-header">
+          <h3><i class="fas fa-globe"></i> Paramètres</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-secondary" onclick="previewPortfolio()"><i class="fas fa-eye"></i> Prévisualiser</button>
+            <button class="btn btn-sm btn-primary" onclick="exportPortfolio()"><i class="fas fa-download"></i> Exporter HTML</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group"><label>Couleur principale</label><input type="color" class="form-control" id="pf-color" value="#2563EB" style="height:42px;padding:4px" oninput="updatePortfolioPreview()" /></div>
+            <div class="form-group"><label>Style</label>
+              <select class="form-control" id="pf-style" onchange="updatePortfolioPreview()">
+                <option value="modern">Moderne Dark</option>
+                <option value="light">Clean Light</option>
+                <option value="gradient">Gradient Pro</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column:1/-1"><label>Slogan / Accroche</label><input type="text" class="form-control" id="pf-slogan" value="Graphiste Designer & Community Manager | Créativité au service de votre marque" oninput="updatePortfolioPreview()" /></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Projets / Réalisations</label>
+              <textarea class="form-control" id="pf-projects" rows="5" oninput="updatePortfolioPreview()">Identité visuelle ONG Paix et Liberté
+Gestion réseaux sociaux Phinan Sublime Luxe
+Formation Canva & Photoshop — 50+ apprenants
+Branding Kladriva France & Canada
+Création vidéo IA — Dolphgroup Academy</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-desktop"></i> Aperçu</h3></div>
+        <div class="card-body" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px">
+          <iframe id="portfolioIframe" style="width:100%;height:600px;border:none;background:#fff"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: QR CODE ════ -->
+    <section class="page" id="page-qrcode">
+      <div class="page-hdr"><h2>QR Code</h2><p>Générez un QR code de contact à intégrer dans votre CV.</p></div>
+      <div style="display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-cog"></i> Paramètres</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>Type de contenu</label>
+              <select class="form-control" id="qr-type" onchange="generateQR()">
+                <option value="vcard">vCard (contact complet)</option>
+                <option value="email">Email uniquement</option>
+                <option value="phone">Téléphone uniquement</option>
+                <option value="linkedin">Profil LinkedIn</option>
+                <option value="portfolio">Portfolio / Site web</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Taille</label>
+              <input type="range" class="w-100" id="qr-size" min="150" max="400" step="50" value="250" oninput="this.nextElementSibling.textContent=this.value+'px';generateQR()" style="accent-color:var(--primary)" />
+              <span style="font-size:12px;color:var(--text-secondary)">250px</span>
+            </div>
+            <div class="form-group"><label>Couleur</label>
+              <input type="color" id="qr-color" value="#1e293b" onchange="generateQR()" class="form-control" style="height:42px;padding:4px" />
+            </div>
+            <button class="btn btn-primary w-100" onclick="downloadQR()"><i class="fas fa-download"></i> Télécharger PNG</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-qrcode"></i> Aperçu</h3></div>
+          <div class="card-body" style="text-align:center">
+            <div id="qrPreview" style="display:inline-block;padding:20px;background:#fff;border-radius:12px;box-shadow:var(--shadow)">
+              <canvas id="qrCanvas"></canvas>
+            </div>
+            <p id="qrInfo" style="margin-top:14px;font-size:12px;color:var(--text-secondary)"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: HISTORIQUE ════ -->
+    <section class="page" id="page-history">
+      <div class="page-hdr"><h2>Historique des versions</h2><p>Jusqu'à 5 versions de votre CV sauvegardées — restaurez en un clic.</p></div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-history"></i> Versions sauvegardées</h3>
+          <button class="btn btn-sm btn-primary" onclick="saveVersion()"><i class="fas fa-save"></i> Sauvegarder version actuelle</button>
+        </div>
+        <div class="card-body"><div id="versionsList"></div></div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: IMPORT CV ════ -->
+    <section class="page" id="page-import-cv">
+      <div class="page-hdr"><h2>Importer un ancien CV</h2><p>Glissez un fichier ou collez le texte — l'outil extrait automatiquement vos informations.</p></div>
+
+      <div class="card mb-16" id="importStep1">
+        <div class="card-header">
+          <h3><i class="fas fa-file-import"></i> Chargement</h3>
+          <span style="font-size:12px;color:var(--text-secondary)">Étape 1 / 3</span>
+        </div>
+        <div class="card-body">
+          <div class="import-drop-zone" id="importDropZone"
+               onclick="document.getElementById('importCvFile').click()"
+               ondragover="handleImportDrag(event)"
+               ondragleave="handleImportDragLeave(event)"
+               ondrop="handleImportDrop(event)">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h4>Glissez votre CV ici ou cliquez pour choisir</h4>
+            <p>Formats acceptés : <strong>.txt</strong> &nbsp;·&nbsp; <strong>.pdf</strong> &nbsp;·&nbsp; <strong>.doc / .docx</strong></p>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:4px">⚠️ JSON non accepté ici — utilisez la page Exporter</p>
+            <input type="file" id="importCvFile" accept=".txt,.pdf,.doc,.docx" style="display:none" onchange="handleImportFileSelect(event)" />
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;margin:16px 0">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <span style="font-size:12px;color:var(--text-muted);font-weight:600">OU</span>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Coller le texte de votre CV</label>
+            <textarea class="form-control" id="importCvText" rows="10"
+              placeholder="Collez ici le contenu texte de votre ancien CV...&#10;&#10;Exemple :&#10;Jean Dupont&#10;Graphiste Designer&#10;jean@email.com | Cotonou&#10;&#10;EXPÉRIENCES&#10;2023 | Designer | Entreprise XYZ&#10;Missions..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-ghost" onclick="document.getElementById('importCvText').value=''"><i class="fas fa-eraser"></i> Effacer</button>
+            <button class="btn btn-primary btn-lg" onclick="parseImportedCV()"><i class="fas fa-magic"></i> Analyser et extraire</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16" id="importStep2" style="display:none">
+        <div class="card-header">
+          <h3><i class="fas fa-check-circle" style="color:var(--success)"></i> Données extraites</h3>
+          <span style="font-size:12px;color:var(--text-secondary)">Étape 2 / 3</span>
+        </div>
+        <div class="card-body"><div class="import-results-grid" id="importResultsGrid"></div></div>
+      </div>
+
+      <div class="card" id="importStep3" style="display:none">
+        <div class="card-header">
+          <h3><i class="fas fa-wand-magic-sparkles"></i> Appliquer au formulaire</h3>
+          <span style="font-size:12px;color:var(--text-secondary)">Étape 3 / 3</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Choisissez ce que vous voulez importer :</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+            <label class="import-option-check"><input type="checkbox" id="imp-infos" checked /><i class="fas fa-user"></i> Informations personnelles</label>
+            <label class="import-option-check"><input type="checkbox" id="imp-profile" checked /><i class="fas fa-align-left"></i> Profil / Résumé</label>
+            <label class="import-option-check"><input type="checkbox" id="imp-skills" checked /><i class="fas fa-star"></i> Compétences</label>
+            <label class="import-option-check"><input type="checkbox" id="imp-tools" checked /><i class="fas fa-tools"></i> Outils & Logiciels</label>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-secondary" onclick="resetImport()"><i class="fas fa-redo"></i> Recommencer</button>
+            <button class="btn btn-primary btn-lg" onclick="applyImportedCV()"><i class="fas fa-check"></i> Appliquer au formulaire CV</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: SETTINGS ════ -->
+    <section class="page" id="page-settings">
+      <div class="page-hdr"><h2>Apparence du CV</h2><p>Personnalisez la typographie et la mise en page de votre CV.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-font"></i> Typographie</h3></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Police principale</label>
+              <select class="form-control" id="s-font" onchange="applySettings()">
+                <option value="Poppins">Poppins (Moderne)</option>
+                <option value="Inter">Inter (Tech)</option>
+                <option value="Montserrat">Montserrat (Élégant)</option>
+                <option value="Playfair Display">Playfair Display (Classique)</option>
+                <option value="Raleway">Raleway (Créatif)</option>
+                <option value="Lato">Lato (Neutre)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Taille de base</label>
+              <div style="display:flex;align-items:center;gap:12px">
+                <input type="range" style="flex:1;accent-color:var(--primary)" id="s-fontsize" min="10" max="14" step="0.5" value="12" oninput="this.nextElementSibling.textContent=this.value+'px';applySettings()" />
+                <span style="font-size:12px;color:var(--text-secondary);min-width:32px">12px</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Interligne</label>
+              <div style="display:flex;align-items:center;gap:12px">
+                <input type="range" style="flex:1;accent-color:var(--primary)" id="s-lineheight" min="1.3" max="2.0" step="0.1" value="1.6" oninput="this.nextElementSibling.textContent=this.value;applySettings()" />
+                <span style="font-size:12px;color:var(--text-secondary);min-width:32px">1.6</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-eye"></i> Aperçu typographie</h3><button class="btn btn-sm btn-ghost" onclick="resetSettings()"><i class="fas fa-undo"></i> Réinitialiser</button></div>
+          <div class="card-body">
+            <div id="settingsPreviewBox" style="padding:20px;border:1px solid var(--border);border-radius:8px;background:var(--bg-input)">
+              <p id="settingsPreviewText" style="margin:0;transition:all .3s ease">
+                <strong>Thibaut A. Hoyochi</strong> — Graphiste Designer & Community Manager<br>
+                <span style="font-size:.9em;color:#666">Depuis 3 ans, je conçois des identités visuelles et accompagne les marques dans leur stratégie digitale.</span>
+              </p>
+            </div>
+            <button class="btn btn-primary mt-16" onclick="applySettings();showToast('Apparence appliquée au CV','success')">
+              <i class="fas fa-check"></i> Appliquer au CV
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: TIPS ════ -->
+    <section class="page" id="page-tips">
+      <div class="page-hdr"><h2>Conseils CV</h2><p>Bonnes pratiques pour un CV efficace et percutant.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card"><div class="card-header"><h3><i class="fas fa-user-tie"></i> Profil & Identité</h3></div>
+          <div class="card-body">
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Commencez par votre titre exact puis mentionnez vos années d'expérience.</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Évitez "je suis motivé" — soyez spécifique et factuel.</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Mentionnez votre diplôme ou certification la plus pertinente.</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-briefcase"></i> Expériences</h3></div>
+          <div class="card-body">
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Commencez par un verbe d'action : "Conçu", "Géré", "Développé"...</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Ajoutez des métriques : "formé 30 personnes", "créé 50+ visuels".</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Mettez les expériences récentes en premier (ordre antichronologique).</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-star"></i> Compétences</h3></div>
+          <div class="card-body">
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Limitez à 8-10 compétences maximum. Mieux vaut peu et bien maîtrisées.</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Soyez honnête avec les pourcentages — les recruteurs le verront en entretien.</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-palette"></i> Design & Lisibilité</h3></div>
+          <div class="card-body">
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Choisissez un template adapté : Créatif pour la com, Corporate pour la finance.</span></div>
+            <div class="tip-item"><i class="fas fa-lightbulb"></i><span class="tip-text">Votre CV doit idéalement tenir sur une seule page A4.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════ FULLSCREEN PRESENTATION ════ -->
+<div id="fullscreenPresent" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;flex-direction:column;align-items:center;justify-content:center">
+  <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px;z-index:10001">
+    <button onclick="presentPrev()" class="btn btn-sm btn-secondary" id="fs-prev"><i class="fas fa-chevron-left"></i></button>
+    <span class="btn btn-sm btn-ghost" id="fs-counter" style="color:#fff">1/1</span>
+    <button onclick="presentNext()" class="btn btn-sm btn-secondary" id="fs-next"><i class="fas fa-chevron-right"></i></button>
+    <button onclick="closeFullscreen()" class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Quitter</button>
+  </div>
+  <div id="fsSlideWrap" style="transform:scale(0.82);transform-origin:center center;border-radius:10px;box-shadow:0 24px 72px rgba(0,0,0,.6)"></div>
+</div>
+
+    <!-- ════ PHOTO CROP MODAL ════ -->
+<div class="modal-backdrop hidden" id="cropModal">
+  <div class="modal" style="max-width:560px;width:95%">
+    <h3><i class="fas fa-crop-alt" style="color:var(--primary)"></i> Recadrer la photo</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Déplacez et redimensionnez le cercle pour cadrer votre photo.</p>
+
+    <div id="cropContainer" style="position:relative;width:100%;height:360px;background:#1e293b;border-radius:12px;overflow:hidden;cursor:move;user-select:none">
+      <img id="cropImg" style="position:absolute;transform-origin:0 0" draggable="false" />
+      <!-- Dark overlay with circle cutout -->
+      <canvas id="cropOverlay" style="position:absolute;top:0;left:0;pointer-events:none"></canvas>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+      <i class="fas fa-search-minus" style="color:var(--text-muted)"></i>
+      <input type="range" id="cropZoom" min="0.5" max="3" step="0.01" value="1" style="flex:1;accent-color:var(--primary)" oninput="updateCropZoom(this.value)" />
+      <i class="fas fa-search-plus" style="color:var(--text-muted)"></i>
+      <span id="cropZoomLabel" style="font-size:12px;color:var(--text-secondary);min-width:36px;text-align:right">100%</span>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:space-between;align-items:center">
+      <button class="btn btn-ghost" onclick="closeCropModal()"><i class="fas fa-times"></i> Annuler</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="resetCrop()"><i class="fas fa-undo"></i> Réinitialiser</button>
+        <button class="btn btn-primary" onclick="applyCrop()"><i class="fas fa-check"></i> Appliquer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="print-zone" style="display:none"></div>
+
+<!-- ════ TOAST CONTAINER ════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════ RESET MODAL ════ -->
+<div class="modal-backdrop hidden" id="resetModal">
+  <div class="modal">
+    <h3><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i> Réinitialiser le CV ?</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">Cette action effacera <strong>toutes vos données</strong>. Elle est irréversible.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="document.getElementById('resetModal').classList.add('hidden')">Annuler</button>
+      <button class="btn btn-danger" onclick="resetAll()">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+  // Clean corrupted localStorage data on load
+  (function() {
+    var saved = localStorage.getItem('cvGeneratorData');
+    if (saved) {
+      try {
+        var d = JSON.parse(saved);
+        // Detect corrupted data: PDF binary content in fields
+        var isBad = !d || typeof d.name !== 'string' ||
+          (d.name && (d.name.indexOf('%PDF') >= 0 || d.name.indexOf('8páÂ') >= 0 || d.name.length > 200)) ||
+          (d.profile && d.profile.indexOf('%PDF') >= 0) ||
+          (d.title && d.title.indexOf('%PDF') >= 0) ||
+          (d.address && d.address.length > 300);
+        if (isBad) {
+          console.warn('Corrupted data detected — resetting to defaults');
+          localStorage.removeItem('cvGeneratorData');
+        }
+      } catch(e) {
+        localStorage.removeItem('cvGeneratorData');
+      }
+    }
+    // Also clear importCvText if it contains PDF binary
+    var ta = document.getElementById('importCvText');
+    if (ta && ta.value && ta.value.indexOf('%PDF') >= 0) {
+      ta.value = '';
+    }
+  })();
+
+  // Update dashboard mini-preview on load
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var dp = document.getElementById('dashCvPreview');
+      if (dp && typeof buildCvHTML === 'function') dp.innerHTML = buildCvHTML(cvData);
+    }, 300);
+  });
+</script>
+</body>
+</html>
