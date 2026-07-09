@@ -1,0 +1,12 @@
+# Fichiers temporaires
+*.py
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Fichiers de debug
+debug.html
+check_*.py
+fix_*.py

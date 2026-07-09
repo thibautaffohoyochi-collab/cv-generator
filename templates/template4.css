@@ -1,0 +1,271 @@
+/* ============================================
+   TEMPLATE 4 - CORPORATE (Traditional, B&W)
+   ============================================ */
+
+.cv-template-4 {
+  font-family: 'Times New Roman', Georgia, serif;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: #fff;
+  padding: 36px 44px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+  color: #222;
+}
+
+.cv-template-4 .cv-header {
+  text-align: center;
+  border-bottom: 2px solid #222;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cv-template-4 .cv-photo-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.cv-template-4 .cv-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #999;
+  overflow: hidden;
+}
+
+.cv-template-4 .cv-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cv-template-4 .cv-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.cv-template-4 .cv-title {
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: #555;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.cv-template-4 .cv-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  margin-top: 4px;
+}
+
+.cv-template-4 .cv-contact-item {
+  font-size: 10.5px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cv-template-4 .cv-contact-item i {
+  font-size: 9px;
+  color: #222;
+}
+
+/* ---- BODY ---- */
+.cv-template-4 .cv-section {
+  margin-bottom: 18px;
+}
+
+.cv-template-4 .cv-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #111;
+  margin: 0 0 10px 0;
+  padding: 4px 0;
+  border-top: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+}
+
+.cv-template-4 .cv-profile-text {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #333;
+  margin: 0;
+  font-style: italic;
+}
+
+.cv-template-4 .cv-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 32px;
+}
+
+.cv-template-4 .cv-experience-item {
+  margin-bottom: 14px;
+}
+
+.cv-template-4 .cv-exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cv-template-4 .cv-exp-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 2px 0;
+}
+
+.cv-template-4 .cv-exp-date {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.cv-template-4 .cv-exp-company {
+  font-size: 11.5px;
+  font-style: italic;
+  color: #444;
+  margin: 0 0 4px 0;
+}
+
+.cv-template-4 .cv-exp-desc {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+}
+
+.cv-template-4 .cv-edu-item {
+  margin-bottom: 12px;
+}
+
+.cv-template-4 .cv-edu-school {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 1px 0;
+}
+
+.cv-template-4 .cv-edu-degree {
+  font-size: 11.5px;
+  color: #333;
+  font-style: italic;
+  margin: 0 0 1px 0;
+}
+
+.cv-template-4 .cv-edu-date {
+  font-size: 10.5px;
+  color: #777;
+  margin: 0;
+}
+
+.cv-template-4 .cv-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+}
+
+.cv-template-4 .cv-skills-list li {
+  font-size: 12px;
+  color: #333;
+  padding: 1px 0 1px 16px;
+  position: relative;
+}
+
+.cv-template-4 .cv-skills-list li::before {
+  content: '▪';
+  position: absolute;
+  left: 4px;
+  color: #555;
+}
+
+.cv-template-4 .cv-tools-list {
+  columns: 2;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cv-template-4 .cv-tools-list li {
+  font-size: 12px;
+  color: #333;
+  padding: 1px 0 1px 16px;
+  position: relative;
+}
+
+.cv-template-4 .cv-tools-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 4px;
+  color: #333;
+}
+
+.cv-template-4 .cv-lang-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #333;
+  padding: 3px 0;
+  border-bottom: 1px dotted #ddd;
+}
+
+.cv-template-4 .cv-lang-level {
+  font-style: italic;
+  color: #666;
+}
+
+.cv-template-4 .cv-ref-item {
+  margin-bottom: 10px;
+}
+
+.cv-template-4 .cv-ref-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 2px 0;
+}
+
+.cv-template-4 .cv-ref-detail {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+  margin: 0;
+}
+
+.cv-template-4 .cv-interest-tag {
+  font-size: 11.5px;
+  color: #333;
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.cv-template-4 .cv-interest-tag::before {
+  content: '• ';
+}

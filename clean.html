@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="2;url=index.html">
+  <title>Nettoyage...</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f4f8; }
+    .box { background: #fff; padding: 40px 48px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.1); text-align: center; max-width: 420px; }
+    .icon { font-size: 48px; margin-bottom: 16px; }
+    h2 { color: #1e293b; margin-bottom: 8px; font-size: 20px; }
+    p { color: #64748b; font-size: 14px; }
+    .bar { height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; margin-top: 20px; }
+    .bar-fill { height: 100%; background: #2563EB; border-radius: 2px; animation: fill 2s linear forwards; }
+    @keyframes fill { from { width: 0%; } to { width: 100%; } }
+  </style>
+</head>
+<body>
+<div class="box">
+  <div class="icon">🧹</div>
+  <h2 id="msg">Nettoyage en cours...</h2>
+  <p id="sub">Suppression des données corrompues</p>
+  <div class="bar"><div class="bar-fill"></div></div>
+</div>
+<script>
+  // Vider tout le localStorage lié au CV Generator
+  var keys = ['cvGeneratorData', 'cvTheme', 'cvSettings', 'cvVersions'];
+  keys.forEach(function(k) { localStorage.removeItem(k); });
+  
+  // Vérification
+  var allClean = keys.every(function(k) { return !localStorage.getItem(k); });
+  
+  document.getElementById('msg').textContent = allClean ? '✅ Nettoyage terminé !' : '⚠️ Nettoyage partiel';
+  document.getElementById('sub').textContent = 'Redirection vers l\'application dans 2 secondes...';
+</script>
+</body>
+</html>
