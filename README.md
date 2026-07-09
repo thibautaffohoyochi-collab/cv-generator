@@ -3,7 +3,7 @@
 **Créateur de CV professionnel en ligne** — par Thibaut A. Hoyochi
 
 ## 🚀 Accès direct
-👉 [Ouvrir le CV Generator](https://thibaut-hoyochi.github.io/cv-generator/)
+👉 [Ouvrir le CV Generator](https://thibautaffohoyochi-collab.github.io/cv-generator/)
 
 ## ✨ Fonctionnalités
 - 4 templates CV professionnels (Moderne, Minimaliste, Créatif, Corporate)
