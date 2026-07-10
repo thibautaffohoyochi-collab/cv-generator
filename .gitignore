@@ -1,5 +1,4 @@
 # Fichiers temporaires
-*.py
 *.log
 *.bak
 .DS_Store
@@ -10,3 +9,15 @@ desktop.ini
 debug.html
 check_*.py
 fix_*.py
+
+# Scripts admin — PRIVÉS (ne pas partager sur GitHub)
+*.py
+gerer_codes.py
+generate_codes.py
+ajouter_codes.py
+
+# Données admin — PRIVÉES
+codes_pro.json
+admin.html
+.git_token
+*_export_*.csv
