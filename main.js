@@ -74,10 +74,16 @@ const ACCENT_COLORS = [
 ];
 
 const TEMPLATES = [
-  { id:1, name:'Moderne' },
-  { id:2, name:'Minimaliste' },
-  { id:3, name:'Créatif' },
-  { id:4, name:'Corporate' }
+  { id:1,  name:'Moderne' },
+  { id:2,  name:'Minimaliste' },
+  { id:3,  name:'Créatif' },
+  { id:4,  name:'Corporate' },
+  { id:5,  name:'Executive' },
+  { id:6,  name:'Timeline' },
+  { id:7,  name:'Élégant' },
+  { id:8,  name:'Colorblock' },
+  { id:9,  name:'Compact' },
+  { id:10, name:'Gradient Pro' }
 ];
 
 /* ----------------------------------------------------------
@@ -451,10 +457,16 @@ function buildCvHTML(data) {
              "font-size:" + (cvSettings.fontSize||12) + "px;" +
              "line-height:" + (cvSettings.lineHeight||1.6);
   switch (data.template || 1) {
-    case 1: return buildTemplate1(data, accent, fs);
-    case 2: return buildTemplate2(data, accent, fs);
-    case 3: return buildTemplate3(data, accent, fs);
-    case 4: return buildTemplate4(data, accent, fs);
+    case 1:  return buildTemplate1(data, accent, fs);
+    case 2:  return buildTemplate2(data, accent, fs);
+    case 3:  return buildTemplate3(data, accent, fs);
+    case 4:  return buildTemplate4(data, accent, fs);
+    case 5:  return buildTemplate5(data, accent, fs);
+    case 6:  return buildTemplate6(data, accent, fs);
+    case 7:  return buildTemplate7(data, accent, fs);
+    case 8:  return buildTemplate8(data, accent, fs);
+    case 9:  return buildTemplate9(data, accent, fs);
+    case 10: return buildTemplate10(data, accent, fs);
     default: return buildTemplate1(data, accent, fs);
   }
 }
@@ -2408,3 +2420,289 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(unlockProUI, 200);
   }
 });
+
+/* ==========================================================
+   TEMPLATES 5-10 — Build functions
+   ========================================================== */
+
+/* Helper: build common blocks */
+function buildExpItems(exps, cls) {
+  return (exps||[]).map(function(e) {
+    return '<div class="' + cls + '-experience-item">' +
+      (cls === 'cv-template-6' ?
+        '<div class="cv-timeline-dot"></div>' +
+        '<div class="cv-exp-body"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
+        '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
+        '<p class="cv-exp-date">'+esc(e.date)+'</p>' +
+        '<p class="cv-exp-desc">'+esc(e.desc)+'</p></div>'
+      : cls === 'cv-template-8' ?
+        '<div class="cv-exp-header"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
+        '<span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
+        '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
+        '<p class="cv-exp-desc">'+esc(e.desc)+'</p>'
+      :
+        '<div class="cv-exp-header"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
+        '<span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
+        '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
+        '<p class="cv-exp-desc">'+esc(e.desc)+'</p>'
+      ) +
+    '</div>';
+  }).join('');
+}
+
+function buildSkills(skills, cls) {
+  return (skills||[]).map(function(sk) {
+    return '<div class="cv-skill-item"><div class="cv-skill-name"><span>'+esc(sk.name)+'</span><span>'+sk.pct+'%</span></div>' +
+           '<div class="cv-skill-bar"><div class="cv-skill-fill" style="width:'+sk.pct+'%"></div></div></div>';
+  }).join('');
+}
+
+function buildTools(tools, cls) {
+  return (tools||[]).map(function(t) { return '<span class="cv-tool-tag">'+esc(t)+'</span>'; }).join('');
+}
+
+function buildLangs(langs, cls) {
+  return (langs||[]).map(function(l) {
+    return '<div class="cv-lang-item"><span>'+esc(l.name)+'</span><span class="cv-lang-level">'+esc(l.level)+'</span></div>';
+  }).join('');
+}
+
+function buildInterests(interests, cls) {
+  return (interests||[]).map(function(it) { return '<span class="cv-interest-tag">'+esc(it)+'</span>'; }).join('');
+}
+
+function buildEduItems(edu, certs, cls) {
+  const e = (edu||[]).map(function(e) {
+    return '<div class="cv-edu-item">' +
+      (cls==='cv-template-8' ?
+        '<div class="cv-edu-dot"></div><div class="cv-edu-info"><p class="cv-edu-school">'+esc(e.school)+'</p><p class="cv-edu-degree">'+esc(e.degree)+'</p><p class="cv-edu-date">'+esc(e.date)+'</p></div>'
+      :
+        '<p class="cv-edu-school">'+esc(e.school)+'</p><p class="cv-edu-degree">'+esc(e.degree)+'</p><p class="cv-edu-date">'+esc(e.date)+'</p>'
+      ) + '</div>';
+  }).join('');
+  const c = (certs||[]).map(function(c) {
+    return '<div class="cv-edu-item">' +
+      (cls==='cv-template-8' ?
+        '<div class="cv-edu-dot"></div><div class="cv-edu-info"><p class="cv-edu-school">'+esc(c.year)+(c.org?' — '+esc(c.org):'')+'</p><p class="cv-edu-degree">'+esc(c.title)+'</p></div>'
+      :
+        '<p class="cv-edu-school">'+esc(c.year)+(c.org?' — '+esc(c.org):'')+'</p><p class="cv-edu-degree">'+esc(c.title)+'</p>'
+      ) + '</div>';
+  }).join('');
+  return e + c;
+}
+
+function buildRefs(refs, cls) {
+  return (refs||[]).map(function(r) {
+    return '<div class="cv-ref-item"><p class="cv-ref-name">'+esc(r.name)+'</p><p class="cv-ref-detail">'+esc(r.role)+'</p><p class="cv-ref-detail">'+esc(r.contact)+'</p></div>';
+  }).join('');
+}
+
+/* TEMPLATE 5 — EXECUTIVE */
+function buildTemplate5(d, accent, fs) {
+  var cls = 'cv-template-5';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  return '<div class="cv-template-5" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-sidebar">' +
+      '<div class="cv-photo-wrapper">'+photoTag(d,'cv-photo')+'</div>' +
+      '<div class="cv-sidebar-section"><h3>Contact</h3>'+contactItems(d,'cv-contact-item')+'</div>' +
+      (skills?'<div class="cv-sidebar-section"><h3>Compétences</h3>'+skills+'</div>':'') +
+      (tools?'<div class="cv-sidebar-section"><h3>Outils</h3>'+tools+'</div>':'') +
+      (langs?'<div class="cv-sidebar-section"><h3>Langues</h3>'+langs+'</div>':'') +
+      (ints?'<div class="cv-sidebar-section"><h3>Intérêts</h3>'+ints+'</div>':'') +
+    '</div>' +
+    '<div class="cv-main">' +
+      '<div class="cv-header"><h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1><p class="cv-title">'+(esc(d.title)||'Titre')+'</p></div>' +
+      (d.profile?'<div><h2 class="cv-section-title">Profil</h2><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+      (exps?'<div><h2 class="cv-section-title">Expériences</h2>'+exps+'</div>':'') +
+      (edu?'<div><h2 class="cv-section-title">Formation</h2>'+edu+'</div>':'') +
+      (refs?'<div><h2 class="cv-section-title">Références</h2>'+refs+'</div>':'') +
+    '</div></div>';
+}
+
+/* TEMPLATE 6 — TIMELINE */
+function buildTemplate6(d, accent, fs) {
+  var cls = 'cv-template-6';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  return '<div class="cv-template-6" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">'+photoTag(d,'cv-photo') +
+      '<div class="cv-header-info">' +
+        '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+        '<p class="cv-title">'+(esc(d.title)||'Titre')+'</p>' +
+        contactRow(d,'cv-contact-item') +
+      '</div>' +
+    '</div>' +
+    '<div class="cv-body">' +
+      '<div class="cv-left">' +
+        (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+        (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences</h3>'+exps+'</div>':'') +
+        (edu?'<div class="cv-section"><h3 class="cv-section-title">Formation</h3>'+edu+'</div>':'') +
+        (refs?'<div class="cv-section"><h3 class="cv-section-title">Références</h3>'+refs+'</div>':'') +
+      '</div>' +
+      '<div class="cv-right">' +
+        (skills?'<div class="cv-section"><h3 class="cv-section-title">Compétences</h3>'+skills+'</div>':'') +
+        (tools?'<div class="cv-section"><h3 class="cv-section-title">Outils</h3>'+tools+'</div>':'') +
+        (langs?'<div class="cv-section"><h3 class="cv-section-title">Langues</h3>'+langs+'</div>':'') +
+        (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
+      '</div>' +
+    '</div></div>';
+}
+
+/* TEMPLATE 7 — ELEGANT */
+function buildTemplate7(d, accent, fs) {
+  var cls = 'cv-template-7';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  var mkRight = function(title, content) {
+    return content ? '<div class="cv-right-section"><h4 class="cv-right-title">'+title+'</h4>'+content+'</div>' : '';
+  };
+
+  return '<div class="cv-template-7" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">' +
+      photoTag(d,'cv-photo') +
+      '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+      '<p class="cv-title">'+(esc(d.title)||'Titre')+'</p>' +
+      contactRow(d,'cv-contact-item') +
+    '</div>' +
+    '<div class="cv-body">' +
+      '<div class="cv-left">' +
+        (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+        (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences</h3>'+exps+'</div>':'') +
+        (edu?'<div class="cv-section"><h3 class="cv-section-title">Formation</h3>'+edu+'</div>':'') +
+      '</div>' +
+      '<div class="cv-right">' +
+        mkRight('Compétences', skills) +
+        mkRight('Outils', tools) +
+        mkRight('Langues', langs) +
+        mkRight('Intérêts', ints) +
+        mkRight('Références', refs) +
+      '</div>' +
+    '</div></div>';
+}
+
+/* TEMPLATE 8 — COLORBLOCK */
+function buildTemplate8(d, accent, fs) {
+  var cls = 'cv-template-8';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  return '<div class="cv-template-8" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">' +
+      '<div class="cv-header-left">'+photoTag(d,'cv-photo')+'</div>' +
+      '<div class="cv-header-right">' +
+        '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+        '<p class="cv-title">'+(esc(d.title)||'Titre')+'</p>' +
+        contactRow(d,'cv-contact-item') +
+      '</div>' +
+    '</div>' +
+    '<div class="cv-body">' +
+      '<div class="cv-left">' +
+        (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+        (skills?'<div class="cv-section"><h3 class="cv-section-title">Compétences</h3>'+skills+'</div>':'') +
+        (tools?'<div class="cv-section"><h3 class="cv-section-title">Outils</h3>'+tools+'</div>':'') +
+        (langs?'<div class="cv-section"><h3 class="cv-section-title">Langues</h3>'+langs+'</div>':'') +
+        (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
+      '</div>' +
+      '<div class="cv-right-col">' +
+        (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences</h3>'+exps+'</div>':'') +
+        (edu?'<div class="cv-section"><h3 class="cv-section-title">Formation</h3>'+edu+'</div>':'') +
+        (refs?'<div class="cv-section"><h3 class="cv-section-title">Références</h3>'+refs+'</div>':'') +
+      '</div>' +
+    '</div></div>';
+}
+
+/* TEMPLATE 9 — COMPACT */
+function buildTemplate9(d, accent, fs) {
+  var cls = 'cv-template-9';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  return '<div class="cv-template-9" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">' + photoTag(d,'cv-photo') +
+      '<div class="cv-header-info">' +
+        '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+        '<p class="cv-title">'+(esc(d.title)||'Titre')+'</p>' +
+        contactRow(d,'cv-contact-item') +
+      '</div>' +
+    '</div>' +
+    '<div class="cv-body">' +
+      '<div class="cv-col">' +
+        (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+        (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences</h3>'+exps+'</div>':'') +
+      '</div>' +
+      '<div class="cv-col">' +
+        (edu?'<div class="cv-section"><h3 class="cv-section-title">Formation</h3>'+edu+'</div>':'') +
+        (skills?'<div class="cv-section"><h3 class="cv-section-title">Compétences</h3>'+skills+'</div>':'') +
+      '</div>' +
+      '<div class="cv-col">' +
+        (tools?'<div class="cv-section"><h3 class="cv-section-title">Outils</h3>'+tools+'</div>':'') +
+        (langs?'<div class="cv-section"><h3 class="cv-section-title">Langues</h3>'+langs+'</div>':'') +
+        (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
+        (refs?'<div class="cv-section"><h3 class="cv-section-title">Références</h3>'+refs+'</div>':'') +
+      '</div>' +
+    '</div></div>';
+}
+
+/* TEMPLATE 10 — GRADIENT PRO */
+function buildTemplate10(d, accent, fs) {
+  var cls = 'cv-template-10';
+  var skills = buildSkills(d.skills, cls);
+  var tools  = buildTools(d.tools, cls);
+  var langs  = buildLangs(d.languages, cls);
+  var ints   = buildInterests(d.interests, cls);
+  var exps   = buildExpItems(d.experiences, cls);
+  var edu    = buildEduItems(d.education, d.certifications, cls);
+  var refs   = buildRefs(d.references, cls);
+
+  return '<div class="cv-template-10" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">'+photoTag(d,'cv-photo') +
+      '<div class="cv-header-info">' +
+        '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+        '<p class="cv-title">'+(esc(d.title)||'Titre')+'</p>' +
+        contactRow(d,'cv-contact-item') +
+      '</div>' +
+    '</div>' +
+    '<div class="cv-body">' +
+      '<div class="cv-left">' +
+        (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+        (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences</h3>'+exps+'</div>':'') +
+        (edu?'<div class="cv-section"><h3 class="cv-section-title">Formation</h3>'+edu+'</div>':'') +
+        (refs?'<div class="cv-section"><h3 class="cv-section-title">Références</h3>'+refs+'</div>':'') +
+      '</div>' +
+      '<div class="cv-right">' +
+        (skills?'<div class="cv-section"><h3 class="cv-section-title">Compétences</h3>'+skills+'</div>':'') +
+        (tools?'<div class="cv-section"><h3 class="cv-section-title">Outils</h3>'+tools+'</div>':'') +
+        (langs?'<div class="cv-section"><h3 class="cv-section-title">Langues</h3>'+langs+'</div>':'') +
+        (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
+      '</div>' +
+    '</div></div>';
+}
