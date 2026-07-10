@@ -74,16 +74,16 @@ const ACCENT_COLORS = [
 ];
 
 const TEMPLATES = [
-  { id:1,  name:'Moderne' },
-  { id:2,  name:'Minimaliste' },
-  { id:3,  name:'Créatif' },
-  { id:4,  name:'Corporate' },
-  { id:5,  name:'Executive' },
-  { id:6,  name:'Timeline' },
-  { id:7,  name:'Élégant' },
-  { id:8,  name:'Colorblock' },
-  { id:9,  name:'Compact' },
-  { id:10, name:'Gradient Pro' }
+  { id:1,  name:'Moderne',      pro:false, icon:'columns' },
+  { id:2,  name:'Minimaliste',  pro:false, icon:'align-center' },
+  { id:3,  name:'Créatif',      pro:false, icon:'paint-brush' },
+  { id:4,  name:'Corporate',    pro:false, icon:'building' },
+  { id:5,  name:'Executive',    pro:true,  icon:'briefcase' },
+  { id:6,  name:'Timeline',     pro:true,  icon:'stream' },
+  { id:7,  name:'Élégant',      pro:true,  icon:'feather' },
+  { id:8,  name:'Colorblock',   pro:true,  icon:'th-large' },
+  { id:9,  name:'Compact',      pro:true,  icon:'compress' },
+  { id:10, name:'Gradient Pro', pro:true,  icon:'fire' }
 ];
 
 /* ----------------------------------------------------------
@@ -209,6 +209,7 @@ function showPage(pageId, btn) {
     'history':      '<i class="fas fa-history"></i><span>Historique</span>',
     'settings':     '<i class="fas fa-sliders-h"></i><span>Apparence</span>',
     'import-cv':    '<i class="fas fa-file-import"></i><span>Importer un CV</span>',
+    'profiles':     '<i class="fas fa-layer-group"></i><span>Mes profils CV</span>',
     'tips':         '<i class="fas fa-lightbulb"></i><span>Conseils CV</span>'
   };
 
@@ -229,6 +230,7 @@ function showPage(pageId, btn) {
   if (pageId === 'translate') setTimeout(translateCV, 100);
   if (pageId === 'present') setTimeout(buildPresentationSlides, 200);
   if (pageId === 'word') setTimeout(refreshWordPreview, 200);
+  if (pageId === 'profiles') renderProfilesList();
 
   if (window.innerWidth <= 900) toggleSidebar(false);
 }
@@ -682,17 +684,42 @@ function renderTemplatePickers(containerId) {
     if (!container) return;
     container.innerHTML = '';
     TEMPLATES.forEach(function(t) {
+      const isPro = t.pro && !isProActive();
+      const isActive = cvData.template === t.id;
       const card = document.createElement('div');
-      card.className = 'template-card' + (cvData.template === t.id ? ' active' : '');
-      card.onclick = function() { selectTemplate(t.id); };
-      const icons = ['columns','align-center','paint-brush','building'];
-      card.innerHTML = '<div class="template-thumb template-thumb-t'+t.id+'"><div class="template-thumb-bars">' +
-        '<div class="template-thumb-bar accent" style="width:60%"></div>' +
-        '<div class="template-thumb-bar" style="width:90%"></div>' +
-        '<div class="template-thumb-bar" style="width:75%"></div>' +
-        '<div class="template-thumb-bar" style="width:50%"></div>' +
-        '</div></div>' +
-        '<div class="template-label"><i class="fas fa-'+icons[t.id-1]+'"></i> '+t.name+'</div>';
+      card.className = 'template-card' + (isActive ? ' active' : '') + (isPro ? ' template-pro-locked' : '');
+      card.style.position = 'relative';
+      card.style.cursor = isPro ? 'pointer' : 'pointer';
+
+      card.onclick = function() {
+        if (isPro) {
+          requirePro('Template ' + t.name);
+          return;
+        }
+        selectTemplate(t.id);
+      };
+
+      card.innerHTML =
+        '<div class="template-thumb template-thumb-t' + Math.min(t.id,4) + '">' +
+          '<div class="template-thumb-bars">' +
+            '<div class="template-thumb-bar accent" style="width:60%"></div>' +
+            '<div class="template-thumb-bar" style="width:90%"></div>' +
+            '<div class="template-thumb-bar" style="width:70%"></div>' +
+            '<div class="template-thumb-bar" style="width:50%"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="template-label">' +
+          '<i class="fas fa-' + t.icon + '"></i> ' + t.name +
+          (isPro ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:3px;text-transform:uppercase">PRO</span>' : '') +
+        '</div>';
+
+      if (isPro) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;border-radius:inherit;z-index:2';
+        overlay.innerHTML = '<div style="text-align:center;color:#fff"><i class="fas fa-lock" style="font-size:22px;margin-bottom:6px;display:block;color:#f59e0b"></i><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px">Pro</span></div>';
+        card.appendChild(overlay);
+      }
+
       container.appendChild(card);
     });
   });
@@ -2705,4 +2732,174 @@ function buildTemplate10(d, accent, fs) {
         (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
       '</div>' +
     '</div></div>';
+}
+
+/* ==========================================================
+   DRAG & DROP — Réordonner les expériences
+   ========================================================== */
+let dragSrcIndex = null;
+let dragSrcList  = null;
+
+function initDragDrop(listId, dataArray, renderFn) {
+  const container = document.getElementById(listId);
+  if (!container) return;
+
+  container.querySelectorAll('.dynamic-item').forEach(function(item, i) {
+    const handle = item.querySelector('.drag-handle');
+    if (!handle) return;
+
+    handle.setAttribute('draggable', true);
+    item.setAttribute('draggable', true);
+
+    item.addEventListener('dragstart', function(e) {
+      dragSrcIndex = i;
+      dragSrcList  = { id: listId, arr: dataArray, render: renderFn };
+      e.dataTransfer.effectAllowed = 'move';
+      item.style.opacity = '0.5';
+    });
+
+    item.addEventListener('dragend', function() {
+      item.style.opacity = '1';
+      container.querySelectorAll('.dynamic-item').forEach(function(el) {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+        el.style.borderTop = '';
+        el.style.borderBottom = '';
+      });
+    });
+
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      item.style.borderTop = i < dragSrcIndex ? '2px solid var(--primary)' : '';
+      item.style.borderBottom = i > dragSrcIndex ? '2px solid var(--primary)' : '';
+    });
+
+    item.addEventListener('dragleave', function() {
+      item.style.borderTop = '';
+      item.style.borderBottom = '';
+    });
+
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (dragSrcIndex === null || dragSrcIndex === i) return;
+      item.style.borderTop = '';
+      item.style.borderBottom = '';
+
+      const arr = dragSrcList.arr;
+      const moved = arr.splice(dragSrcIndex, 1)[0];
+      arr.splice(i, 0, moved);
+      dragSrcList.render();
+      autosave();
+      dragSrcIndex = null;
+      showToast('Ordre mis à jour', 'info');
+    });
+  });
+}
+
+/* Hook drag-drop into render functions */
+var _origRenderExpList = renderExperienceList;
+renderExperienceList = function() {
+  _origRenderExpList();
+  setTimeout(function() {
+    initDragDrop('experienceList', cvData.experiences, renderExperienceList);
+  }, 50);
+};
+
+var _origRenderEduList = renderEducationList;
+renderEducationList = function() {
+  _origRenderEduList();
+  setTimeout(function() {
+    initDragDrop('educationList', cvData.education, renderEducationList);
+  }, 50);
+};
+
+/* ==========================================================
+   MULTI-PROFILS — Gérer plusieurs CV
+   ========================================================== */
+function getProfiles() {
+  try { return JSON.parse(localStorage.getItem('cvProfiles') || '[]'); } catch(e) { return []; }
+}
+
+function saveProfiles(profiles) {
+  localStorage.setItem('cvProfiles', JSON.stringify(profiles));
+}
+
+function saveCurrentProfile(name) {
+  if (!name || !name.trim()) { showToast('Entrez un nom pour ce profil', 'error'); return; }
+  const profiles = getProfiles();
+  const profile = {
+    id: Date.now(),
+    name: name.trim(),
+    title: cvData.title || '',
+    date: new Date().toLocaleDateString('fr-FR'),
+    data: JSON.parse(JSON.stringify(cvData))
+  };
+  // Check if name already exists
+  const existIdx = profiles.findIndex(function(p) { return p.name === profile.name; });
+  if (existIdx >= 0) {
+    profiles[existIdx] = profile; // update
+    showToast('Profil "' + profile.name + '" mis à jour', 'success');
+  } else {
+    profiles.unshift(profile);
+    if (profiles.length > 10) profiles.pop(); // max 10 profiles
+    showToast('Profil "' + profile.name + '" sauvegardé', 'success');
+  }
+  saveProfiles(profiles);
+  renderProfilesList();
+}
+
+function loadProfile(id) {
+  const profiles = getProfiles();
+  const profile = profiles.find(function(p) { return p.id === id; });
+  if (!profile) return;
+  cvData = Object.assign({}, DEFAULT_DATA, profile.data);
+  saveData();
+  renderAllForms();
+  renderTemplatePickers();
+  renderColorPickers();
+  updatePreview();
+  updateStats();
+  updateCompletion();
+  showToast('Profil "' + profile.name + '" chargé !', 'success');
+  showPage('builder', document.querySelector('[data-page="builder"]'));
+}
+
+function deleteProfile(id) {
+  let profiles = getProfiles();
+  const profile = profiles.find(function(p) { return p.id === id; });
+  profiles = profiles.filter(function(p) { return p.id !== id; });
+  saveProfiles(profiles);
+  renderProfilesList();
+  showToast((profile ? '"' + profile.name + '"' : 'Profil') + ' supprimé', 'info');
+}
+
+function renderProfilesList() {
+  const container = document.getElementById('profilesList');
+  if (!container) return;
+  const profiles = getProfiles();
+  if (!profiles.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">' +
+      '<i class="fas fa-layer-group" style="font-size:40px;display:block;margin-bottom:12px;opacity:.4"></i>' +
+      '<p>Aucun profil sauvegardé.<br>Créez votre premier profil ci-dessous.</p></div>';
+    return;
+  }
+  container.innerHTML = profiles.map(function(p) {
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;background:var(--bg-card);transition:all .2s" ' +
+      'onmouseover="this.style.boxShadow=\'var(--shadow-md)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+      '<div style="width:44px;height:44px;border-radius:10px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>' +
+      '<div style="flex:1">' +
+        '<div style="font-weight:700;font-size:13px;color:var(--text)">' + p.name + '</div>' +
+        '<div style="font-size:11px;color:var(--text-secondary)">' + p.title + '</div>' +
+        '<div style="font-size:10px;color:var(--text-muted)"><i class="fas fa-clock"></i> ' + p.date + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px">' +
+        '<button class="btn btn-sm btn-primary" onclick="loadProfile(' + p.id + ')"><i class="fas fa-folder-open"></i> Charger</button>' +
+        '<button class="btn btn-sm btn-ghost" onclick="deleteProfile(' + p.id + ')" style="color:var(--danger)"><i class="fas fa-trash"></i></button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function promptSaveProfile() {
+  const name = window.prompt('Nom du profil :', cvData.name || 'Mon CV');
+  if (name !== null) saveCurrentProfile(name);
 }
