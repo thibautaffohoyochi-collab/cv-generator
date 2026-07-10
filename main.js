@@ -3,6 +3,15 @@
    CV GENERATOR — main.js (version propre UTF-8)
    ============================================================ */
 
+/* ── SERVICE WORKER (PWA installable) ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(reg) { console.log('[SW] Enregistré :', reg.scope); })
+      .catch(function(err) { console.warn('[SW] Erreur :', err); });
+  });
+}
+
 /* ----------------------------------------------------------
    DONNÉES PAR DÉFAUT
    ---------------------------------------------------------- */
