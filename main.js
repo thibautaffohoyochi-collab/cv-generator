@@ -992,7 +992,48 @@ function exportPDF() {
   const win = window.open('', '_blank', 'width=900,height=700');
   if (!win) { showToast('Autorisez les popups pour exporter en PDF', 'error'); return; }
   const getHref = function(sel) { const el = document.querySelector(sel); return el ? el.href : ''; };
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CV — ' + esc(cvData.name||'Mon CV') + '</title>' +
+
+  /* ── CSS d'impression ──
+     - La 1ère page = exactement A4 (210mm × 297mm)
+     - Si le contenu dépasse, une 2ème page se crée proprement
+     - Évite les coupures au milieu d'un bloc (page-break-inside: avoid)
+     - Couleurs d'arrière-plan forcées (print-color-adjust: exact)
+  */
+  const printCSS = [
+    '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
+    'html, body { background: #fff; }',
+    /* Format A4 sans marges navigateur */
+    '@page { size: 210mm 297mm; margin: 0; }',
+    /* Forcer les couleurs d'arrière-plan */
+    '@media print {',
+    '  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }',
+    '  /* Éviter les coupures au milieu des blocs importants */',
+    '  .cv-experience-item, .cv-edu-item, .cv-ref-item, .cv-section { page-break-inside: avoid; break-inside: avoid; }',
+    '  .cv-section-title, h2, h3 { page-break-after: avoid; break-after: avoid; }',
+    '}',
+    /* Templates avec grille fixe (sidebar) — 1ère page A4 exacte,
+       si trop de contenu la colonne principale scroll sur page 2 */
+    '.cv-template-1, .cv-template-5, .cv-template-6, .cv-template-7, .cv-template-8, .cv-template-10 {',
+    '  width: 210mm !important;',
+    '  min-height: 297mm !important;',
+    '  max-width: 210mm !important;',
+    '}',
+    /* Templates 1 colonne — idem */
+    '.cv-template-2, .cv-template-3, .cv-template-4, .cv-template-9 {',
+    '  width: 210mm !important;',
+    '  min-height: 297mm !important;',
+    '  max-width: 210mm !important;',
+    '}',
+    /* La sidebar ne doit pas se couper sur 2 pages */
+    '.cv-sidebar { page-break-inside: avoid; break-inside: avoid; }',
+    /* Le contenu principal peut s'étaler sur plusieurs pages */
+    '.cv-main, .cv-left, .cv-body { overflow: visible !important; }',
+  ].join('\n');
+
+  win.document.write(
+    '<!DOCTYPE html><html><head>' +
+    '<meta charset="UTF-8">' +
+    '<title>CV — ' + esc(cvData.name||'Mon CV') + '</title>' +
     '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">' +
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template1.css"]') + '">' +
@@ -1005,11 +1046,15 @@ function exportPDF() {
     '<link rel="stylesheet" href="' + getHref('link[href*="template8.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template9.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template10.css"]') + '">' +
-    '<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff}@page{size:A4;margin:0}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>' +
-    '</head><body>' + html + '</body></html>');
+    '<style>' + printCSS + '</style>' +
+    '</head><body>' + html + '</body></html>'
+  );
   win.document.close();
-  win.onload = function() { setTimeout(function() { win.print(); }, 600); };
-  showToast('Fenêtre d\'impression ouverte', 'info');
+  win.onload = function() {
+    /* Attendre que les polices Google soient chargées avant d'imprimer */
+    setTimeout(function() { win.print(); }, 900);
+  };
+  showToast('Fenêtre d\'impression ouverte — activez "Graphiques d\'arrière-plan"', 'info');
 }
 
 /* ----------------------------------------------------------

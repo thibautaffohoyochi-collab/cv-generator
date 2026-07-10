@@ -10,7 +10,7 @@
   margin: 0 auto;
   background: #fff;
   box-shadow: 0 4px 30px rgba(0,0,0,0.15);
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* ---- SIDEBAR ---- */
