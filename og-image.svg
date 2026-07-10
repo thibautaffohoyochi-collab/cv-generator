@@ -1,0 +1,88 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0f1e"/>
+      <stop offset="100%" style="stop-color:#131c2e"/>
+    </linearGradient>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glow top left -->
+  <ellipse cx="200" cy="150" rx="380" ry="260" fill="rgba(37,99,235,0.12)"/>
+  <!-- Glow bottom right -->
+  <ellipse cx="1050" cy="500" rx="300" ry="200" fill="rgba(124,58,237,0.1)"/>
+
+  <!-- Logo icon -->
+  <rect x="80" y="80" width="64" height="64" rx="16" fill="url(#grad)"/>
+  <text x="112" y="123" font-family="Arial" font-size="32" fill="white" text-anchor="middle">📄</text>
+
+  <!-- Logo text -->
+  <text x="162" y="108" font-family="'Inter',Arial,sans-serif" font-size="22" font-weight="600" fill="#f1f5f9">CV Generator</text>
+  <text x="162" y="132" font-family="'Inter',Arial,sans-serif" font-size="22" font-weight="300" fill="#94a3b8">Pro</text>
+
+  <!-- Main title -->
+  <text x="80" y="270" font-family="'Inter',Arial,sans-serif" font-size="72" font-weight="800" fill="#f1f5f9" letter-spacing="-2">Créez votre CV</text>
+  <text x="80" y="360" font-family="'Inter',Arial,sans-serif" font-size="72" font-weight="800" letter-spacing="-2">
+    <tspan fill="url(#grad)">professionnel</tspan>
+    <tspan fill="#f1f5f9"> en minutes</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="430" font-family="'Inter',Arial,sans-serif" font-size="26" font-weight="400" fill="#64748b">10 templates · Export PDF · Score CV · Simulation d'entretien · 100% Gratuit</text>
+
+  <!-- Feature pills -->
+  <rect x="80" y="500" width="140" height="42" rx="21" fill="rgba(37,99,235,0.18)" stroke="rgba(37,99,235,0.35)" stroke-width="1"/>
+  <text x="150" y="526" font-family="'Inter',Arial,sans-serif" font-size="18" font-weight="600" fill="#93c5fd" text-anchor="middle">10 Templates</text>
+
+  <rect x="238" y="500" width="120" height="42" rx="21" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <text x="298" y="526" font-family="'Inter',Arial,sans-serif" font-size="18" font-weight="600" fill="#34d399" text-anchor="middle">Export PDF</text>
+
+  <rect x="376" y="500" width="148" height="42" rx="21" fill="rgba(124,58,237,0.18)" stroke="rgba(124,58,237,0.35)" stroke-width="1"/>
+  <text x="450" y="526" font-family="'Inter',Arial,sans-serif" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">Entretien IA</text>
+
+  <rect x="542" y="500" width="130" height="42" rx="21" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+  <text x="607" y="526" font-family="'Inter',Arial,sans-serif" font-size="18" font-weight="600" fill="#fbbf24" text-anchor="middle">100% Gratuit</text>
+
+  <!-- Right side — CV mockup -->
+  <rect x="820" y="120" width="300" height="400" rx="14" fill="#1e293b" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <!-- Sidebar mockup -->
+  <rect x="820" y="120" width="90" height="400" rx="14" fill="#2563EB"/>
+  <rect x="826" y="126" width="90" height="394" rx="12" fill="#2563EB"/>
+  <!-- Avatar circle -->
+  <circle cx="871" cy="185" r="28" fill="rgba(255,255,255,0.25)"/>
+  <!-- Sidebar lines -->
+  <rect x="840" y="230" width="60" height="6" rx="3" fill="rgba(255,255,255,0.4)"/>
+  <rect x="840" y="244" width="44" height="5" rx="2.5" fill="rgba(255,255,255,0.25)"/>
+  <rect x="840" y="275" width="58" height="5" rx="2.5" fill="rgba(255,255,255,0.3)"/>
+  <rect x="840" y="288" width="50" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+  <rect x="840" y="300" width="55" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+  <!-- Main content mockup -->
+  <rect x="928" y="145" width="170" height="14" rx="4" fill="#334155"/>
+  <rect x="928" y="165" width="120" height="9" rx="3" fill="rgba(37,99,235,0.5)"/>
+  <rect x="928" y="192" width="170" height="5" rx="2.5" fill="#1e3a5f"/>
+  <rect x="928" y="204" width="150" height="5" rx="2.5" fill="#1e3a5f"/>
+  <rect x="928" y="220" width="160" height="5" rx="2.5" fill="#1e3a5f"/>
+  <rect x="928" y="244" width="90" height="7" rx="2" fill="rgba(37,99,235,0.4)"/>
+  <rect x="928" y="258" width="170" height="4" rx="2" fill="#1e3a5f"/>
+  <rect x="928" y="270" width="140" height="4" rx="2" fill="#1e3a5f"/>
+  <rect x="928" y="282" width="155" height="4" rx="2" fill="#1e3a5f"/>
+  <rect x="928" y="306" width="90" height="7" rx="2" fill="rgba(37,99,235,0.4)"/>
+  <rect x="928" y="320" width="170" height="4" rx="2" fill="#1e3a5f"/>
+  <rect x="928" y="332" width="130" height="4" rx="2" fill="#1e3a5f"/>
+
+  <!-- URL badge -->
+  <rect x="820" y="544" width="300" height="36" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="970" y="567" font-family="'Inter',Arial,sans-serif" font-size="14" fill="#64748b" text-anchor="middle">cv-generator-pro.github.io</text>
+</svg>
