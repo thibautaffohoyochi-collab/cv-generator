@@ -1533,7 +1533,66 @@ Création vidéo IA — Dolphgroup Academy</textarea>
   </div>
 </div>
 
-<!-- ════ TOAST CONTAINER ════ -->
+<!-- ════ MOBILE BOTTOM NAV ════ -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <div class="mobile-bottom-nav-inner">
+    <button class="mob-nav-btn active" data-page="dashboard" onclick="showPage('dashboard',this);syncMobNav(this)">
+      <i class="fas fa-home"></i><span>Accueil</span>
+    </button>
+    <button class="mob-nav-btn" data-page="builder" onclick="showPage('builder',this);syncMobNav(this)">
+      <i class="fas fa-edit"></i><span>CV</span>
+    </button>
+    <button class="mob-nav-btn" data-page="preview" onclick="showPage('preview',this);syncMobNav(this)">
+      <i class="fas fa-eye"></i><span>Aperçu</span>
+    </button>
+    <button class="mob-nav-btn" data-page="export" onclick="showPage('export',this);syncMobNav(this)">
+      <i class="fas fa-download"></i><span>Export</span>
+    </button>
+    <button class="mob-nav-btn" onclick="toggleMobMenu()">
+      <i class="fas fa-grid-2" id="mobMenuIcon"></i><span>Plus</span>
+      <span class="mob-nav-badge" id="mobMoreBadge" style="display:none"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ════ MOBILE MORE MENU ════ -->
+<div id="mobMoreMenu" style="display:none;position:fixed;bottom:62px;left:0;right:0;z-index:199;background:var(--bg-card);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:16px 12px 8px;box-shadow:0 -8px 32px rgba(0,0,0,0.15);animation:slideUp .25s cubic-bezier(.34,1.56,.64,1)">
+  <style>@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}</style>
+  <div style="width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 16px"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+    <button class="mob-more-btn" onclick="showPage('score',null);closeMobMenu()"><i class="fas fa-chart-bar"></i><span>Score</span></button>
+    <button class="mob-more-btn" onclick="showPage('cover-letter',null);closeMobMenu()"><i class="fas fa-envelope-open-text"></i><span>Lettre</span></button>
+    <button class="mob-more-btn" onclick="showPage('match',null);closeMobMenu()"><i class="fas fa-search"></i><span>Match</span></button>
+    <button class="mob-more-btn" onclick="showPage('interview',null);closeMobMenu()"><i class="fas fa-comments"></i><span>Entretien</span></button>
+    <button class="mob-more-btn" onclick="showPage('linkedin',null);closeMobMenu()"><i class="fab fa-linkedin"></i><span>LinkedIn</span></button>
+    <button class="mob-more-btn" onclick="showPage('translate',null);closeMobMenu()"><i class="fas fa-language"></i><span>Traduire</span></button>
+    <button class="mob-more-btn" onclick="showPage('import-cv',null);closeMobMenu()"><i class="fas fa-file-import"></i><span>Importer</span></button>
+    <button class="mob-more-btn" onclick="showPage('settings',null);closeMobMenu()"><i class="fas fa-sliders-h"></i><span>Style</span></button>
+  </div>
+  <style>
+    .mob-more-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 4px;background:var(--bg-input);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:var(--font);font-size:10px;font-weight:600;color:var(--text-secondary);transition:all .15s;width:100%}
+    .mob-more-btn:hover,.mob-more-btn:active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+    .mob-more-btn i{font-size:18px}
+    [data-theme="dark"] .mob-more-btn:hover{background:rgba(37,99,235,.12)}
+  </style>
+</div>
+
+<!-- ════ ONBOARDING ════ -->
+<div class="onboarding-overlay hidden" id="onboardingOverlay">
+  <div class="onboarding-card">
+    <div class="onboarding-steps" id="onboardingDots"></div>
+    <div class="onboarding-icon" id="onboardingIcon"></div>
+    <h2 id="onboardingTitle"></h2>
+    <p id="onboardingDesc"></p>
+    <div class="onboarding-features" id="onboardingFeatures"></div>
+    <div class="onboarding-actions">
+      <button class="btn btn-ghost" id="onboardingSkip" onclick="skipOnboarding()">Passer</button>
+      <button class="btn btn-primary" id="onboardingNext" onclick="nextOnboarding()">
+        Suivant <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- ════ RESET MODAL ════ -->

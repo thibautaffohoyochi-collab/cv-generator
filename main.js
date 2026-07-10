@@ -3408,3 +3408,194 @@ function exportInterviewReport() {
   URL.revokeObjectURL(url);
   showToast('Rapport exporté !', 'success');
 }
+
+/* ==========================================================
+   MOBILE BOTTOM NAV
+   ========================================================== */
+function syncMobNav(btn) {
+  document.querySelectorAll('.mob-nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+function toggleMobMenu() {
+  var menu = document.getElementById('mobMoreMenu');
+  var icon = document.getElementById('mobMenuIcon');
+  if (!menu) return;
+  var isOpen = menu.style.display !== 'none';
+  menu.style.display = isOpen ? 'none' : 'block';
+  if (icon) icon.className = isOpen ? 'fas fa-grid-2' : 'fas fa-times';
+}
+
+function closeMobMenu() {
+  var menu = document.getElementById('mobMoreMenu');
+  var icon = document.getElementById('mobMenuIcon');
+  if (menu) menu.style.display = 'none';
+  if (icon) icon.className = 'fas fa-grid-2';
+}
+
+// Close more menu when clicking outside
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('mobMoreMenu');
+  if (!menu || menu.style.display === 'none') return;
+  var btn = e.target.closest('.mob-nav-btn');
+  if (!btn && !e.target.closest('#mobMoreMenu')) closeMobMenu();
+});
+
+// Sync mobile bottom nav when showPage is called
+var _origShowPage = showPage;
+showPage = function(pageId, btn) {
+  _origShowPage(pageId, btn);
+  // Sync bottom nav
+  var mainPages = ['dashboard','builder','preview','export'];
+  document.querySelectorAll('.mob-nav-btn[data-page]').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.page === pageId);
+  });
+  // "Plus" button stays unselected for non-main pages
+  var moreBtn = document.querySelector('.mob-nav-btn:not([data-page])');
+  if (moreBtn) moreBtn.classList.toggle('active', !mainPages.includes(pageId));
+};
+
+/* ==========================================================
+   BUTTON RIPPLE EFFECT
+   ========================================================== */
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn');
+  if (!btn) return;
+  var r = document.createElement('span');
+  r.className = 'ripple';
+  var rect = btn.getBoundingClientRect();
+  var size = Math.max(rect.width, rect.height);
+  r.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(r);
+  setTimeout(function() { if (r.parentNode) r.parentNode.removeChild(r); }, 550);
+});
+
+/* ==========================================================
+   ONBOARDING
+   ========================================================== */
+var ONBOARDING_STEPS = [
+  {
+    icon: '👋',
+    iconBg: 'linear-gradient(135deg,#2563EB,#7c3aed)',
+    title: 'Bienvenue dans CV Generator Pro !',
+    desc: 'Créez votre CV professionnel en quelques minutes. Voici un tour rapide des fonctionnalités clés.',
+    features: [
+      { icon: 'fa-edit', color: '#60a5fa', text: '10 templates CV' },
+      { icon: 'fa-file-pdf', color: '#f87171', text: 'Export PDF A4' },
+      { icon: 'fa-chart-bar', color: '#fbbf24', text: 'Score CV /100' },
+      { icon: 'fa-envelope-open-text', color: '#34d399', text: 'Lettre motivation' }
+    ]
+  },
+  {
+    icon: '✍️',
+    iconBg: 'linear-gradient(135deg,#10b981,#059669)',
+    title: 'Remplissez votre profil',
+    desc: 'Commencez par "Créer mon CV" dans la barre latérale. Le formulaire guidé en 5 étapes vous accompagne.',
+    features: [
+      { icon: 'fa-user', color: '#60a5fa', text: 'Infos personnelles' },
+      { icon: 'fa-briefcase', color: '#fbbf24', text: 'Expériences' },
+      { icon: 'fa-graduation-cap', color: '#34d399', text: 'Formation' },
+      { icon: 'fa-star', color: '#f87171', text: 'Compétences' }
+    ]
+  },
+  {
+    icon: '🎯',
+    iconBg: 'linear-gradient(135deg,#f59e0b,#d97706)',
+    title: 'Analysez et optimisez',
+    desc: 'Utilisez le Score CV, le Match offre d\'emploi et la Simulation d\'entretien pour maximiser vos chances.',
+    features: [
+      { icon: 'fa-search', color: '#a78bfa', text: 'Match offre d\'emploi' },
+      { icon: 'fa-comments', color: '#60a5fa', text: 'Simulation entretien' },
+      { icon: 'fa-language', color: '#34d399', text: 'Traduction anglais' },
+      { icon: 'fa-crown', color: '#f59e0b', text: 'Templates Pro' }
+    ]
+  }
+];
+
+var onboardingStep = 0;
+
+function showOnboarding() {
+  if (localStorage.getItem('cvOnboardingDone')) return;
+  var overlay = document.getElementById('onboardingOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('hidden');
+  renderOnboardingStep(0);
+}
+
+function renderOnboardingStep(step) {
+  onboardingStep = step;
+  var s = ONBOARDING_STEPS[step];
+  if (!s) return;
+
+  // Dots
+  var dots = document.getElementById('onboardingDots');
+  if (dots) {
+    dots.innerHTML = ONBOARDING_STEPS.map(function(_, i) {
+      return '<div class="onboarding-dot' + (i === step ? ' active' : '') + '"></div>';
+    }).join('');
+  }
+
+  // Icon
+  var icon = document.getElementById('onboardingIcon');
+  if (icon) {
+    icon.style.background = s.iconBg;
+    icon.innerHTML = '<span style="font-size:32px">' + s.icon + '</span>';
+  }
+
+  setEl('onboardingTitle', s.title);
+
+  var desc = document.getElementById('onboardingDesc');
+  if (desc) desc.textContent = s.desc;
+
+  // Features
+  var feat = document.getElementById('onboardingFeatures');
+  if (feat) {
+    feat.innerHTML = s.features.map(function(f) {
+      return '<div class="onboarding-feature">' +
+        '<i class="fas ' + f.icon + '" style="color:' + f.color + '"></i>' +
+        '<span>' + f.text + '</span></div>';
+    }).join('');
+  }
+
+  // Buttons
+  var nextBtn = document.getElementById('onboardingNext');
+  var skipBtn = document.getElementById('onboardingSkip');
+  var isLast = step === ONBOARDING_STEPS.length - 1;
+
+  if (nextBtn) {
+    nextBtn.innerHTML = isLast
+      ? '<i class="fas fa-rocket"></i> Commencer !'
+      : 'Suivant <i class="fas fa-arrow-right"></i>';
+  }
+  if (skipBtn) skipBtn.style.display = isLast ? 'none' : 'inline-flex';
+}
+
+function nextOnboarding() {
+  if (onboardingStep < ONBOARDING_STEPS.length - 1) {
+    renderOnboardingStep(onboardingStep + 1);
+  } else {
+    closeOnboarding();
+  }
+}
+
+function skipOnboarding() { closeOnboarding(); }
+
+function closeOnboarding() {
+  var overlay = document.getElementById('onboardingOverlay');
+  if (overlay) {
+    overlay.style.animation = 'none';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s';
+    setTimeout(function() { overlay.classList.add('hidden'); }, 300);
+  }
+  localStorage.setItem('cvOnboardingDone', '1');
+}
+
+// Lancer l'onboarding au chargement si premier usage
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    if (!localStorage.getItem('cvOnboardingDone') && !localStorage.getItem('cvGeneratorData')) {
+      showOnboarding();
+    }
+  }, 800);
+});
