@@ -7,50 +7,44 @@
    DONNÉES PAR DÉFAUT
    ---------------------------------------------------------- */
 const DEFAULT_DATA = {
-  name: 'Thibaut A. Hoyochi',
-  title: 'Graphiste Designer & Community Manager',
-  email: 'thibautaffohoyochi@gmail.com',
-  phone: '00 229 01 67 61 34 04',
-  address: 'Cotonou, Abomey Calavi, Bénin',
+  name: 'Jean-Pierre Dubois',
+  title: 'Développeur Web & Designer UI/UX',
+  email: 'jean.dubois@exemple.com',
+  phone: '+229 01 XX XX XX',
+  address: 'Cotonou, Bénin',
   linkedin: '',
   portfolio: '',
   photo: '',
-  profile: "Graphiste designer depuis 3 ans, j'ai des compétences très poussées en conception graphique professionnelle. Community manager depuis 1 an et formateur en création de contenu avec l'intelligence Artificielle. Titulaire d'une Licence Professionnelle en Géographie Humaine et Economique.",
+  profile: "Développeur web passionné avec 3 ans d'expérience dans la conception d'interfaces modernes et performantes. Spécialisé en React, Node.js et design UI/UX. Je combine créativité et rigueur technique pour livrer des produits digitaux de qualité.",
   experiences: [
-    { date:'2025', company:'Kladriva France & Canada', role:'Graphiste designer consultant', desc:'Gestion Branding, Mentoring, Création & Formation en création vidéo IA, IA testeurs' },
-    { date:'2024', company:'Salon Phinan Sublime Luxe', role:'Community Manager', desc:'Gestion des réseaux sociaux, Manager du salon et secrétariats, Mentor et formateur' },
-    { date:'2024', company:'Ubora Mentor & Dolphgroup Academy (France/Cameroun)', role:'Formateur & Mentor', desc:"Formateur en graphisme avec Canva et Photoshop, Mentoring en création de contenu assisté par l'IA" },
-    { date:'2023', company:'ONG Paix et Liberté Bénin', role:'Graphiste Designer', desc:'Conception de visuel de communication, Mise en page et montage de livre/Magazine' },
-    { date:'2022-2023', company:'Gimed Services', role:'Graphiste Designer', desc:"Conception de visuel de communication, Élaboration des plans d'action de communication digitale, Créations graphiques (logo, visuelle publicitaire)" }
+    { date:'2024', company:'Agence Digitale XYZ', role:'Développeur Web Front-end', desc:'Développement d\'interfaces React, intégration d\'API REST, optimisation des performances. Collaboration avec une équipe de 5 développeurs.' },
+    { date:'2023', company:'StartupTech Africa', role:'Designer UI/UX', desc:'Conception de maquettes Figma, prototypage, tests utilisateurs. Refonte complète de l\'interface mobile (+40% d\'engagement).' },
+    { date:'2022-2023', company:'Freelance', role:'Développeur Web Full-stack', desc:'Création de sites web et applications pour des PME locales. Stack : HTML, CSS, JavaScript, PHP, WordPress.' }
   ],
   education: [
-    { school:"Université D'Abomey-Calavi", degree:'Licence en Géographie Humaine et Economique', date:'Septembre 2017 - Juin 2021' }
+    { school:'Université d\'Abomey-Calavi', degree:'Licence en Informatique', date:'2019 - 2022' }
   ],
   certifications: [
-    { year:'2020', org:'SHARE ONG', title:'Attestation en informatique (Microsoft, Word, Excel, PowerPoint)' },
-    { year:'2021', org:'Atelier graphique EIGB', title:'Attestation Initiation en Adobe Illustrator' },
-    { year:'2023', org:'Blemama', title:'Réseaux sociaux et Stratégie marketing digital' },
-    { year:'2024', org:'', title:'Attestation en Community management' }
+    { year:'2023', org:'Google', title:'Google UX Design Certificate' },
+    { year:'2022', org:'freeCodeCamp', title:'Responsive Web Design Certification' },
+    { year:'2021', org:'OpenClassrooms', title:'Développeur Web JavaScript / React' }
   ],
   skills: [
-    { name:'Création Identité visuelle', pct:90 },
-    { name:'Branding', pct:88 },
-    { name:'Visuelle de communication', pct:92 },
-    { name:'Mise en page Livre', pct:85 },
-    { name:"Création de contenu IA", pct:88 },
-    { name:'Community Manager', pct:82 },
-    { name:'Géo référenceur (GMap)', pct:75 },
-    { name:'Secrétariat administratif', pct:80 }
+    { name:'Développement Web', pct:90 },
+    { name:'Design UI/UX', pct:82 },
+    { name:'React / JavaScript', pct:85 },
+    { name:'Gestion de projet', pct:75 },
+    { name:'Communication', pct:88 },
+    { name:'Résolution de problèmes', pct:90 }
   ],
-  tools: ['Adobe Photoshop','Adobe Illustrator','Adobe InDesign','Canva'],
+  tools: ['VS Code', 'Figma', 'React', 'Node.js', 'Git / GitHub'],
   languages: [
-    { name:'Français', level:'Courant', pct:95 },
-    { name:'Anglais', level:'Intermédiaire', pct:55 }
+    { name:'Français', level:'Natif', pct:100 },
+    { name:'Anglais', level:'Avancé', pct:80 }
   ],
-  interests: ['Graphisme','Intelligence Artificielle','Photographie','Formation'],
+  interests: ['Technologie', 'Design', 'Entrepreneuriat', 'Open Source'],
   references: [
-    { name:'Médar Affo', role:'PGD Gimed Service', contact:'Tél: 00 229 94 42 49 61' },
-    { name:'Hugues Hector Zogo', role:'Président ONG Paix et Liberté', contact:'Email: zogohector@gmail.com' }
+    { name:'Marie Koné', role:'Directrice Agence Digitale XYZ', contact:'Tel: +229 01 XX XX XX' }
   ],
   template: 1,
   accentColor: '#2563EB'
