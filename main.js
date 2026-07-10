@@ -210,7 +210,8 @@ function showPage(pageId, btn) {
     'settings':     '<i class="fas fa-sliders-h"></i><span>Apparence</span>',
     'import-cv':    '<i class="fas fa-file-import"></i><span>Importer un CV</span>',
     'profiles':     '<i class="fas fa-layer-group"></i><span>Mes profils CV</span>',
-    'tips':         '<i class="fas fa-lightbulb"></i><span>Conseils CV</span>'
+    'tips':         '<i class="fas fa-lightbulb"></i><span>Conseils CV</span>',
+    'interview':    '<i class="fas fa-comments"></i><span>Simulation d\'entretien</span>'
   };
 
   const tb = document.getElementById('topbarTitle');
@@ -231,6 +232,7 @@ function showPage(pageId, btn) {
   if (pageId === 'present') setTimeout(buildPresentationSlides, 200);
   if (pageId === 'word') setTimeout(refreshWordPreview, 200);
   if (pageId === 'profiles') renderProfilesList();
+  if (pageId === 'interview') { setTimeout(initInterviewPage, 100); setTimeout(renderSampleQuestions, 150); }
 
   if (window.innerWidth <= 900) toggleSidebar(false);
 }
@@ -2954,4 +2956,455 @@ function renderProfilesList() {
 function promptSaveProfile() {
   const name = window.prompt('Nom du profil :', cvData.name || 'Mon CV');
   if (name !== null) saveCurrentProfile(name);
+}
+
+/* ==========================================================
+   SIMULATION D'ENTRETIEN
+   ========================================================== */
+
+/* -- État de la simulation -- */
+var ivSession = {
+  questions: [], answers: [], scores: [], feedbacks: [],
+  current: 0, active: false, type: 'general', lang: 'fr',
+  poste: '', entreprise: ''
+};
+
+/* -- Banque de questions -- */
+var IV_QUESTIONS = {
+  fr: {
+    general: [
+      { q: "Parlez-moi de vous.", cat: "Présentation", hint: "Résumez votre parcours en 2 minutes max : formation, expériences clés, compétences.", ideal: "Je suis [Nom], [titre]. J'ai [N] ans d'expérience dans [domaine]. J'ai notamment travaillé sur [projet clé] ce qui m'a permis de [résultat concret]. Aujourd'hui je cherche à [objectif]." },
+      { q: "Pourquoi voulez-vous travailler dans notre entreprise ?", cat: "Motivation", hint: "Montrez que vous connaissez l'entreprise et que vous avez une vraie raison.", ideal: "J'ai suivi votre actualité et je suis particulièrement intéressé par [projet/valeur]. Mes compétences en [domaine] correspondraient bien à vos besoins sur [poste]." },
+      { q: "Quelles sont vos principales qualités ?", cat: "Soft skills", hint: "Citez 3 qualités concrètes, illustrées par des exemples réels.", ideal: "Ma première qualité est [qualité 1] : par exemple lors de [situation]. Je suis aussi [qualité 2] ce qui m'a permis de [résultat]. Enfin [qualité 3] me caractérise car [preuve]." },
+      { q: "Quel est votre principal défaut ?", cat: "Introspection", hint: "Choisissez un défaut réel mais que vous êtes en train de corriger. Évitez les clichés.", ideal: "J'ai tendance à être trop perfectionniste, ce qui peut allonger certaines tâches. J'ai appris à mieux fixer des limites de temps et à prioriser l'essentiel." },
+      { q: "Où vous voyez-vous dans 5 ans ?", cat: "Ambition", hint: "Montrez une vision claire mais réaliste, en lien avec le poste et l'entreprise.", ideal: "Dans 5 ans, je me vois [objectif concret] avec des responsabilités accrues en [domaine], idéalement au sein d'une structure comme la vôtre où je peux continuer à progresser." },
+      { q: "Décrivez votre plus grande réussite professionnelle.", cat: "Expérience", hint: "Utilisez la méthode STAR : Situation, Tâche, Action, Résultat.", ideal: "Dans mon poste chez [entreprise], j'ai [action concrète] ce qui a permis de [résultat mesurable]. C'est ma plus grande fierté car [impact]." },
+      { q: "Comment gérez-vous le stress et la pression ?", cat: "Soft skills", hint: "Donnez des exemples concrets de situations stressantes et comment vous les avez gérées.", ideal: "Je gère le stress en priorisant mes tâches et en découpant les problèmes complexes en étapes. Par exemple lors de [situation], j'ai [action] ce qui a permis de [résultat]." },
+      { q: "Pourquoi avez-vous quitté votre précédent emploi ?", cat: "Parcours", hint: "Restez positif, ne critiquez jamais votre ancien employeur.", ideal: "J'ai quitté ce poste car je souhaitais évoluer vers [nouveau domaine/responsabilité]. C'était une excellente expérience mais je sentais que j'avais fait le tour de mes missions." },
+      { q: "Quelles sont vos prétentions salariales ?", cat: "Négociation", hint: "Faites des recherches sur le marché, donnez une fourchette réaliste.", ideal: "Compte tenu de mon expérience de [N] ans et du marché local, je vise une rémunération entre [X] et [Y] FCFA. Je reste ouvert à la discussion selon les avantages proposés." },
+      { q: "Avez-vous des questions pour nous ?", cat: "Initiative", hint: "Toujours préparer 2-3 questions sur les missions, l'équipe ou la culture d'entreprise.", ideal: "Oui, j'aimerais savoir comment est structurée l'équipe avec laquelle je travaillerais, et quels sont les défis principaux du poste pour les 6 premiers mois." }
+    ],
+    motivation: [
+      { q: "Qu'est-ce qui vous motive dans ce métier ?", cat: "Motivation", hint: "Parlez de passion, d'impact, de création de valeur — soyez sincère.", ideal: "Ce qui me motive avant tout, c'est [raison profonde] et le fait de voir [impact concret] au quotidien." },
+      { q: "Pourquoi ce poste et pas un autre ?", cat: "Motivation", hint: "Montrez que c'est un choix réfléchi, pas un hasard.", ideal: "Ce poste correspond exactement à [compétences] que j'ai développées et au type de mission que je recherche activement : [précision]." },
+      { q: "Qu'est-ce qui vous donne envie de vous lever chaque matin pour travailler ?", cat: "Motivation", hint: "Réponse personnelle et authentique sur ce qui vous anime professionnellement.", ideal: "Ce qui me donne envie c'est [mission ou challenge quotidien]. Je suis passionné par [domaine] et chaque journée apporte [bénéfice]." },
+      { q: "Comment définiriez-vous le succès dans ce poste ?", cat: "Vision", hint: "Parlez de résultats mesurables, d'impact sur l'équipe et sur les clients.", ideal: "Le succès pour moi ce serait d'atteindre [objectif mesurable], de contribuer à [objectif équipe] et d'être reconnu pour [qualité spécifique]." },
+      { q: "Quelle est la valeur ajoutée que vous apporteriez à notre équipe ?", cat: "Valeur", hint: "Listez 2-3 compétences différenciantes avec des preuves concrètes.", ideal: "J'apporterais [compétence 1] prouvée par [exemple], [compétence 2] illustrée par [résultat], et une capacité à [compétence 3] que peu de candidats ont." }
+    ],
+    technique: [
+      { q: "Décrivez un projet technique complexe que vous avez réalisé.", cat: "Technique", hint: "Détaillez les outils, les défis techniques et la solution trouvée.", ideal: "J'ai travaillé sur [projet] qui consistait à [objectif]. J'ai utilisé [outils/technologies], résolu le défi de [problème] en [solution], avec un résultat de [mesure]." },
+      { q: "Comment vous tenez-vous à jour dans votre domaine ?", cat: "Veille", hint: "Mentionnez des sources concrètes : newsletters, formations, communautés.", ideal: "Je suis régulièrement [sources spécifiques], je participe à [communautés/événements] et j'ai récemment suivi une formation sur [sujet]." },
+      { q: "Quelle est votre maîtrise de [outil principal du poste] ?", cat: "Compétence", hint: "Soyez honnête sur votre niveau, et montrez votre capacité d'apprentissage.", ideal: "Je maîtrise [outil] à [niveau] et je l'utilise pour [usage]. J'ai notamment réalisé [exemple concret] qui montre ma maîtrise pratique." },
+      { q: "Comment organisez-vous votre travail au quotidien ?", cat: "Organisation", hint: "Parlez de méthodes (to-do list, sprints, Kanban) et d'outils utilisés.", ideal: "Je commence par prioriser mes tâches selon urgence/importance, j'utilise [outil/méthode] et je fais des points réguliers pour ajuster mon plan." },
+      { q: "Comment gérez-vous les délais serrés sur un projet ?", cat: "Gestion", hint: "Montrez votre capacité à prioriser, communiquer et livrer sous pression.", ideal: "Face à un délai serré, je décompose le projet en tâches essentielles, communique immédiatement avec le client si nécessaire, et me concentre sur le livrable minimum viable avant d'enrichir." }
+    ],
+    situation: [
+      { q: "Décrivez une situation où vous avez dû gérer un conflit avec un collègue.", cat: "Conflit", hint: "Méthode STAR — montrez l'écoute, la communication et la résolution positive.", ideal: "Dans ce contexte, j'ai d'abord écouté le point de vue de mon collègue sans interrompre, puis expliqué le mien calmement. Nous avons trouvé un compromis qui a amélioré notre collaboration." },
+      { q: "Parlez d'une fois où vous avez échoué et ce que vous en avez appris.", cat: "Résilience", hint: "Montrez l'échec honnêtement, puis insistez sur l'apprentissage et la correction.", ideal: "Sur le projet [X], j'ai sous-estimé le temps nécessaire pour [tâche]. J'ai manqué la deadline. Depuis, j'ajoute toujours une marge de 20% à mes estimations et je communique en avance si un risque apparaît." },
+      { q: "Comment avez-vous géré un client ou un manager difficile ?", cat: "Relations", hint: "Empathie, clarté des attentes, documentation écrite.", ideal: "J'ai demandé un entretien pour clarifier ses attentes avec des exemples concrets. J'ai reformulé ce que j'avais compris et proposé un plan d'action. La relation s'est nettement améliorée ensuite." },
+      { q: "Racontez une situation où vous avez dû prendre une décision difficile.", cat: "Leadership", hint: "Montrez votre analyse, votre courage décisionnel et l'impact de votre choix.", ideal: "J'avais le choix entre [option A] et [option B]. J'ai analysé les risques et bénéfices de chaque option, consulté les parties prenantes, puis décidé de [choix] ce qui a permis [résultat positif]." },
+      { q: "Décrivez un moment où vous avez dû apprendre quelque chose très vite.", cat: "Apprentissage", hint: "Montrez votre méthode d'apprentissage rapide et votre adaptabilité.", ideal: "On m'a demandé de maîtriser [compétence] en [délai]. J'ai suivi [méthode d'apprentissage], pratiqué sur [exercice concret] et pu livrer [résultat] dans les temps impartis." }
+    ],
+    stress: [
+      { q: "Vendez-moi ce stylo.", cat: "Stress test", hint: "Identifiez un besoin, valorisez les caractéristiques comme bénéfices, concluez sur la valeur.", ideal: "Avant de vous proposer quoi que ce soit, permettez-moi de comprendre vos besoins : qu'est-ce qui est important pour vous dans un stylo ? [Écoute] Dans ce cas, ce stylo est parfait car..." },
+      { q: "Êtes-vous vraiment la meilleure personne pour ce poste ?", cat: "Confiance", hint: "Répondez avec assurance sans arrogance, appuyez-vous sur des faits.", ideal: "Je crois sincèrement être un excellent candidat pour ce poste car [3 raisons concrètes]. Je reconnais qu'il peut y avoir d'autres bons profils, mais je suis convaincu que [valeur différenciante] fait la différence." },
+      { q: "Que pensez-vous de votre ancien manager ?", cat: "Stress test", hint: "Restez professionnel et positif même si la relation était difficile.", ideal: "Mon ancien manager avait de grandes qualités en [domaine]. Comme dans toute relation professionnelle, nous avions parfois des approches différentes, mais j'en ai toujours tiré des apprentissages utiles." },
+      { q: "Qu'est-ce que vous n'avez pas aimé dans votre dernier poste ?", cat: "Honnêteté", hint: "Soyez honnête mais constructif, évitez toute négativité excessive.", ideal: "Il y avait peu d'opportunités d'évolution vers [domaine qui m'intéresse]. C'est d'ailleurs ce qui m'a poussé à chercher un poste comme celui-ci qui offre davantage de [bénéfice]." },
+      { q: "Pourquoi devrais-je vous choisir vous plutôt qu'un autre candidat ?", cat: "Différenciation", hint: "3 arguments béton, concis, différenciants. Soyez direct et confiant.", ideal: "Trois raisons : premièrement [argument 1 + preuve], deuxièmement [argument 2 + résultat], troisièmement [argument 3 unique]. Ensemble, ces éléments font de moi un candidat qui peut [valeur immédiate pour l'entreprise]." }
+    ],
+    rh: [
+      { q: "Quelle est votre disponibilité ?", cat: "Logistique", hint: "Soyez précis sur votre préavis et votre date de début possible.", ideal: "Je suis disponible à partir du [date]. J'ai un préavis de [durée] dans mon poste actuel que je respecterai bien sûr." },
+      { q: "Êtes-vous prêt à travailler en dehors des heures normales si nécessaire ?", cat: "Flexibilité", hint: "Montrez votre engagement sans vous engager à l'illimité.", ideal: "Je suis capable de m'investir davantage lors de périodes importantes ou de projets urgents. J'apprécie cependant qu'un équilibre sain soit maintenu sur le long terme pour une performance durable." },
+      { q: "Que recherchez-vous dans votre prochain employeur ?", cat: "Attentes", hint: "Parlez de valeurs, d'environnement de travail et d'opportunités d'évolution.", ideal: "Je cherche un environnement où [valeur 1], des opportunités de monter en compétences sur [domaine], et un management basé sur [style de management souhaité]." },
+      { q: "Comment décrivent-on votre travail vos anciens collègues ?", cat: "Réputation", hint: "Citez des qualités précises, idéalement des choses que vous ont dites réellement.", ideal: "Mes collègues me décrivent généralement comme [qualité 1] et [qualité 2]. L'un d'eux m'a dit [citation réelle ou plausible] ce qui m'a vraiment marqué." },
+      { q: "Avez-vous d'autres entretiens en cours ?", cat: "Position", hint: "Soyez honnête, ça démontre votre attractivité sans être arrogant.", ideal: "Oui, j'ai quelques processus en cours mais votre entreprise est ma priorité car [raison sincère]. Je serais en mesure de vous donner une réponse sous [délai]." }
+    ]
+  },
+  en: {
+    general: [
+      { q: "Tell me about yourself.", cat: "Introduction", hint: "Summarize your background in 2 minutes: education, key experience, skills.", ideal: "I'm [Name], a [title] with [N] years of experience in [field]. I've worked on [key project] which allowed me to [concrete result]. I'm now looking to [goal]." },
+      { q: "Why do you want to work at our company?", cat: "Motivation", hint: "Show you know the company and have a genuine reason for applying.", ideal: "I've followed your work and I'm particularly interested in [project/value]. My skills in [field] would align well with your needs for this role." },
+      { q: "What are your greatest strengths?", cat: "Soft skills", hint: "List 3 concrete strengths with real examples.", ideal: "My first strength is [strength 1], for example in [situation]. I'm also [strength 2] which helped me [result]. Finally [strength 3] characterizes me because [proof]." },
+      { q: "What is your greatest weakness?", cat: "Self-awareness", hint: "Choose a real weakness you're actively working to improve.", ideal: "I tend to be overly detail-oriented, which can slow me down on some tasks. I've learned to set time limits and focus on what's most important." },
+      { q: "Where do you see yourself in 5 years?", cat: "Ambition", hint: "Show a clear but realistic vision linked to the role and company.", ideal: "In 5 years, I see myself in [concrete goal] with more responsibility in [field], ideally in a company like yours where I can continue to grow." }
+    ]
+  }
+};
+
+/* -- Initialisation de la page entretien -- */
+function initInterviewPage() {
+  var name = cvData.name || '—';
+  var title = cvData.title || '—';
+  setEl('ivPreviewName', name);
+  setEl('ivPreviewTitle', title);
+
+  var posteEl = document.getElementById('iv-poste');
+  if (posteEl && !posteEl.value) posteEl.value = cvData.title || '';
+
+  renderSampleQuestions();
+}
+
+function renderSampleQuestions() {
+  var lang = (document.getElementById('iv-lang') || {}).value || 'fr';
+  var type = (document.getElementById('iv-type') || {}).value || 'general';
+  var bank = (IV_QUESTIONS[lang] || IV_QUESTIONS.fr)[type] || IV_QUESTIONS.fr.general;
+  var samples = bank.slice(0, 3);
+  var el = document.getElementById('ivSampleQuestions');
+  if (!el) return;
+  el.innerHTML = samples.map(function(q) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--bg-input);border-radius:8px">' +
+      '<i class="fas fa-question-circle" style="color:var(--primary);margin-top:2px;flex-shrink:0;font-size:13px"></i>' +
+      '<span style="font-size:12px;color:var(--text)">' + q.q + '</span></div>';
+  }).join('');
+}
+
+/* -- Démarrer la simulation -- */
+function startInterview() {
+  var lang = document.getElementById('iv-lang').value || 'fr';
+  var type = document.getElementById('iv-type').value || 'general';
+  var count = parseInt(document.getElementById('iv-count').value) || 10;
+  var poste = document.getElementById('iv-poste').value.trim() || cvData.title || 'ce poste';
+  var entreprise = document.getElementById('iv-entreprise').value.trim() || 'votre entreprise';
+
+  var bank = (IV_QUESTIONS[lang] || IV_QUESTIONS.fr)[type] || IV_QUESTIONS.fr.general;
+
+  // Mélanger et sélectionner les questions
+  var shuffled = bank.slice().sort(function() { return Math.random() - 0.5; });
+  var selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  // Ajouter des questions personnalisées selon le CV
+  selected = personalizeQuestions(selected, poste, cvData, lang);
+
+  ivSession = {
+    questions: selected,
+    answers: [],
+    scores: [],
+    feedbacks: [],
+    current: 0,
+    active: true,
+    type: type,
+    lang: lang,
+    poste: poste,
+    entreprise: entreprise
+  };
+
+  document.getElementById('interviewSetup').style.display = 'none';
+  document.getElementById('interviewResults').style.display = 'none';
+  document.getElementById('interviewSession').style.display = 'block';
+
+  setEl('ivTotalNum', selected.length);
+  var typeLabels = { general:'Entretien général', motivation:'Motivation', technique:'Compétences techniques', situation:'Questions situationnelles', stress:'Entretien de stress', rh:'Entretien RH' };
+  setEl('ivTypeBadge', typeLabels[type] || 'Entretien');
+
+  showQuestion(0);
+}
+
+/* -- Personnaliser les questions selon le CV -- */
+function personalizeQuestions(questions, poste, data, lang) {
+  return questions.map(function(q) {
+    var text = q.q
+      .replace(/\[poste\]/gi, poste)
+      .replace(/\[outil principal du poste\]/gi, (data.tools || ['votre outil principal'])[0] || poste)
+      .replace(/\[Nom\]/gi, data.name || 'votre nom')
+      .replace(/\[titre\]/gi, poste);
+    return Object.assign({}, q, { q: text });
+  });
+}
+
+/* -- Afficher une question -- */
+function showQuestion(index) {
+  var q = ivSession.questions[index];
+  if (!q) return;
+
+  document.getElementById('ivAnswer').value = '';
+  document.getElementById('ivAnswerCounter').textContent = '0 mots';
+  document.getElementById('ivFeedback').style.display = 'none';
+  document.getElementById('ivHint').style.display = 'none';
+
+  setEl('ivCurrentNum', index + 1);
+  setEl('ivQuestionCategory', q.cat);
+  setEl('ivQuestionText', q.q);
+  setEl('ivHintText', q.hint);
+
+  var pct = Math.round(((index + 1) / ivSession.questions.length) * 100);
+  document.getElementById('ivProgressBar').style.width = pct + '%';
+
+  var avgScore = ivSession.scores.length > 0
+    ? Math.round(ivSession.scores.reduce(function(a,b){return a+b;},0) / ivSession.scores.length)
+    : '—';
+  setEl('ivScore', avgScore === '—' ? '—' : avgScore + '/100');
+
+  document.getElementById('ivAnswer').focus();
+}
+
+/* -- Compteur de mots -- */
+function countWords(el, counterId) {
+  var words = el.value.trim().split(/\s+/).filter(function(w) { return w.length > 0; });
+  var el2 = document.getElementById(counterId);
+  if (el2) el2.textContent = words.length + ' mot' + (words.length > 1 ? 's' : '');
+}
+
+/* -- Toggle hint -- */
+function toggleHint() {
+  var hint = document.getElementById('ivHint');
+  if (hint) hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+}
+
+/* -- Soumettre une réponse -- */
+function submitAnswer() {
+  var answer = (document.getElementById('ivAnswer').value || '').trim();
+  if (!answer) { showToast('Tapez votre réponse avant de valider', 'warning'); return; }
+
+  var q = ivSession.questions[ivSession.current];
+  var feedback = evaluateAnswer(answer, q, ivSession.lang);
+
+  ivSession.answers.push(answer);
+  ivSession.scores.push(feedback.score);
+  ivSession.feedbacks.push(feedback);
+
+  // Afficher le feedback
+  document.getElementById('ivFeedback').style.display = 'block';
+  document.getElementById('ivAnswerScore').innerHTML =
+    '<span style="color:' + scoreColor(feedback.score) + '">' + feedback.score + '/100</span>';
+  document.getElementById('ivFeedbackPos').innerHTML = feedback.positif.map(function(p) {
+    return '<div style="display:flex;gap:6px;margin-bottom:6px"><i class="fas fa-check-circle" style="color:var(--success);margin-top:2px;flex-shrink:0"></i><span>' + p + '</span></div>';
+  }).join('');
+  document.getElementById('ivFeedbackNeg').innerHTML = feedback.negatif.map(function(n) {
+    return '<div style="display:flex;gap:6px;margin-bottom:6px"><i class="fas fa-arrow-up" style="color:var(--warning);margin-top:2px;flex-shrink:0"></i><span>' + n + '</span></div>';
+  }).join('');
+  setEl('ivIdealAnswer', q.ideal);
+
+  var isLast = ivSession.current >= ivSession.questions.length - 1;
+  var nextBtn = document.getElementById('ivNextBtn');
+  if (nextBtn) {
+    nextBtn.innerHTML = isLast
+      ? '<i class="fas fa-trophy"></i> Voir les résultats'
+      : '<i class="fas fa-arrow-right"></i> Question suivante';
+  }
+
+  document.getElementById('ivFeedback').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* -- Évaluer une réponse -- */
+function evaluateAnswer(answer, question, lang) {
+  var words = answer.trim().split(/\s+/).filter(function(w) { return w.length > 0; });
+  var wordCount = words.length;
+  var score = 50;
+  var positif = [];
+  var negatif = [];
+
+  // Longueur de la réponse
+  if (wordCount >= 80) { score += 15; positif.push('Réponse bien développée et complète.'); }
+  else if (wordCount >= 40) { score += 8; positif.push('Longueur de réponse correcte.'); }
+  else if (wordCount >= 20) { score += 0; negatif.push('Réponse un peu courte — développez davantage (idéal : 60-100 mots).'); }
+  else { score -= 15; negatif.push('Réponse trop courte. Le recruteur attend plus de détail.'); }
+
+  // Mots-clés positifs
+  var posKeywords = lang === 'en'
+    ? ['experience', 'result', 'achieved', 'managed', 'developed', 'improved', 'team', 'project', 'client']
+    : ['expérience', 'résultat', 'réalisé', 'géré', 'développé', 'amélioré', 'équipe', 'projet', 'client', 'objectif', 'formation'];
+  var foundPos = posKeywords.filter(function(kw) { return answer.toLowerCase().indexOf(kw) >= 0; });
+  if (foundPos.length >= 4) { score += 12; positif.push('Bonne utilisation de mots-clés professionnels.'); }
+  else if (foundPos.length >= 2) { score += 5; }
+  else { negatif.push('Utilisez plus de mots-clés professionnels : résultats, expériences, chiffres.'); }
+
+  // Chiffres et métriques
+  var hasNumbers = /\d+/.test(answer);
+  if (hasNumbers) { score += 10; positif.push('Excellente utilisation de chiffres et données concrètes.'); }
+  else { negatif.push('Ajoutez des chiffres ou métriques pour crédibiliser votre réponse (ex: +30%, 5 projets, 3 ans).'); }
+
+  // Exemples personnels (indicateurs de la méthode STAR)
+  var starKeywords = lang === 'en'
+    ? ['when', 'because', 'so', 'therefore', 'example', 'situation']
+    : ['quand', 'parce que', 'donc', 'ainsi', 'exemple', 'situation', 'lors', 'grâce', 'notamment'];
+  var hasStar = starKeywords.some(function(kw) { return answer.toLowerCase().indexOf(kw) >= 0; });
+  if (hasStar) { score += 8; positif.push('Bonne structure avec des exemples concrets.'); }
+  else { negatif.push('Illustrez avec un exemple concret (méthode STAR : Situation, Tâche, Action, Résultat).'); }
+
+  // Mots à éviter
+  var badWords = lang === 'en'
+    ? ['i don\'t know', 'i can\'t', 'never', 'always', 'perfect', 'best ever']
+    : ['je sais pas', 'je ne sais pas', 'je peux pas', 'jamais', 'toujours', 'parfait', 'le meilleur'];
+  var hasBad = badWords.some(function(bw) { return answer.toLowerCase().indexOf(bw) >= 0; });
+  if (hasBad) { score -= 10; negatif.push('Évitez les formulations négatives ou les absolus comme "jamais" ou "toujours".'); }
+
+  // Cohérence avec le profil
+  var profileKeywords = [
+    (cvData.title || '').toLowerCase(),
+    (cvData.name || '').split(' ')[0].toLowerCase()
+  ].concat((cvData.tools || []).map(function(t) { return t.toLowerCase(); }));
+  var cvMatch = profileKeywords.some(function(kw) { return kw.length > 2 && answer.toLowerCase().indexOf(kw) >= 0; });
+  if (cvMatch) { score += 5; positif.push('Réponse bien alignée avec votre profil CV.'); }
+
+  // Borner le score
+  score = Math.max(10, Math.min(100, score));
+
+  // Messages par défaut si rien trouvé
+  if (positif.length === 0) positif.push('Vous avez répondu à la question posée.');
+  if (negatif.length === 0) negatif.push('Continuez à vous entraîner pour plus de fluidité.');
+
+  return { score: score, positif: positif, negatif: negatif };
+}
+
+function scoreColor(score) {
+  if (score >= 75) return 'var(--success)';
+  if (score >= 50) return 'var(--warning)';
+  return 'var(--danger)';
+}
+
+/* -- Question suivante -- */
+function nextQuestion() {
+  var isLast = ivSession.current >= ivSession.questions.length - 1;
+  if (isLast) { showInterviewResults(); return; }
+  ivSession.current++;
+  showQuestion(ivSession.current);
+  document.getElementById('ivQuestionCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* -- Passer une question -- */
+function skipQuestion() {
+  ivSession.answers.push('');
+  ivSession.scores.push(0);
+  ivSession.feedbacks.push({ score: 0, positif: [], negatif: ['Question passée.'] });
+  var isLast = ivSession.current >= ivSession.questions.length - 1;
+  if (isLast) { showInterviewResults(); return; }
+  ivSession.current++;
+  showQuestion(ivSession.current);
+  showToast('Question passée', 'warning');
+}
+
+/* -- Arrêter la simulation -- */
+function stopInterview() {
+  if (!confirm('Arrêter la simulation ? Les résultats actuels seront affichés.')) return;
+  // Compléter les questions manquantes
+  while (ivSession.answers.length < ivSession.questions.length) {
+    ivSession.answers.push('');
+    ivSession.scores.push(0);
+    ivSession.feedbacks.push({ score: 0, positif: [], negatif: ['Question non traitée.'] });
+  }
+  showInterviewResults();
+}
+
+/* -- Afficher les résultats finaux -- */
+function showInterviewResults() {
+  ivSession.active = false;
+  document.getElementById('interviewSession').style.display = 'none';
+  document.getElementById('interviewResults').style.display = 'block';
+  document.getElementById('interviewResults').scrollIntoView({ behavior: 'smooth' });
+
+  var scores = ivSession.scores;
+  var answered = scores.filter(function(s) { return s > 0; });
+  var avgScore = answered.length > 0
+    ? Math.round(answered.reduce(function(a,b){return a+b;},0) / answered.length)
+    : 0;
+  var goodCount = scores.filter(function(s) { return s >= 70; }).length;
+  var midCount  = scores.filter(function(s) { return s >= 40 && s < 70; }).length;
+  var skipCount = scores.filter(function(s) { return s === 0; }).length;
+
+  setEl('ivFinalScore', avgScore);
+  setEl('ivResTotal', scores.length);
+  setEl('ivResGood', goodCount);
+  setEl('ivResMid', midCount);
+  setEl('ivResSkip', skipCount);
+
+  // Emoji selon score
+  var emoji = avgScore >= 80 ? '🏆' : avgScore >= 60 ? '🎉' : avgScore >= 40 ? '💪' : '📚';
+  setEl('ivResultEmoji', emoji);
+
+  // Détail par question
+  var detailEl = document.getElementById('ivDetailedResults');
+  if (detailEl) {
+    detailEl.innerHTML = ivSession.questions.map(function(q, i) {
+      var s = scores[i] || 0;
+      var a = ivSession.answers[i] || '';
+      return '<div style="border-bottom:1px solid var(--border);padding:16px 0' + (i === 0 ? ';padding-top:0' : '') + (i === ivSession.questions.length-1 ? ';border-bottom:none' : '') + '">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">' +
+          '<div style="flex:1">' +
+            '<p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Q' + (i+1) + ' — ' + q.cat + '</p>' +
+            '<p style="font-size:13px;font-weight:600;color:var(--text)">' + q.q + '</p>' +
+          '</div>' +
+          '<div style="text-align:center;flex-shrink:0">' +
+            '<div style="font-size:20px;font-weight:800;color:' + scoreColor(s) + '">' + (s > 0 ? s : '—') + '</div>' +
+            '<div style="font-size:10px;color:var(--text-muted)">/100</div>' +
+          '</div>' +
+        '</div>' +
+        (a ? '<p style="font-size:12px;color:var(--text-secondary);background:var(--bg-input);padding:10px 12px;border-radius:8px;margin:0;font-style:italic">"' + a.substring(0, 150) + (a.length > 150 ? '...' : '') + '"</p>' : '<p style="font-size:12px;color:var(--danger);font-style:italic">Question passée</p>') +
+      '</div>';
+    }).join('');
+  }
+
+  // Recommandations
+  var recEl = document.getElementById('ivRecommendations');
+  if (recEl) {
+    var recs = [];
+    if (avgScore < 50) recs.push({ icon: 'book', color: 'var(--primary)', text: 'Entraînez-vous davantage avec la méthode STAR pour structurer vos réponses.' });
+    if (skipCount > 0) recs.push({ icon: 'forward', color: 'var(--warning)', text: 'Vous avez passé ' + skipCount + ' question(s). Préparez des réponses pour tous les types de questions.' });
+    if (goodCount >= scores.length * 0.7) recs.push({ icon: 'star', color: '#f59e0b', text: 'Excellent niveau ! Vous êtes prêt(e) pour un entretien réel.' });
+    recs.push({ icon: 'comments', color: 'var(--success)', text: 'Pratiquez à voix haute : la fluidité orale est aussi importante que le contenu.' });
+    recs.push({ icon: 'search', color: 'var(--violet)', text: 'Recherchez l\'entreprise en détail avant chaque entretien (actualités, valeurs, projets).' });
+    if (cvData.profile && cvData.profile.length < 100) recs.push({ icon: 'edit', color: 'var(--primary)', text: 'Enrichissez votre profil CV — il servira de base à vos réponses d\'entretien.' });
+
+    recEl.innerHTML = recs.map(function(r) {
+      return '<div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)">' +
+        '<i class="fas fa-' + r.icon + '" style="color:' + r.color + ';margin-top:2px;font-size:15px;flex-shrink:0"></i>' +
+        '<span style="font-size:13px;color:var(--text);line-height:1.6">' + r.text + '</span></div>';
+    }).join('');
+  }
+}
+
+/* -- Redémarrer -- */
+function restartInterview() {
+  ivSession = { questions:[], answers:[], scores:[], feedbacks:[], current:0, active:false };
+  document.getElementById('interviewResults').style.display = 'none';
+  document.getElementById('interviewSession').style.display = 'none';
+  document.getElementById('interviewSetup').style.display = 'grid';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* -- Exporter le rapport -- */
+function exportInterviewReport() {
+  var scores = ivSession.scores;
+  var avgScore = scores.length > 0
+    ? Math.round(scores.reduce(function(a,b){return a+b;},0) / scores.filter(function(s){return s>0;}).length || 0)
+    : 0;
+  var date = new Date().toLocaleDateString('fr', { year:'numeric', month:'long', day:'numeric' });
+  var name = cvData.name || 'Candidat';
+
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Rapport d\'entretien — ' + name + '</title>' +
+    '<style>body{font-family:Inter,sans-serif;max-width:800px;margin:40px auto;color:#1e293b;padding:0 24px}' +
+    'h1{font-size:28px;font-weight:800;margin-bottom:4px}' +
+    '.score-big{font-size:56px;font-weight:900;color:#2563EB;text-align:center;margin:24px 0}' +
+    '.q-item{border-left:3px solid #2563EB;padding:12px 16px;margin-bottom:16px;background:#f8fafc;border-radius:0 8px 8px 0}' +
+    '.q-cat{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px}' +
+    '.q-text{font-size:14px;font-weight:600;margin:4px 0 8px}' +
+    '.q-answer{font-size:12px;color:#475569;font-style:italic;margin-bottom:6px}' +
+    '.q-score{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}' +
+    '.good{background:#d1fae5;color:#065f46}.mid{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}' +
+    '</style></head><body>' +
+    '<h1>Rapport de simulation d\'entretien</h1>' +
+    '<p style="color:#64748b;margin-bottom:24px">' + name + ' — ' + date + ' — ' + ivSession.poste + '</p>' +
+    '<div class="score-big">' + avgScore + '<span style="font-size:24px;color:#94a3b8">/100</span></div>';
+
+  html += '<h2 style="font-size:18px;margin-bottom:16px">Détail des réponses</h2>';
+  ivSession.questions.forEach(function(q, i) {
+    var s = scores[i] || 0;
+    var cls = s >= 70 ? 'good' : s >= 40 ? 'mid' : 'bad';
+    html += '<div class="q-item">' +
+      '<div class="q-cat">Q' + (i+1) + ' — ' + q.cat + '</div>' +
+      '<div class="q-text">' + q.q + '</div>' +
+      (ivSession.answers[i] ? '<div class="q-answer">"' + ivSession.answers[i] + '"</div>' : '<div class="q-answer" style="color:#ef4444">Question passée</div>') +
+      '<span class="q-score ' + cls + '">' + (s > 0 ? s + '/100' : 'Passée') + '</span>' +
+      '</div>';
+  });
+
+  html += '<p style="text-align:center;margin-top:40px;font-size:12px;color:#94a3b8">Généré par CV Generator Pro — thibautaffohoyochi-collab.github.io/cv-generator</p></body></html>';
+
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'rapport_entretien_' + (name.replace(/\s+/g,'_')) + '_' + new Date().toISOString().slice(0,10) + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Rapport exporté !', 'success');
 }

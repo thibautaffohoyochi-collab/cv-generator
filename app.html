@@ -203,6 +203,10 @@
       <button class="nav-item" data-page="tips" onclick="showPage('tips',this)">
         <i class="fas fa-lightbulb"></i> Conseils CV
       </button>
+      <button class="nav-item" data-page="interview" onclick="showPage('interview',this)">
+        <i class="fas fa-comments"></i> Simulation entretien
+        <span class="nav-badge" style="background:linear-gradient(135deg,#7c3aed,#2563EB)">NEW</span>
+      </button>
     </nav>
 
     <div class="sidebar-completion">
@@ -355,6 +359,9 @@
                 </button>
                 <button class="dash-action-btn" onclick="showPage('profiles',document.querySelector('[data-page=profiles]'))">
                   <i class="fas fa-layer-group"></i><span>Mes profils</span>
+                </button>
+                <button class="dash-action-btn" onclick="showPage('interview',document.querySelector('[data-page=interview]'))" style="border-color:rgba(124,58,237,0.3)">
+                  <i class="fas fa-comments" style="color:#7c3aed"></i><span style="color:#7c3aed">Entretien</span>
                 </button>
                 <input type="file" id="importInput" accept=".json" style="display:none" onchange="importJSON(event)" />
               </div>
@@ -1202,6 +1209,231 @@ Création vidéo IA — Dolphgroup Academy</textarea>
             <div style="font-size:12px;color:var(--text-secondary)"><i class="fas fa-check" style="color:var(--success)"></i> CV Freelance International</div>
             <div style="font-size:12px;color:var(--text-secondary)"><i class="fas fa-check" style="color:var(--success)"></i> CV Version Anglais</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: SIMULATION ENTRETIEN ════ -->
+    <section class="page" id="page-interview">
+      <div class="page-hdr">
+        <h2><i class="fas fa-comments" style="color:var(--primary)"></i> Simulation d'entretien</h2>
+        <p>Entraînez-vous avec des questions adaptées à votre profil CV. Répondez, obtenez un feedback instantané.</p>
+      </div>
+
+      <!-- CONFIG -->
+      <div style="display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start" id="interviewSetup">
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-cog"></i> Paramètres</h3></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Type d'entretien</label>
+              <select class="form-control" id="iv-type">
+                <option value="general">Général — Toutes questions</option>
+                <option value="motivation">Motivation & Soft skills</option>
+                <option value="technique">Compétences techniques</option>
+                <option value="situation">Questions situationnelles</option>
+                <option value="stress">Entretien de stress</option>
+                <option value="rh">Entretien RH classique</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Poste visé</label>
+              <input type="text" class="form-control" id="iv-poste" placeholder="Ex: Graphiste Designer, Développeur Web..." />
+            </div>
+            <div class="form-group">
+              <label>Entreprise (optionnel)</label>
+              <input type="text" class="form-control" id="iv-entreprise" placeholder="Ex: Orange Bénin, Freelance..." />
+            </div>
+            <div class="form-group">
+              <label>Nombre de questions</label>
+              <select class="form-control" id="iv-count">
+                <option value="5">5 questions (rapide)</option>
+                <option value="10" selected>10 questions (standard)</option>
+                <option value="15">15 questions (complet)</option>
+                <option value="20">20 questions (intensif)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Langue</label>
+              <select class="form-control" id="iv-lang">
+                <option value="fr">Français</option>
+                <option value="en">Anglais</option>
+              </select>
+            </div>
+            <button class="btn btn-primary w-100 mt-8" onclick="startInterview()" style="margin-top:8px">
+              <i class="fas fa-play"></i> Démarrer la simulation
+            </button>
+          </div>
+        </div>
+
+        <!-- TIPS BEFORE START -->
+        <div>
+          <div class="card mb-16" style="border-color:rgba(37,99,235,0.2);background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.04))">
+            <div class="card-body">
+              <p style="font-size:15px;font-weight:800;margin-bottom:12px"><i class="fas fa-lightbulb" style="color:#f59e0b"></i> Comment ça marche ?</p>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">1</div>
+                  <div><strong style="font-size:13px">Configurez</strong><p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0">Choisissez le type d'entretien et le poste visé.</p></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">2</div>
+                  <div><strong style="font-size:13px">Répondez</strong><p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0">Tapez votre réponse à chaque question comme si vous étiez en entretien réel.</p></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">3</div>
+                  <div><strong style="font-size:13px">Obtenez un feedback</strong><p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0">Chaque réponse est évaluée avec des conseils d'amélioration.</p></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">4</div>
+                  <div><strong style="font-size:13px">Score final</strong><p style="font-size:12px;color:var(--text-secondary);margin:2px 0 0">Recevez votre score global avec un rapport détaillé à la fin.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-star" style="color:#f59e0b"></i> Questions générées depuis votre CV</h3></div>
+            <div class="card-body">
+              <div id="ivQuestionPreview" style="font-size:13px;color:var(--text-secondary)">
+                <p><i class="fas fa-info-circle" style="color:var(--primary)"></i> Les questions seront personnalisées selon votre profil : <strong id="ivPreviewName">—</strong>, <strong id="ivPreviewTitle">—</strong>.</p>
+                <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px" id="ivSampleQuestions"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERVIEW SESSION (hidden by default) -->
+      <div id="interviewSession" style="display:none">
+
+        <!-- Progress bar -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px">
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-size:13px;font-weight:700">Question <span id="ivCurrentNum">1</span> / <span id="ivTotalNum">10</span></span>
+              <span style="font-size:12px;color:var(--text-secondary)" id="ivTypeBadge">Entretien général</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+              <div id="ivProgressBar" style="height:100%;background:linear-gradient(90deg,var(--primary),#7c3aed);border-radius:3px;transition:width .5s ease;width:10%"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:22px;font-weight:800;color:var(--primary)" id="ivScore">—</div>
+            <div style="font-size:10px;color:var(--text-secondary)">Score actuel</div>
+          </div>
+          <button class="btn btn-sm btn-ghost" onclick="stopInterview()" style="flex-shrink:0"><i class="fas fa-stop"></i> Arrêter</button>
+        </div>
+
+        <!-- Question card -->
+        <div class="card mb-16" id="ivQuestionCard">
+          <div class="card-body" style="padding:24px">
+            <div style="display:flex;align-items:flex-start;gap:16px">
+              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="fas fa-user-tie" style="color:#fff;font-size:20px"></i>
+              </div>
+              <div style="flex:1">
+                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px" id="ivQuestionCategory">Question de motivation</p>
+                <p style="font-size:16px;font-weight:600;line-height:1.6;color:var(--text)" id="ivQuestionText">Chargement...</p>
+              </div>
+            </div>
+
+            <!-- Hint -->
+            <div id="ivHint" style="margin-top:16px;padding:12px 16px;background:rgba(37,99,235,0.06);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;font-size:12px;color:var(--text-secondary);display:none">
+              <strong style="color:var(--primary)"><i class="fas fa-lightbulb"></i> Conseil :</strong> <span id="ivHintText"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Answer area -->
+        <div class="card mb-16">
+          <div class="card-header">
+            <h3><i class="fas fa-keyboard"></i> Votre réponse</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span id="ivAnswerCounter" style="font-size:12px;color:var(--text-secondary)">0 mots</span>
+              <button class="btn btn-sm btn-ghost" id="ivHintBtn" onclick="toggleHint()"><i class="fas fa-lightbulb"></i> Indice</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <textarea class="form-control" id="ivAnswer" rows="5"
+              placeholder="Tapez votre réponse ici comme si vous étiez face au recruteur..."
+              oninput="countWords(this,'ivAnswerCounter')"
+              onkeydown="if(event.ctrlKey&&event.key==='Enter')submitAnswer()"></textarea>
+            <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:12px">
+              <span style="font-size:12px;color:var(--text-muted)"><kbd style="background:var(--border);padding:2px 6px;border-radius:4px;font-size:11px">Ctrl+Entrée</kbd> pour valider</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" onclick="skipQuestion()"><i class="fas fa-forward"></i> Passer</button>
+                <button class="btn btn-primary" onclick="submitAnswer()"><i class="fas fa-check"></i> Valider la réponse</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback (hidden until answer submitted) -->
+        <div id="ivFeedback" style="display:none">
+          <div class="card" style="border-color:rgba(16,185,129,0.3)">
+            <div class="card-header" style="background:rgba(16,185,129,0.06)">
+              <h3><i class="fas fa-comment-dots" style="color:var(--success)"></i> Feedback du recruteur</h3>
+              <div id="ivAnswerScore" style="font-size:18px;font-weight:800"></div>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div>
+                  <p style="font-size:11px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"><i class="fas fa-thumbs-up"></i> Points forts</p>
+                  <div id="ivFeedbackPos" style="font-size:13px;color:var(--text);line-height:1.7"></div>
+                </div>
+                <div>
+                  <p style="font-size:11px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"><i class="fas fa-arrow-up"></i> À améliorer</p>
+                  <div id="ivFeedbackNeg" style="font-size:13px;color:var(--text);line-height:1.7"></div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:12px 16px;background:rgba(37,99,235,0.06);border-radius:10px">
+                <p style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:6px"><i class="fas fa-magic"></i> Exemple de réponse idéale</p>
+                <p id="ivIdealAnswer" style="font-size:12px;color:var(--text-secondary);line-height:1.7;font-style:italic"></p>
+              </div>
+              <div style="display:flex;justify-content:flex-end;margin-top:16px">
+                <button class="btn btn-primary" id="ivNextBtn" onclick="nextQuestion()"><i class="fas fa-arrow-right"></i> Question suivante</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RESULTS (hidden by default) -->
+      <div id="interviewResults" style="display:none">
+        <div class="card" style="border-color:rgba(37,99,235,0.3);margin-bottom:20px">
+          <div class="card-body" style="text-align:center;padding:40px">
+            <div style="font-size:60px;margin-bottom:8px" id="ivResultEmoji">🎉</div>
+            <h2 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:8px">Simulation terminée !</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Voici votre bilan d'entretien complet</p>
+            <div style="display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--primary),#7c3aed);padding:16px 36px;border-radius:50px;margin-bottom:32px">
+              <span style="font-size:40px;font-weight:900;color:#fff" id="ivFinalScore">0</span>
+              <div style="text-align:left"><div style="color:rgba(255,255,255,.7);font-size:12px">Score global</div><div style="color:#fff;font-size:13px;font-weight:600">sur 100</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:600px;margin:0 auto 32px">
+              <div style="background:var(--bg-input);border-radius:12px;padding:16px"><div style="font-size:24px;font-weight:800;color:var(--primary)" id="ivResTotal">0</div><div style="font-size:11px;color:var(--text-secondary)">Questions</div></div>
+              <div style="background:var(--bg-input);border-radius:12px;padding:16px"><div style="font-size:24px;font-weight:800;color:var(--success)" id="ivResGood">0</div><div style="font-size:11px;color:var(--text-secondary)">Bonnes réponses</div></div>
+              <div style="background:var(--bg-input);border-radius:12px;padding:16px"><div style="font-size:24px;font-weight:800;color:var(--warning)" id="ivResMid">0</div><div style="font-size:11px;color:var(--text-secondary)">À améliorer</div></div>
+              <div style="background:var(--bg-input);border-radius:12px;padding:16px"><div style="font-size:24px;font-weight:800;color:var(--danger)" id="ivResSkip">0</div><div style="font-size:11px;color:var(--text-secondary)">Passées</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed results -->
+        <div class="card mb-16">
+          <div class="card-header"><h3><i class="fas fa-list-check"></i> Détail par question</h3></div>
+          <div class="card-body" id="ivDetailedResults"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card mb-16">
+          <div class="card-header"><h3><i class="fas fa-star" style="color:#f59e0b"></i> Recommandations personnalisées</h3></div>
+          <div class="card-body" id="ivRecommendations"></div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn btn-secondary" onclick="exportInterviewReport()"><i class="fas fa-file-pdf"></i> Exporter le rapport</button>
+          <button class="btn btn-primary" onclick="restartInterview()"><i class="fas fa-redo"></i> Recommencer</button>
         </div>
       </div>
     </section>
