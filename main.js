@@ -2466,7 +2466,6 @@ function unlockProUI() {
   // Remove pro-locked class from all locked buttons
   document.querySelectorAll('.nav-item.pro-locked').forEach(function(btn) {
     btn.classList.remove('pro-locked');
-    // Restore original onclick based on feature name text
     const text = btn.textContent.trim();
     if (text.includes('sentation')) {
       btn.setAttribute('onclick', "showPage('present',this)");
@@ -2483,12 +2482,26 @@ function unlockProUI() {
   // Hide Pro badges on unlocked items
   document.querySelectorAll('.nav-item .pro-badge').forEach(function(b) { b.style.display = 'none'; });
 
+  // Refresh template pickers — removes lock overlays
+  renderTemplatePickers();
+  renderTemplatePickers('templateGridPreview');
+
   // Hide Pro banner
   const banner = document.querySelector('.pro-banner');
   if (banner) {
     banner.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.08))';
     banner.style.borderColor = 'rgba(16,185,129,0.25)';
     banner.innerHTML = '<div style="font-size:13px;color:var(--text)"><strong style="color:var(--success)">✅ Version Pro activée</strong> — Toutes les fonctionnalités sont débloquées !</div>';
+  }
+
+  // Update dashboard Pro button if present
+  const proBtn = document.querySelector('.btn-pro-sm');
+  if (proBtn) {
+    proBtn.style.display = 'none';
+  }
+  const proBanner = document.querySelector('.pro-banner');
+  if (proBanner) {
+    proBanner.innerHTML = '<div style="font-size:13px;color:var(--text)"><strong style="color:var(--success)">✅ Version Pro activée</strong> — Toutes les fonctionnalités sont débloquées !</div>';
   }
 }
 
@@ -2526,7 +2539,83 @@ document.addEventListener('DOMContentLoaded', function() {
   if (isProActive()) {
     setTimeout(unlockProUI, 200);
   }
+  // Toujours rendre le bloc d'activation Pro dans les paramètres
+  setTimeout(renderProActivationBlock, 300);
 });
+
+function renderProActivationBlock() {
+  var body = document.getElementById('proActivationBody');
+  if (!body) return;
+
+  if (isProActive()) {
+    body.innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:8px 0">'
+      + '<div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,.12);display:grid;place-items:center;font-size:20px;flex-shrink:0">✅</div>'
+      + '<div>'
+        + '<div style="font-weight:700;font-size:14px;color:var(--success)">Version Pro activée</div>'
+        + '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Code : <strong style="font-family:monospace">' + (localStorage.getItem('cvProCode')||'—') + '</strong></div>'
+      + '</div>'
+      + '<button onclick="deactivatePro()" style="margin-left:auto;background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)"><i class="fas fa-sign-out-alt"></i> Désactiver</button>'
+    + '</div>';
+  } else {
+    body.innerHTML = '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Entrez votre code d\'accès Pro pour débloquer les 6 templates supplémentaires, le Portfolio Web, QR Code et la Présentation.</p>'
+      + '<div style="display:flex;gap:8px">'
+        + '<input type="text" id="settingsProInput" placeholder="CVPRO-XXXX-XXXX" class="form-control" style="flex:1;text-transform:uppercase;font-family:monospace;font-size:14px;letter-spacing:1px" onkeydown="if(event.key===\'Enter\')activateProFromSettings()" />'
+        + '<button onclick="activateProFromSettings()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:var(--font)">'
+          + '<i class="fas fa-key"></i> Activer'
+        + '</button>'
+      + '</div>'
+      + '<p id="settingsProMsg" style="font-size:12px;margin-top:8px;min-height:16px;font-weight:600"></p>'
+      + '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">'
+        + '<a href="https://wa.me/22901676134?text=Bonjour%2C%20je%20veux%20la%20version%20Pro%20de%20CV%20Generator%20Pro%20(3500%20FCFA)" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(37,211,102,.12);color:#4ade80;border:1px solid rgba(37,211,102,.2);padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">'
+          + '<i class="fab fa-whatsapp" style="font-size:16px"></i> Obtenir un code — 3 500 FCFA'
+        + '</a>'
+      + '</div>';
+  }
+}
+
+function activateProFromSettings() {
+  var inp = document.getElementById('settingsProInput');
+  var msg = document.getElementById('settingsProMsg');
+  if (!inp) return;
+  var code = inp.value.trim().toUpperCase();
+  if (!code) { if(msg) msg.style.color='var(--warning)'; if(msg) msg.textContent='Entrez votre code.'; return; }
+
+  var btn = inp.nextElementSibling;
+  if (btn) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'; }
+
+  setTimeout(function() {
+    try {
+      var hash = sha256(code);
+      if (PRO_CODES.includes(hash)) {
+        localStorage.setItem('cvProActivated','true');
+        localStorage.setItem('cvProCode', code);
+        if (msg) { msg.style.color='var(--success)'; msg.textContent='✅ Code valide ! Pro activé.'; }
+        setTimeout(function() {
+          unlockProUI();
+          renderProActivationBlock();
+          showToast('🎉 Version Pro activée ! Tous les templates sont débloqués.', 'success');
+          showPage('builder', document.querySelector('[data-page="builder"]'));
+        }, 900);
+      } else {
+        if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-key"></i> Activer'; }
+        if (msg) { msg.style.color='var(--danger)'; msg.textContent='❌ Code invalide. Vérifiez et réessayez.'; }
+        inp.value=''; inp.focus();
+      }
+    } catch(e) {
+      if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-key"></i> Activer'; }
+    }
+  }, 400);
+}
+
+function deactivatePro() {
+  if (!confirm('Désactiver la version Pro ? Vous devrez réentrer votre code pour la réactiver.')) return;
+  localStorage.removeItem('cvProActivated');
+  localStorage.removeItem('cvProCode');
+  renderProActivationBlock();
+  renderTemplatePickers();
+  showToast('Version Pro désactivée', 'info');
+  location.reload();
+}
 
 /* ==========================================================
    TEMPLATES 5-10 — Build functions
