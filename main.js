@@ -994,15 +994,21 @@ function exportPDF() {
   const getHref = function(sel) { const el = document.querySelector(sel); return el ? el.href : ''; };
   win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CV — ' + esc(cvData.name||'Mon CV') + '</title>' +
     '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">' +
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">' +
-    '<link rel="stylesheet" href="' + getHref('link[href*="template1"]') + '">' +
-    '<link rel="stylesheet" href="' + getHref('link[href*="template2"]') + '">' +
-    '<link rel="stylesheet" href="' + getHref('link[href*="template3"]') + '">' +
-    '<link rel="stylesheet" href="' + getHref('link[href*="template4"]') + '">' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template1.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template2.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template3.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template4.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template5.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template6.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template7.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template8.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template9.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template10.css"]') + '">' +
     '<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff}@page{size:A4;margin:0}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>' +
     '</head><body>' + html + '</body></html>');
   win.document.close();
-  win.onload = function() { setTimeout(function() { win.print(); }, 500); };
+  win.onload = function() { setTimeout(function() { win.print(); }, 600); };
   showToast('Fenêtre d\'impression ouverte', 'info');
 }
 
@@ -2509,18 +2515,18 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Helper: build common blocks */
 function buildExpItems(exps, cls) {
   return (exps||[]).map(function(e) {
-    return '<div class="' + cls + '-experience-item">' +
+    return '<div class="cv-experience-item">' +
       (cls === 'cv-template-6' ?
         '<div class="cv-timeline-dot"></div>' +
         '<div class="cv-exp-body"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
         '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
         '<p class="cv-exp-date">'+esc(e.date)+'</p>' +
         '<p class="cv-exp-desc">'+esc(e.desc)+'</p></div>'
-      : cls === 'cv-template-8' ?
-        '<div class="cv-exp-header"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
-        '<span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
+      : cls === 'cv-template-5' ?
+        '<div class="cv-exp-date">'+esc(e.date)+'</div>' +
+        '<div class="cv-exp-body"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
         '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
-        '<p class="cv-exp-desc">'+esc(e.desc)+'</p>'
+        '<p class="cv-exp-desc">'+esc(e.desc)+'</p></div>'
       :
         '<div class="cv-exp-header"><p class="cv-exp-title">'+esc(e.role)+'</p>' +
         '<span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
