@@ -1050,6 +1050,26 @@ function importJSON(event) {
 /* ----------------------------------------------------------
    COPY TO CLIPBOARD
    ---------------------------------------------------------- */
+/* ----------------------------------------------------------
+   SHARE
+   ---------------------------------------------------------- */
+function shareApp() {
+  const url  = 'https://thibautaffohoyochi-collab.github.io/cv-generator/';
+  const text = '🎯 CV Generator Pro — Créez votre CV professionnel gratuitement en minutes. 10 templates, export PDF, simulation d\'entretien et bien plus !';
+  if (navigator.share) {
+    navigator.share({ title: 'CV Generator Pro', text: text, url: url })
+      .then(function() { showToast('Merci d\'avoir partagé !', 'success'); })
+      .catch(function() {});
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      showToast('Lien copié ! Partagez-le autour de vous 🙌', 'success');
+    });
+  }
+}
+
+/* ----------------------------------------------------------
+   COPY TO CLIPBOARD
+   ---------------------------------------------------------- */
 function copyToClipboard() {
   let text = (cvData.name||'') + '\n' + (cvData.title||'') + '\n' +
     [cvData.email, cvData.phone, cvData.address].filter(Boolean).join(' | ') + '\n\n';

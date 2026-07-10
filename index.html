@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="CV Generator Pro — Créez votre CV professionnel en ligne gratuitement. 10 templates, export PDF, lettre de motivation, traduction anglais et bien plus." />
-  <meta name="keywords" content="CV, curriculum vitae, générateur CV, créer CV en ligne, CV professionnel, Bénin, Afrique" />
-  <meta property="og:title" content="CV Generator Pro" />
-  <meta property="og:description" content="Créez votre CV professionnel en quelques minutes. Gratuit, sans inscription." />
+  <meta name="keywords" content="CV, curriculum vitae, générateur CV, créer CV en ligne, CV professionnel, Bénin, Afrique, gratuit" />
+  <meta property="og:title" content="CV Generator Pro — Créer son CV gratuitement" />
+  <meta property="og:description" content="10 templates · Export PDF · Score CV · Simulation d'entretien · Lettre de motivation · 100% gratuit, sans inscription." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://thibautaffohoyochi-collab.github.io/cv-generator/" />
+  <meta property="og:image" content="https://thibautaffohoyochi-collab.github.io/cv-generator/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CV Generator Pro" />
+  <meta name="twitter:description" content="Créez votre CV professionnel gratuitement. 10 templates, export PDF, simulation d'entretien." />
+  <meta name="theme-color" content="#0071e3" />
+  <link rel="canonical" href="https://thibautaffohoyochi-collab.github.io/cv-generator/" />
   <title>CV Generator Pro — Créez votre CV professionnel gratuitement</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -367,6 +375,63 @@
     .faq-a { font-size: 14px; color: var(--text3); line-height: 1.75; padding: 0 36px 18px 0; display: none; }
     .faq-item.open .faq-a { display: block; }
 
+    /* ── PRIX ── */
+    .prix-section { padding: 100px 22px; background: var(--bg3); }
+    .prix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; margin: 52px auto 0; }
+    .prix-card {
+      background: #fff; border-radius: var(--radius-lg); padding: 40px 36px;
+      border: 0.5px solid var(--border2); position: relative;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .prix-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+    .prix-card-pro {
+      background: var(--text); color: #fff;
+      border-color: transparent;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+    }
+    .prix-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; padding: 4px 12px;
+      border-radius: 20px; margin-bottom: 24px;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    .prix-badge-free { background: rgba(0,113,227,.08); color: var(--blue); }
+    .prix-badge-pro { background: rgba(255,159,10,.15); color: #ff9f0a; }
+    .prix-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .prix-card-pro .prix-name { color: #fff; }
+    .prix-price { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 6px; color: var(--text); }
+    .prix-card-pro .prix-price { color: #fff; }
+    .prix-price-note { font-size: 13px; color: var(--text4); margin-bottom: 28px; }
+    .prix-card-pro .prix-price-note { color: rgba(255,255,255,0.5); }
+    .prix-features { list-style: none; margin-bottom: 32px; display: flex; flex-direction: column; gap: 12px; }
+    .prix-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text2); }
+    .prix-card-pro .prix-features li { color: rgba(255,255,255,0.8); }
+    .prix-features li i { font-size: 13px; flex-shrink: 0; }
+    .prix-features li .ok { color: #34c759; }
+    .prix-features li .no { color: var(--text4); opacity: .5; }
+    .prix-btn-free {
+      display: block; text-align: center; padding: 13px; border-radius: 980px;
+      font-size: 15px; font-weight: 500; background: var(--bg2);
+      color: var(--blue); border: 0.5px solid var(--border2);
+      transition: background .15s;
+    }
+    .prix-btn-free:hover { background: rgba(0,113,227,0.06); }
+    .prix-btn-pro {
+      display: block; text-align: center; padding: 13px; border-radius: 980px;
+      font-size: 15px; font-weight: 600; background: #fff; color: var(--text);
+      transition: opacity .15s;
+    }
+    .prix-btn-pro:hover { opacity: .9; }
+    .prix-popular {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: #ff9f0a; color: #fff; font-size: 11px; font-weight: 700;
+      padding: 4px 16px; border-radius: 20px; white-space: nowrap;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    @media(max-width: 640px) {
+      .prix-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── CTA ── */
     .cta-section { padding: 100px 22px; text-align: center; }
     .cta-box {
@@ -443,7 +508,7 @@
     <a href="#features" class="nav-link">Fonctionnalités</a>
     <a href="#templates" class="nav-link">Templates</a>
     <a href="#interview" class="nav-link">Entretien</a>
-    <a href="#testimonials" class="nav-link">Avis</a>
+    <a href="#prix" class="nav-link">Tarifs</a>
     <a href="#faq" class="nav-link">FAQ</a>
   </div>
   <a href="app.html" class="nav-cta">Créer mon CV</a>
@@ -455,7 +520,7 @@
   <a href="#features" class="mob-link" onclick="closeMobileNav()">Fonctionnalités</a>
   <a href="#templates" class="mob-link" onclick="closeMobileNav()">Templates</a>
   <a href="#interview" class="mob-link" onclick="closeMobileNav()">Entretien</a>
-  <a href="#testimonials" class="mob-link" onclick="closeMobileNav()">Avis</a>
+  <a href="#prix" class="mob-link" onclick="closeMobileNav()">Tarifs</a>
   <a href="#faq" class="mob-link" onclick="closeMobileNav()">FAQ</a>
   <a href="app.html" class="mob-cta">Créer mon CV — Gratuit</a>
 </div>
@@ -848,6 +913,70 @@
         <div class="faq-a">Oui ! La fonctionnalité "Mes profils CV" vous permet de sauvegarder jusqu'à 10 versions différentes — un par secteur, un en français, un en anglais, etc. Passez d'un profil à l'autre en un clic.</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- PRIX -->
+<section id="prix" class="prix-section">
+  <div class="section-wrap">
+    <div class="section-center">
+      <p class="eyebrow">Tarifs</p>
+      <h2 class="sec-h2">Simple et <em>transparent</em></h2>
+      <p class="sec-p center" style="margin-top:12px">Commencez gratuitement. Passez Pro quand vous êtes prêt — un seul paiement, pour toujours.</p>
+    </div>
+    <div class="prix-grid">
+
+      <!-- GRATUIT -->
+      <div class="prix-card reveal">
+        <div class="prix-badge prix-badge-free"><i class="fas fa-gift"></i> Gratuit</div>
+        <div class="prix-name">Essentiel</div>
+        <div class="prix-price">0 FCFA</div>
+        <div class="prix-price-note">Pour toujours · Sans carte bancaire</div>
+        <ul class="prix-features">
+          <li><i class="fas fa-check ok"></i> 4 templates CV professionnels</li>
+          <li><i class="fas fa-check ok"></i> Aperçu temps réel</li>
+          <li><i class="fas fa-check ok"></i> Export PDF · Word · RTF</li>
+          <li><i class="fas fa-check ok"></i> Lettre de motivation (3 styles)</li>
+          <li><i class="fas fa-check ok"></i> Score CV + recommandations</li>
+          <li><i class="fas fa-check ok"></i> Match avec offre d'emploi</li>
+          <li><i class="fas fa-check ok"></i> Traduction anglais</li>
+          <li><i class="fas fa-check ok"></i> Simulation d'entretien</li>
+          <li><i class="fas fa-check ok"></i> Posts LinkedIn (6 types)</li>
+          <li><i class="fas fa-minus no"></i> Templates Pro (6 supplémentaires)</li>
+          <li><i class="fas fa-minus no"></i> Portfolio web · QR Code</li>
+          <li><i class="fas fa-minus no"></i> Mode Présentation</li>
+        </ul>
+        <a href="app.html" class="prix-btn-free">Commencer gratuitement</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="prix-card prix-card-pro reveal">
+        <div class="prix-popular">⭐ Recommandé</div>
+        <div class="prix-badge prix-badge-pro"><i class="fas fa-crown"></i> Pro</div>
+        <div class="prix-name">Pro</div>
+        <div class="prix-price">3 500 <span style="font-size:1.2rem;font-weight:500">FCFA</span></div>
+        <div class="prix-price-note">Paiement unique · Pas d'abonnement</div>
+        <ul class="prix-features">
+          <li><i class="fas fa-check ok"></i> Tout le plan Essentiel inclus</li>
+          <li><i class="fas fa-check ok"></i> 6 templates Pro exclusifs</li>
+          <li><i class="fas fa-check ok"></i> Executive · Timeline · Élégant</li>
+          <li><i class="fas fa-check ok"></i> Colorblock · Compact · Gradient Pro</li>
+          <li><i class="fas fa-check ok"></i> Portfolio web exportable (HTML)</li>
+          <li><i class="fas fa-check ok"></i> QR Code de contact</li>
+          <li><i class="fas fa-check ok"></i> Mode Présentation plein écran</li>
+          <li><i class="fas fa-check ok"></i> Code d'activation permanent</li>
+          <li><i class="fas fa-check ok"></i> Toutes les futures fonctions Pro</li>
+          <li><i class="fas fa-check ok"></i> Support WhatsApp prioritaire</li>
+        </ul>
+        <a href="https://wa.me/22901676134?text=Bonjour%2C%20je%20veux%20activer%20la%20version%20Pro%20de%20CV%20Generator%20Pro%20%E2%80%94%203%20500%20FCFA" target="_blank" class="prix-btn-pro">
+          <i class="fab fa-whatsapp" style="color:#34c759;margin-right:6px"></i> Obtenir via WhatsApp
+        </a>
+      </div>
+
+    </div>
+    <p style="text-align:center;font-size:12px;color:var(--text4);margin-top:24px">
+      Paiement Mobile Money (MTN, Moov, Wave) · Livraison du code en moins de 30 minutes
+    </p>
   </div>
 </section>
 
