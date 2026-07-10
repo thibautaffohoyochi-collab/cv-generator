@@ -55,6 +55,70 @@
     /* ── CROP MODAL ── */
     #cropContainer { touch-action: none; }
     #cropContainer:active { cursor: grabbing; }
+
+    /* ── PRO SYSTEM ── */
+    .pro-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff; font-size: 9px; font-weight: 800;
+      padding: 2px 7px; border-radius: 20px; letter-spacing: 0.5px;
+      margin-left: auto; text-transform: uppercase;
+    }
+    .nav-item.pro-locked { opacity: 0.75; }
+    .nav-item.pro-locked:hover { background: rgba(245,158,11,0.1) !important; color: var(--text-sidebar) !important; }
+
+    .pro-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .pro-overlay.hidden { display: none; }
+    .pro-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 40px 44px; max-width: 480px; width: 90%;
+      text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+      animation: modalIn 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .pro-card .pro-icon {
+      width: 72px; height: 72px; border-radius: 20px; margin: 0 auto 20px;
+      background: linear-gradient(135deg,#f59e0b,#d97706);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; box-shadow: 0 8px 24px rgba(245,158,11,0.35);
+    }
+    .pro-card h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .pro-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7; }
+    .pro-features { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 28px; text-align: left; }
+    .pro-feat { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); padding: 8px 12px; background: var(--bg-input); border-radius: 8px; }
+    .pro-feat i { color: #f59e0b; font-size: 13px; flex-shrink: 0; }
+    .pro-price { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+    .pro-price span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+    .btn-pro {
+      width: 100%; padding: 14px; border-radius: 50px; font-size: 15px; font-weight: 700;
+      background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 6px 20px rgba(245,158,11,0.35); transition: all 0.2s; margin-bottom: 12px;
+    }
+    .btn-pro:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(245,158,11,0.5); }
+    .btn-pro-close { background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; text-decoration: underline; }
+    .btn-pro-close:hover { color: var(--text); }
+
+    /* Pro banner in dashboard */
+    .pro-banner {
+      background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.08));
+      border: 1px solid rgba(245,158,11,0.25); border-radius: 14px;
+      padding: 16px 20px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .pro-banner-text { font-size: 13px; color: var(--text); }
+    .pro-banner-text strong { color: #f59e0b; }
+    .btn-pro-sm {
+      background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff;
+      border: none; padding: 8px 18px; border-radius: 50px; font-size: 12px;
+      font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .btn-pro-sm:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(245,158,11,0.4); }
   </style>
 </head>
 <body>
@@ -107,14 +171,14 @@
       <button class="nav-item" data-page="export" onclick="showPage('export',this)">
         <i class="fas fa-download"></i> Exporter
       </button>
-      <button class="nav-item" data-page="present" onclick="showPage('present',this)">
-        <i class="fas fa-tv"></i> Présentation
+      <button class="nav-item pro-locked" onclick="requirePro('Mode Présentation')">
+        <i class="fas fa-tv"></i> Présentation <span class="pro-badge"><i class="fas fa-crown"></i> PRO</span>
       </button>
-      <button class="nav-item" data-page="portfolio" onclick="showPage('portfolio',this)">
-        <i class="fas fa-globe"></i> Portfolio Web
+      <button class="nav-item pro-locked" onclick="requirePro('Portfolio Web')">
+        <i class="fas fa-globe"></i> Portfolio Web <span class="pro-badge"><i class="fas fa-crown"></i> PRO</span>
       </button>
-      <button class="nav-item" data-page="qrcode" onclick="showPage('qrcode',this)">
-        <i class="fas fa-qrcode"></i> QR Code
+      <button class="nav-item pro-locked" onclick="requirePro('QR Code')">
+        <i class="fas fa-qrcode"></i> QR Code <span class="pro-badge"><i class="fas fa-crown"></i> PRO</span>
       </button>
       <button class="nav-item" data-page="history" onclick="showPage('history',this)">
         <i class="fas fa-history"></i> Historique
@@ -187,6 +251,16 @@
           </div>
         </div>
         <img src="https://illustrations.popsy.co/amber/designer.svg" alt="" style="height:120px;opacity:.85" onerror="this.style.display='none'">
+      </div>
+
+      <!-- Pro banner -->
+      <div class="pro-banner">
+        <div class="pro-banner-text">
+          <strong>👑 CV Generator Pro</strong> — Débloquez la Présentation, Portfolio Web, QR Code, Posts LinkedIn et plus encore.
+        </div>
+        <button class="btn-pro-sm" onclick="requirePro('Version Pro complète')">
+          <i class="fas fa-crown"></i> Passer en Pro
+        </button>
       </div>
 
       <!-- Stats row -->
@@ -1102,6 +1176,32 @@ Création vidéo IA — Dolphgroup Academy</textarea>
   </div>
 </div>
 <div id="print-zone" style="display:none"></div>
+
+<!-- ════ PRO MODAL ════ -->
+<div class="pro-overlay hidden" id="proModal">
+  <div class="pro-card">
+    <div class="pro-icon">👑</div>
+    <h2>Fonctionnalité <span style="background:linear-gradient(135deg,#f59e0b,#d97706);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Pro</span></h2>
+    <p id="proModalDesc">Cette fonctionnalité est disponible dans la version Pro. Accédez à tout l'outil sans restriction.</p>
+    <div class="pro-features">
+      <div class="pro-feat"><i class="fas fa-tv"></i> Mode Présentation</div>
+      <div class="pro-feat"><i class="fas fa-globe"></i> Portfolio Web</div>
+      <div class="pro-feat"><i class="fas fa-qrcode"></i> QR Code contact</div>
+      <div class="pro-feat"><i class="fas fa-language"></i> Traduction EN</div>
+      <div class="pro-feat"><i class="fas fa-file-word"></i> Export Word/RTF</div>
+      <div class="pro-feat"><i class="fab fa-linkedin"></i> Posts LinkedIn</div>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:6px">Accès à vie — paiement unique</p>
+    <p style="font-size:32px;font-weight:900;color:#f59e0b;margin-bottom:24px;letter-spacing:-1px">15 000 FCFA</p>
+    <a href="https://wa.me/22901676134?text=Bonjour%20Thibaut%2C%20je%20veux%20la%20version%20Pro%20de%20CV%20Generator%20Pro%20!" target="_blank" style="text-decoration:none">
+      <button class="btn-pro"><i class="fab fa-whatsapp" style="font-size:18px"></i> Contacter sur WhatsApp</button>
+    </a>
+    <a href="mailto:thibautaffohoyochi@gmail.com?subject=CV Generator Pro - Version Pro&body=Bonjour Thibaut, je souhaite obtenir la version Pro !" style="text-decoration:none">
+      <button class="btn-pro" style="background:linear-gradient(135deg,#2563EB,#1d4ed8);box-shadow:0 6px 20px rgba(37,99,235,.35);margin-bottom:16px"><i class="fas fa-envelope"></i> Contacter par Email</button>
+    </a>
+    <button class="btn-pro-close" onclick="document.getElementById('proModal').classList.add('hidden')">Continuer avec la version gratuite</button>
+  </div>
+</div>
 
 <!-- ════ TOAST CONTAINER ════ -->
 <div class="toast-container" id="toastContainer"></div>

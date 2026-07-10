@@ -2243,3 +2243,17 @@ function closeCropModal() {
   const c = document.getElementById('cropContainer');
   if (c) c._cropEventsAttached = false;
 }
+
+/* ==========================================================
+   FREEMIUM — Pro System
+   ========================================================== */
+function requirePro(featureName) {
+  const modal = document.getElementById('proModal');
+  const desc  = document.getElementById('proModalDesc');
+  if (!modal) return;
+  if (desc) {
+    desc.textContent = '"' + featureName + '" est disponible dans la version Pro. ' +
+      'Contactez Thibaut pour obtenir un accès complet sans restriction.';
+  }
+  modal.classList.remove('hidden');
+}
