@@ -2257,3 +2257,154 @@ function requirePro(featureName) {
   }
   modal.classList.remove('hidden');
 }
+
+/* ==========================================================
+   PRO ACCESS — Code System
+   SHA-256 hashes of valid Pro codes
+   DO NOT share these codes — give one per paying client
+   ========================================================== */
+const PRO_CODES = [
+  '5b8670fd32741572a146049b0b2133fa29c8dc88a1062668c1a255512c439c1b',
+  '11bc0bfcf79f87957966f305fdfcf4ede249662a406247731d264242c9b843f4',
+  '5f40accbc12229da3ec8fe02c854227da0952ccec0592b32a3265524cde657e2',
+  '8fc832a2858665d4b7a62e16582a2c7e050a5f8899e22de077ab4b91c5bdc727',
+  '721cc11828b7edc44db791e61923da0ef06f92ee2db426574c018c850ed6f2d3',
+  '1c75128b3d532b94a089c129cd56db7c203d44f42e356bb1ccebd8ed5010f94f',
+  '264d04e59e7f37bb066ff0876814f4ad785733a35fbfaca5bd5a5253242f60bf',
+  'cb97ce90728a8eb93e23a8565ba67c7d625a34c72b8f9827d1bf959c8b10baf4',
+  '194fcdeee3f8138e7e238c80332f2f1e14710093d073fbacb094d53faf980cc1',
+  '6c82183806cad8cccdd77562ca1326a194650e0eb019d67124f8f734acde1d5e',
+  '0f21284c56110d767281993d4a25a325f34f2dfd852f08fc9124e327963c30c4',
+  '7bfc111ef0c240e6f57460bc13e89a097cacb05ad26d4c322610892e10f9424f',
+  '13b37f0ceb18b81cc75553f343fbe721cc57bfd159290ebdc42fe04eaf942a6d',
+  '708d8bce9bf3b4fe60d1817636b874e04de8a0fe93307b9228f4237f472823cd',
+  'c2ba3f95dcdd910a283b0a7d71f6bef83c99e97e8514f91010614d13863bb6aa',
+  '5c33f97ccaed4dbdc14a7cf81f7f953dbbec548cb3537a6e1725476f222f762c',
+  '1a13da7430aae264367d5fbd559655a92329565ba3e89eb39ec745a4fa0e0c70',
+  '5b0ce808c1aca9b386dd8be37be615f38750868543c2ad79abe9e6bc9f33e9a7',
+  '7e93bb2c058dc79b09f34643da8a8fbea639911c3028f6ad2cf9b5ff6cd79d75',
+  '950345271af856c4474a69eebc30c79b9afd0b8bc5cab9555d8dd02a0e37863e'
+];
+
+/* Check if Pro is already activated */
+function isProActive() {
+  return localStorage.getItem('cvProActivated') === 'true';
+}
+
+/* Hash a string using SubtleCrypto (async) */
+async function hashString(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str.trim().toUpperCase());
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* Activate Pro with a code */
+async function activateProCode() {
+  const input = document.getElementById('proCodeInput');
+  const btn   = document.getElementById('proCodeBtn');
+  const msg   = document.getElementById('proCodeMsg');
+  if (!input || !msg) return;
+
+  const code = input.value.trim().toUpperCase();
+  if (!code) { msg.textContent = 'Entrez votre code d\'accès.'; msg.style.color = 'var(--warning)'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+  msg.textContent = '';
+
+  try {
+    const hash = await hashString(code);
+    if (PRO_CODES.includes(hash)) {
+      localStorage.setItem('cvProActivated', 'true');
+      localStorage.setItem('cvProCode', code);
+      msg.textContent = '✅ Code valide ! Accès Pro activé.';
+      msg.style.color = 'var(--success)';
+      btn.innerHTML = '<i class="fas fa-check"></i> Activé !';
+
+      setTimeout(function() {
+        document.getElementById('proModal').classList.add('hidden');
+        unlockProUI();
+        showToast('🎉 Version Pro activée ! Toutes les fonctionnalités sont débloquées.', 'success');
+      }, 1200);
+    } else {
+      msg.textContent = '❌ Code invalide. Vérifiez et réessayez.';
+      msg.style.color = 'var(--danger)';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-key"></i> Activer';
+    }
+  } catch(e) {
+    msg.textContent = 'Erreur de vérification. Réessayez.';
+    msg.style.color = 'var(--danger)';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-key"></i> Activer';
+  }
+}
+
+/* Unlock Pro UI elements */
+function unlockProUI() {
+  // Remove pro-locked class from all locked buttons
+  document.querySelectorAll('.nav-item.pro-locked').forEach(function(btn) {
+    btn.classList.remove('pro-locked');
+    // Restore original onclick based on feature name text
+    const text = btn.textContent.trim();
+    if (text.includes('sentation')) {
+      btn.setAttribute('onclick', "showPage('present',this)");
+      btn.setAttribute('data-page', 'present');
+    } else if (text.includes('Portfolio')) {
+      btn.setAttribute('onclick', "showPage('portfolio',this)");
+      btn.setAttribute('data-page', 'portfolio');
+    } else if (text.includes('QR')) {
+      btn.setAttribute('onclick', "showPage('qrcode',this)");
+      btn.setAttribute('data-page', 'qrcode');
+    }
+  });
+
+  // Hide Pro badges on unlocked items
+  document.querySelectorAll('.nav-item .pro-badge').forEach(function(b) { b.style.display = 'none'; });
+
+  // Hide Pro banner
+  const banner = document.querySelector('.pro-banner');
+  if (banner) {
+    banner.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.08))';
+    banner.style.borderColor = 'rgba(16,185,129,0.25)';
+    banner.innerHTML = '<div style="font-size:13px;color:var(--text)"><strong style="color:var(--success)">✅ Version Pro activée</strong> — Toutes les fonctionnalités sont débloquées !</div>';
+  }
+}
+
+/* Override requirePro to check activation first */
+function requirePro(featureName) {
+  if (isProActive()) {
+    // Already pro — just navigate to the right page
+    const pageMap = {
+      'Mode Présentation': 'present',
+      'Portfolio Web': 'portfolio',
+      'QR Code': 'qrcode'
+    };
+    const pageId = pageMap[featureName];
+    if (pageId) showPage(pageId, null);
+    return;
+  }
+
+  const modal = document.getElementById('proModal');
+  const desc  = document.getElementById('proModalDesc');
+  if (!modal) return;
+  if (desc) {
+    desc.textContent = '"' + featureName + '" est disponible dans la version Pro. Entrez votre code ci-dessous ou contactez Thibaut pour l\'obtenir.';
+  }
+  modal.classList.remove('hidden');
+
+  // Focus the code input
+  setTimeout(function() {
+    const inp = document.getElementById('proCodeInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+/* Init Pro on load */
+document.addEventListener('DOMContentLoaded', function() {
+  if (isProActive()) {
+    setTimeout(unlockProUI, 200);
+  }
+});

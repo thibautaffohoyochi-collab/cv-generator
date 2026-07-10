@@ -1192,11 +1192,36 @@ Création vidéo IA — Dolphgroup Academy</textarea>
       <div class="pro-feat"><i class="fab fa-linkedin"></i> Posts LinkedIn</div>
     </div>
     <p style="font-size:13px;color:var(--text-secondary);margin-bottom:6px">Accès à vie — paiement unique</p>
-    <p style="font-size:32px;font-weight:900;color:#f59e0b;margin-bottom:24px;letter-spacing:-1px">3 500 FCFA</p>
-    <a href="https://wa.me/22901676134?text=Bonjour%20Thibaut%2C%20je%20veux%20la%20version%20Pro%20de%20CV%20Generator%20Pro%20!" target="_blank" style="text-decoration:none">
-      <button class="btn-pro"><i class="fab fa-whatsapp" style="font-size:18px"></i> Contacter sur WhatsApp</button>
+    <p style="font-size:32px;font-weight:900;color:#f59e0b;margin-bottom:20px;letter-spacing:-1px">3 500 FCFA</p>
+
+    <!-- Code activation section -->
+    <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px">
+      <p style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+        <i class="fas fa-key" style="color:#f59e0b"></i> Vous avez déjà un code d'accès ?
+      </p>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="proCodeInput" placeholder="CVPRO-XXXX-XXXX"
+          style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-card);color:var(--text);font-family:'Inter',sans-serif;outline:none;text-transform:uppercase"
+          onfocus="this.style.borderColor='#f59e0b'" onblur="this.style.borderColor='var(--border)'"
+          onkeydown="if(event.key==='Enter')activateProCode()" />
+        <button id="proCodeBtn" onclick="activateProCode()"
+          style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
+          <i class="fas fa-key"></i> Activer
+        </button>
+      </div>
+      <p id="proCodeMsg" style="font-size:12px;margin-top:8px;min-height:16px;font-weight:600"></p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:11px;color:var(--text-muted);font-weight:600">OU OBTENIR UN CODE</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+
+    <a href="https://wa.me/22901676134?text=Bonjour%20Thibaut%2C%20je%20veux%20la%20version%20Pro%20de%20CV%20Generator%20Pro%20(3500%20FCFA)%20!" target="_blank" style="text-decoration:none">
+      <button class="btn-pro"><i class="fab fa-whatsapp" style="font-size:18px"></i> Payer & obtenir mon code — WhatsApp</button>
     </a>
-    <a href="mailto:thibautaffohoyochi@gmail.com?subject=CV Generator Pro - Version Pro&body=Bonjour Thibaut, je souhaite obtenir la version Pro !" style="text-decoration:none">
+    <a href="mailto:thibautaffohoyochi@gmail.com?subject=CV Generator Pro - Code accès Pro&body=Bonjour Thibaut, je souhaite payer 3500 FCFA pour obtenir un code d'accès Pro !" style="text-decoration:none">
       <button class="btn-pro" style="background:linear-gradient(135deg,#2563EB,#1d4ed8);box-shadow:0 6px 20px rgba(37,99,235,.35);margin-bottom:16px"><i class="fas fa-envelope"></i> Contacter par Email</button>
     </a>
     <button class="btn-pro-close" onclick="document.getElementById('proModal').classList.add('hidden')">Continuer avec la version gratuite</button>
