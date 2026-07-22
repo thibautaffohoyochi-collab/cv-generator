@@ -1953,106 +1953,238 @@ function parseImportedCV() {
   const raw = document.getElementById('importCvText')?.value?.trim() || '';
   if (raw.length < 20) { showToast('Collez d\'abord le texte de votre CV', 'error'); return; }
 
-  const lines = raw.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
-  const result = { name:'',title:'',email:'',phone:'',address:'',linkedin:'',portfolio:'',profile:'',experiences:[],education:[],certifications:[],skills:[],tools:[],languages:[],interests:[],references:[] };
+  const btn = document.getElementById('importAnalyzeBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse en cours...'; }
 
+  const lines = raw.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+  const result = { name:'',title:'',email:'',phone:'',address:'',linkedin:'',portfolio:'',profile:'',
+    experiences:[],education:[],certifications:[],skills:[],tools:[],languages:[],interests:[],references:[] };
+
+  /* Extraction contacts */
   const emailMatch = raw.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i);
   if (emailMatch) result.email = emailMatch[0];
   const phoneMatch = raw.match(/\+?[\d\s\-().]{8,20}/);
   if (phoneMatch) result.phone = phoneMatch[0].trim();
   const liMatch = raw.match(/linkedin\.com\/in\/[\w-]+/i);
   if (liMatch) result.linkedin = 'https://' + liMatch[0];
+  const portMatch = raw.match(/(?:https?:\/\/)?(?:www\.)?[\w-]+\.[\w.-]+\/[\w-]*/i);
+  if (portMatch && !portMatch[0].includes('linkedin')) result.portfolio = portMatch[0];
 
+  /* Nom (premières lignes sans email/téléphone) */
   for (let i = 0; i < Math.min(5, lines.length); i++) {
     const l = lines[i];
-    if (!l.includes('@') && !l.match(/\d{4}/) && l.split(' ').length <= 5 && l.length>3 && l.length<50) { result.name = l; break; }
+    if (!l.includes('@') && !l.match(/^\+?\d/) && l.split(' ').length <= 5 && l.length>3 && l.length<50 && !/http|www/i.test(l)) {
+      result.name = l; break;
+    }
   }
 
+  /* Titre (ligne après le nom) */
   const nameIdx = lines.findIndex(function(l){return l===result.name;});
   if (nameIdx>=0 && nameIdx+1<lines.length) {
     const next = lines[nameIdx+1];
-    if (!next.includes('@') && next.length>3 && next.length<80 && !next.match(/^\d/)) result.title = next;
+    if (!next.includes('@') && next.length>3 && next.length<80 && !next.match(/^\d/) && !/http/i.test(next)) result.title = next;
   }
 
-  const addrMatch = raw.match(/(?:Cotonou|Bénin|Benin|Paris|Dakar|Abidjan|France|Canada|Cameroun)[^,\n]*/i);
+  /* Adresse */
+  const addrMatch = raw.match(/(?:Cotonou|Bénin|Benin|Paris|Dakar|Abidjan|France|Canada|Cameroun|Lomé|Accra|Lagos|Abuja|Bruxelles|Montréal|Québec)[^,\n]*/i);
   if (addrMatch) result.address = addrMatch[0].trim();
 
-  const SECS = { profile:['profil','résumé','summary','about','presentation'], exp:['expérience','experience','emploi','poste','professional'], edu:['formation','education','diplôme','études'], cert:['certification','attestation'], skills:['compétence','competence','skill'], tools:['outil','logiciel','software','adobe','canva'], langs:['langue','language'], interests:['intérêt','interest','loisir','hobby'], refs:['référence','reference'] };
-  let curSec = 'none', secBuf = [], sections = {};
+  /* Détection des sections */
+  const SECS = {
+    profile:['profil','résumé','summary','about','presentation','objective','à propos'],
+    exp:['expérience','experience','emploi','poste','professional','parcours professionnel','historique'],
+    edu:['formation','education','diplôme','études','academic','scolaire','universitaire'],
+    cert:['certification','attestation','licence','certificate'],
+    skills:['compétence','competence','skill','savoir-faire'],
+    tools:['outil','logiciel','software','adobe','canva','stack','technologie','technique'],
+    langs:['langue','language'],
+    interests:['intérêt','interest','loisir','hobby','passion'],
+    refs:['référence','reference']
+  };
+
+  let curSec = 'header', secBuf = [], sections = { header:[] };
   lines.forEach(function(line) {
     const ll = line.toLowerCase();
     let detected = null;
     Object.entries(SECS).forEach(function(entry) {
       if (!detected && entry[1].some(function(k){return ll.includes(k)&&line.length<60;})) detected = entry[0];
     });
-    if (detected) { if (curSec!=='none') sections[curSec]=secBuf.slice(); curSec=detected; secBuf=[]; }
+    if (detected) { if (curSec) sections[curSec] = (sections[curSec]||[]).concat(secBuf); curSec = detected; secBuf = []; }
     else secBuf.push(line);
   });
-  if (curSec!=='none') sections[curSec]=secBuf.slice();
+  if (curSec) sections[curSec] = (sections[curSec]||[]).concat(secBuf);
 
-  if (sections.profile) result.profile = sections.profile.filter(function(l){return l.length>20;}).slice(0,5).join(' ').substring(0,600);
+  /* Profil */
+  if (sections.profile) result.profile = sections.profile.filter(function(l){return l.length>20;}).slice(0,8).join(' ').substring(0,700);
 
-  const KNOWN_TOOLS = ['photoshop','illustrator','indesign','canva','figma','word','excel','powerpoint','html','css','javascript','python'];
+  /* Expériences */
+  var expLines = sections.exp || [];
+  var expItem = null;
+  expLines.forEach(function(line) {
+    var dateMatch = line.match(/(\d{4})\s*[-–—à]\s*(\d{4}|présent|today|now|actuel)/i) || line.match(/^\d{4}/);
+    if (dateMatch) {
+      if (expItem && expItem.role) result.experiences.push(expItem);
+      expItem = { date: dateMatch[0], role:'', company:'', desc:'' };
+    } else if (expItem) {
+      if (!expItem.role && line.length > 2 && line.length < 80) expItem.role = line;
+      else if (!expItem.company && line.length > 2 && line.length < 80) expItem.company = line;
+      else expItem.desc += (expItem.desc?' ':'') + line;
+    }
+  });
+  if (expItem && expItem.role) result.experiences.push(expItem);
+
+  /* Formation */
+  var eduLines = sections.edu || [];
+  var eduItem = null;
+  eduLines.forEach(function(line) {
+    var dateMatch = line.match(/\d{4}/);
+    if (dateMatch && line.length < 60) {
+      if (eduItem) result.education.push(eduItem);
+      eduItem = { date: line.match(/\d{4}[-–—à\s]*\d{0,4}/)?.[0] || dateMatch[0], school:'', degree:'' };
+    } else if (eduItem) {
+      if (!eduItem.school && line.length > 2) eduItem.school = line;
+      else if (!eduItem.degree && line.length > 2) eduItem.degree = line;
+    }
+  });
+  if (eduItem && eduItem.school) result.education.push(eduItem);
+
+  /* Compétences et outils */
+  const KNOWN_TOOLS = ['photoshop','illustrator','indesign','canva','figma','word','excel','powerpoint',
+    'html','css','javascript','python','react','angular','vue','node','php','laravel','java','kotlin',
+    'swift','flutter','django','mongodb','mysql','postgresql','git','github','docker','aws','firebase',
+    'premiere','after effects','lightroom','blender','sketch','notion','trello','slack','zoom'];
+
   (sections.skills||[]).concat(sections.tools||[]).forEach(function(line) {
-    line.split(/[,;•|\n]/).map(function(i){return i.trim();}).filter(function(i){return i.length>2&&i.length<50;}).forEach(function(item) {
+    line.split(/[,;•|\n\/]/).map(function(i){return i.trim().replace(/^\W+/,'');}).filter(function(i){return i.length>2&&i.length<50;}).forEach(function(item) {
       const isT = KNOWN_TOOLS.some(function(t){return item.toLowerCase().includes(t);});
       const pct = item.match(/(\d{2,3})\s*%/);
-      if (isT) { const clean = item.replace(/\d+%/,'').trim(); if (!result.tools.includes(clean)) result.tools.push(clean); }
-      else result.skills.push({name:item.replace(/\d+%/,'').trim(), pct:pct?parseInt(pct[1]):80});
+      if (isT) {
+        const clean = item.replace(/\d+%/,'').replace(/[•\-–]/g,'').trim();
+        if (clean && !result.tools.includes(clean)) result.tools.push(clean);
+      } else {
+        const clean = item.replace(/\d+%/,'').replace(/[•\-–]/g,'').trim();
+        if (clean) result.skills.push({name:clean, pct:pct?Math.min(parseInt(pct[1]),100):80});
+      }
     });
   });
 
-  result.skills = result.skills.filter(function(s,i,a){return s.name&&a.findIndex(function(x){return x.name===s.name;})===i;}).slice(0,12);
-  result.tools  = [...new Set(result.tools.filter(function(t){return t;}))].slice(0,8);
+  result.skills = result.skills.filter(function(s,i,a){return s.name&&s.name.length>2&&a.findIndex(function(x){return x.name===s.name;})===i;}).slice(0,12);
+  result.tools  = [...new Set(result.tools.filter(function(t){return t&&t.length>1;}))].slice(0,10);
+
+  /* Langues */
+  (sections.langs||[]).forEach(function(line) {
+    var parts = line.split(/[:\-–|\/]/);
+    if (parts.length >= 1 && parts[0].trim().length > 1) {
+      result.languages.push({ name: parts[0].trim(), level: parts[1]?parts[1].trim():'', pct:70 });
+    }
+  });
 
   importedParsed = result;
   showImportResults(result);
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Analyser & Transformer'; }
 }
 
 function showImportResults(r) {
   const grid = document.getElementById('importResultsGrid'); if (!grid) return;
-  const field = function(label, value) {
-    return '<div class="import-field-row">' +
-      '<div class="import-field-label"><i class="fas fa-'+(value?'check-circle':'circle-xmark')+'" style="color:'+(value?'var(--success)':'var(--text-muted)')+'"></i> '+label+'</div>' +
-      '<div class="import-field-value '+(value?'':'empty')+'">'+(value||'Non détecté')+'</div></div>';
+
+  /* Grille des champs extraits */
+  const field = function(label, value, icon) {
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)">' +
+      '<i class="fas fa-' + (value?'check-circle':'circle-xmark') + '" style="color:'+(value?'var(--success)':'#ccc')+';margin-top:2px;font-size:13px;flex-shrink:0"></i>' +
+      '<div style="flex:1"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px">'+label+'</div>' +
+      '<div style="font-size:12px;color:'+(value?'var(--text)':'var(--text-muted)')+'">'+( value||'Non détecté')+'</div></div></div>';
   };
-  const listField = function(label, items, display) {
-    return '<div class="import-field-row"><div class="import-field-label"><i class="fas fa-'+(items.length?'check-circle':'circle-xmark')+'" style="color:'+(items.length?'var(--success)':'var(--text-muted)')+'"></i> '+label+' <span style="background:var(--primary);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:4px">'+items.length+'</span></div>' +
-      '<div class="import-field-value">'+(items.length?display(items):'<span class="empty">Non détecté</span>')+'</div></div>';
+  const countBadge = function(n, color) {
+    return '<span style="background:'+(color||'var(--primary)')+';color:#fff;font-size:10px;font-weight:700;padding:1px 8px;border-radius:10px;margin-left:6px">'+n+'</span>';
   };
-  grid.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">' +
-    field('Nom', r.name) + field('Titre', r.title) + field('Email', r.email) + field('Téléphone', r.phone) + field('Adresse', r.address) +
-    listField('Compétences', r.skills, function(items){return items.map(function(s){return '<span class="import-tag">'+s.name+'</span>';}).join('');}) +
-    listField('Outils', r.tools, function(items){return items.map(function(t){return '<span class="import-tag">'+t+'</span>';}).join('');}) +
-    field('Profil extrait', r.profile ? r.profile.substring(0,120)+'...' : '') +
-  '</div>';
+
+  grid.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">' +
+      field('Nom', r.name) + field('Titre', r.title) +
+      field('Email', r.email) + field('Téléphone', r.phone) +
+      field('Adresse', r.address) + field('LinkedIn', r.linkedin) +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px">' +
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;text-align:center">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--primary)">' + r.experiences.length + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted)">Expériences</div>' +
+      '</div>' +
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;text-align:center">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--success)">' + r.skills.length + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted)">Compétences</div>' +
+      '</div>' +
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;text-align:center">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--warning)">' + r.tools.length + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted)">Outils</div>' +
+      '</div>' +
+    '</div>';
+
+  /* Afficher étapes 2 et 3 */
   document.getElementById('importStep2').style.display = 'block';
   document.getElementById('importStep3').style.display = 'block';
-  document.getElementById('importStep2').scrollIntoView({behavior:'smooth',block:'start'});
-  showToast('Extraction terminée — ' + r.skills.length + ' compétence(s) trouvée(s)', 'success');
+
+  /* Générer l'aperçu CV */
+  updateImportPreview();
+
+  document.getElementById('importStep2').scrollIntoView({behavior:'smooth', block:'start'});
+  showToast('CV analysé — ' + r.experiences.length + ' exp · ' + r.skills.length + ' compétences · ' + r.tools.length + ' outils', 'success');
+}
+
+function updateImportPreview() {
+  if (!importedParsed) return;
+  const sel = document.getElementById('importTemplateSelect');
+  const tplId = sel ? parseInt(sel.value) : 1;
+  const previewData = Object.assign({}, DEFAULT_DATA, importedParsed, { template: tplId });
+  const html = buildCvHTML(previewData);
+  const el = document.getElementById('importCvPreview');
+  if (el) el.innerHTML = html;
 }
 
 function applyImportedCV() {
   if (!importedParsed) { showToast('Aucune donnée à appliquer', 'error'); return; }
   const r = importedParsed;
+  const sel = document.getElementById('importTemplateSelect');
+  const tplId = sel ? parseInt(sel.value) : 1;
+
   if (document.getElementById('imp-infos')?.checked) {
-    if (r.name) cvData.name = r.name; if (r.title) cvData.title = r.title;
-    if (r.email) cvData.email = r.email; if (r.phone) cvData.phone = r.phone;
-    if (r.address) cvData.address = r.address;
+    if (r.name)     cvData.name    = r.name;
+    if (r.title)    cvData.title   = r.title;
+    if (r.email)    cvData.email   = r.email;
+    if (r.phone)    cvData.phone   = r.phone;
+    if (r.address)  cvData.address = r.address;
+    if (r.linkedin) cvData.linkedin = r.linkedin;
+    if (r.portfolio) cvData.portfolio = r.portfolio;
   }
   if (document.getElementById('imp-profile')?.checked && r.profile) cvData.profile = r.profile;
+  if (document.getElementById('imp-exp')?.checked && r.experiences.length) cvData.experiences = r.experiences;
+  if (document.getElementById('imp-edu')?.checked && r.education.length)   cvData.education   = r.education;
   if (document.getElementById('imp-skills')?.checked && r.skills.length) {
     const existing = cvData.skills.map(function(s){return s.name.toLowerCase();});
     cvData.skills = cvData.skills.concat(r.skills.filter(function(s){return !existing.includes(s.name.toLowerCase());})).slice(0,12);
   }
   if (document.getElementById('imp-tools')?.checked && r.tools.length) {
     const existing = cvData.tools.map(function(t){return t.toLowerCase();});
-    cvData.tools = cvData.tools.concat(r.tools.filter(function(t){return !existing.includes(t.toLowerCase());})).slice(0,8);
+    cvData.tools = cvData.tools.concat(r.tools.filter(function(t){return !existing.includes(t.toLowerCase());})).slice(0,10);
   }
+  if (r.languages && r.languages.length) cvData.languages = r.languages;
+  cvData.template = tplId;
+
   saveData(); renderAllForms(); renderTemplatePickers(); renderColorPickers();
   updatePreview(); updateStats(); updateCompletion();
-  showToast('CV importé et appliqué ! 🎉', 'success');
+  showToast('CV transformé et appliqué ! Vous pouvez maintenant modifier les détails 🎉', 'success');
   setTimeout(function() { showPage('builder', document.querySelector('[data-page="builder"]')); }, 1200);
+}
+
+function exportImportedPDF() {
+  if (!importedParsed) { showToast('Analysez d\'abord un CV', 'error'); return; }
+  const sel = document.getElementById('importTemplateSelect');
+  const tplId = sel ? parseInt(sel.value) : 1;
+  const saved = cvData;
+  cvData = Object.assign({}, DEFAULT_DATA, importedParsed, { template: tplId });
+  exportPDF();
+  cvData = saved;
+  showToast('Export PDF en cours...', 'info');
 }
 
 function resetImport() {

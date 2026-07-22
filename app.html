@@ -1072,68 +1072,106 @@ Création vidéo IA — Dolphgroup Academy</textarea>
 
     <!-- ════ PAGE: IMPORT CV ════ -->
     <section class="page" id="page-import-cv">
-      <div class="page-hdr"><h2>Importer un ancien CV</h2><p>Glissez un fichier ou collez le texte — l'outil extrait automatiquement vos informations.</p></div>
+      <div class="page-hdr">
+        <h2><i class="fas fa-magic" style="color:var(--primary)"></i> Transformer un CV existant</h2>
+        <p>Uploadez votre ancien CV — notre outil extrait les informations et génère un CV professionnel en quelques secondes.</p>
+      </div>
 
+      <!-- ÉTAPE 1 : Upload -->
       <div class="card mb-16" id="importStep1">
         <div class="card-header">
-          <h3><i class="fas fa-file-import"></i> Chargement</h3>
-          <span style="font-size:12px;color:var(--text-secondary)">Étape 1 / 3</span>
+          <h3><i class="fas fa-cloud-upload-alt"></i> Étape 1 — Chargez votre ancien CV</h3>
+          <span style="font-size:12px;color:var(--text-secondary);background:var(--primary);color:#fff;padding:2px 10px;border-radius:20px">1 / 3</span>
         </div>
         <div class="card-body">
+
+          <!-- Zone de drop -->
           <div class="import-drop-zone" id="importDropZone"
                onclick="document.getElementById('importCvFile').click()"
                ondragover="handleImportDrag(event)"
                ondragleave="handleImportDragLeave(event)"
                ondrop="handleImportDrop(event)">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <h4>Glissez votre CV ici ou cliquez pour choisir</h4>
-            <p>Formats acceptés : <strong>.txt</strong> &nbsp;·&nbsp; <strong>.pdf</strong> &nbsp;·&nbsp; <strong>.doc / .docx</strong></p>
-            <p style="font-size:11px;color:var(--text-muted);margin-top:4px">⚠️ JSON non accepté ici — utilisez la page Exporter</p>
+            <i class="fas fa-file-arrow-up" style="font-size:48px;color:var(--primary);margin-bottom:12px;display:block"></i>
+            <h4 style="margin-bottom:6px">Glissez votre CV ici ou cliquez pour choisir</h4>
+            <p style="font-size:12px;color:var(--text-muted)">Formats acceptés : <strong>.txt</strong> &nbsp;·&nbsp; <strong>.pdf</strong> &nbsp;·&nbsp; <strong>.doc / .docx</strong></p>
             <input type="file" id="importCvFile" accept=".txt,.pdf,.doc,.docx" style="display:none" onchange="handleImportFileSelect(event)" />
           </div>
 
           <div style="display:flex;align-items:center;gap:12px;margin:16px 0">
             <div style="flex:1;height:1px;background:var(--border)"></div>
-            <span style="font-size:12px;color:var(--text-muted);font-weight:600">OU</span>
+            <span style="font-size:12px;color:var(--text-muted);font-weight:600">OU COLLEZ LE TEXTE</span>
             <div style="flex:1;height:1px;background:var(--border)"></div>
           </div>
 
           <div class="form-group">
-            <label>Coller le texte de votre CV</label>
-            <textarea class="form-control" id="importCvText" rows="10"
-              placeholder="Collez ici le contenu texte de votre ancien CV...&#10;&#10;Exemple :&#10;Jean Dupont&#10;Graphiste Designer&#10;jean@email.com | Cotonou&#10;&#10;EXPÉRIENCES&#10;2023 | Designer | Entreprise XYZ&#10;Missions..."></textarea>
+            <textarea class="form-control" id="importCvText" rows="8"
+              style="font-size:12px;font-family:monospace"
+              placeholder="Collez ici le contenu texte de votre ancien CV...&#10;&#10;Exemple :&#10;Jean Dupont&#10;Développeur Web&#10;jean@email.com | +229 01 XX XX XX | Cotonou&#10;&#10;EXPÉRIENCES&#10;2023-2024 | Développeur Front-end | Agence XYZ&#10;Développement d'interfaces React...&#10;&#10;FORMATION&#10;2019-2022 | Licence Informatique | Université d'Abomey-Calavi&#10;&#10;COMPÉTENCES&#10;HTML, CSS, JavaScript, React, Figma..."></textarea>
           </div>
           <div style="display:flex;gap:10px;justify-content:flex-end">
             <button class="btn btn-ghost" onclick="document.getElementById('importCvText').value=''"><i class="fas fa-eraser"></i> Effacer</button>
-            <button class="btn btn-primary btn-lg" onclick="parseImportedCV()"><i class="fas fa-magic"></i> Analyser et extraire</button>
+            <button class="btn btn-primary btn-lg" id="importAnalyzeBtn" onclick="parseImportedCV()">
+              <i class="fas fa-wand-magic-sparkles"></i> Analyser & Transformer
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="card mb-16" id="importStep2" style="display:none">
-        <div class="card-header">
-          <h3><i class="fas fa-check-circle" style="color:var(--success)"></i> Données extraites</h3>
-          <span style="font-size:12px;color:var(--text-secondary)">Étape 2 / 3</span>
+      <!-- ÉTAPE 2 : Résultats + choix template + aperçu -->
+      <div id="importStep2" style="display:none">
+        <div class="card mb-16">
+          <div class="card-header">
+            <h3><i class="fas fa-check-circle" style="color:var(--success)"></i> Étape 2 — Informations extraites</h3>
+            <span style="font-size:12px;background:var(--primary);color:#fff;padding:2px 10px;border-radius:20px">2 / 3</span>
+          </div>
+          <div class="card-body">
+            <div id="importResultsGrid"></div>
+          </div>
         </div>
-        <div class="card-body"><div class="import-results-grid" id="importResultsGrid"></div></div>
+
+        <!-- Choix du template + aperçu live -->
+        <div class="card mb-16">
+          <div class="card-header">
+            <h3><i class="fas fa-eye"></i> Aperçu du CV transformé</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="font-size:12px;color:var(--text-muted)">Template :</span>
+              <select id="importTemplateSelect" class="form-control" style="width:auto;padding:4px 10px;font-size:12px" onchange="updateImportPreview()">
+                <option value="1">Moderne</option>
+                <option value="2">Minimaliste</option>
+                <option value="3">Créatif</option>
+                <option value="4">Corporate</option>
+                <option value="13">Infographique</option>
+                <option value="14">Classique Élégant</option>
+                <option value="15">Tech / Dev</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;overflow:auto;background:#f5f5f7;min-height:400px;display:flex;align-items:flex-start;justify-content:center;padding:24px">
+            <div id="importCvPreview" style="transform-origin:top center;transform:scale(0.7);width:210mm;box-shadow:0 8px 40px rgba(0,0,0,0.15)"></div>
+          </div>
+        </div>
       </div>
 
+      <!-- ÉTAPE 3 : Appliquer -->
       <div class="card" id="importStep3" style="display:none">
         <div class="card-header">
-          <h3><i class="fas fa-wand-magic-sparkles"></i> Appliquer au formulaire</h3>
-          <span style="font-size:12px;color:var(--text-secondary)">Étape 3 / 3</span>
+          <h3><i class="fas fa-rocket"></i> Étape 3 — Appliquer & Exporter</h3>
+          <span style="font-size:12px;background:var(--success);color:#fff;padding:2px 10px;border-radius:20px">3 / 3</span>
         </div>
         <div class="card-body">
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Choisissez ce que vous voulez importer :</p>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Votre CV a été transformé. Choisissez ce que vous voulez importer dans l'éditeur :</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
             <label class="import-option-check"><input type="checkbox" id="imp-infos" checked /><i class="fas fa-user"></i> Informations personnelles</label>
             <label class="import-option-check"><input type="checkbox" id="imp-profile" checked /><i class="fas fa-align-left"></i> Profil / Résumé</label>
+            <label class="import-option-check"><input type="checkbox" id="imp-exp" checked /><i class="fas fa-briefcase"></i> Expériences</label>
+            <label class="import-option-check"><input type="checkbox" id="imp-edu" checked /><i class="fas fa-graduation-cap"></i> Formation</label>
             <label class="import-option-check"><input type="checkbox" id="imp-skills" checked /><i class="fas fa-star"></i> Compétences</label>
             <label class="import-option-check"><input type="checkbox" id="imp-tools" checked /><i class="fas fa-tools"></i> Outils & Logiciels</label>
           </div>
-          <div style="display:flex;gap:10px">
-            <button class="btn btn-secondary" onclick="resetImport()"><i class="fas fa-redo"></i> Recommencer</button>
-            <button class="btn btn-primary btn-lg" onclick="applyImportedCV()"><i class="fas fa-check"></i> Appliquer au formulaire CV</button>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-ghost" onclick="resetImport()"><i class="fas fa-redo"></i> Recommencer</button>
+            <button class="btn btn-success btn-lg" onclick="exportImportedPDF()"><i class="fas fa-file-pdf"></i> Exporter PDF directement</button>
+            <button class="btn btn-primary btn-lg" onclick="applyImportedCV()"><i class="fas fa-check"></i> Appliquer & Éditer dans le formulaire</button>
           </div>
         </div>
       </div>
