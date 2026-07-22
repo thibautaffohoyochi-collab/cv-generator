@@ -4,8 +4,8 @@
                Network First pour les pages HTML
    ============================================================ */
 
-const CACHE_NAME = 'cvpro-v5';
-const CACHE_STATIC = 'cvpro-static-v5';
+const CACHE_NAME = 'cvpro-v10';
+const CACHE_STATIC = 'cvpro-static-v10';
 
 /* Assets à mettre en cache immédiatement à l'installation */
 const PRECACHE_URLS = [
