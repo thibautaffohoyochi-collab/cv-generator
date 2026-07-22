@@ -79,7 +79,19 @@ const ACCENT_COLORS = [
   { hex:'#059669', name:'Vert' },
   { hex:'#dc2626', name:'Rouge' },
   { hex:'#d97706', name:'Orange' },
-  { hex:'#0891b2', name:'Cyan' }
+  { hex:'#0891b2', name:'Cyan' },
+  { hex:'#111111', name:'Noir' },
+  { hex:'#be185d', name:'Rose' },
+  { hex:'#b45309', name:'Marron' },
+  { hex:'#0369a1', name:'Bleu foncé' },
+  { hex:'linear-gradient(135deg,#667eea,#764ba2)', name:'Dégradé Violet', gradient:true },
+  { hex:'linear-gradient(135deg,#f093fb,#f5576c)', name:'Dégradé Rose', gradient:true },
+  { hex:'linear-gradient(135deg,#4facfe,#00f2fe)', name:'Dégradé Cyan', gradient:true },
+  { hex:'linear-gradient(135deg,#43e97b,#38f9d7)', name:'Dégradé Vert', gradient:true },
+  { hex:'linear-gradient(135deg,#fa709a,#fee140)', name:'Dégradé Sunset', gradient:true },
+  { hex:'linear-gradient(135deg,#30cfd0,#667eea)', name:'Dégradé Ocean', gradient:true },
+  { hex:'linear-gradient(135deg,#f7971e,#ffd200)', name:'Dégradé Gold', gradient:true },
+  { hex:'linear-gradient(135deg,#a18cd1,#fbc2eb)', name:'Dégradé Lavande', gradient:true }
 ];
 
 const TEMPLATES = [
@@ -764,16 +776,27 @@ function renderColorPickers(containerId) {
     container.innerHTML = '';
     ACCENT_COLORS.forEach(function(color) {
       const sw = document.createElement('div');
-      sw.className = 'color-swatch' + (cvData.accentColor === color.hex ? ' active' : '');
+      const isActive = cvData.accentColor === color.hex;
+      sw.className = 'color-swatch' + (isActive ? ' active' : '');
       sw.style.background = color.hex;
       sw.title = color.name;
+      /* Dégradés : ajouter une mini étiquette */
+      if (color.gradient) {
+        sw.style.border = isActive ? '2.5px solid #fff' : '2px solid rgba(255,255,255,0.3)';
+        sw.style.boxShadow = isActive ? '0 0 0 2px #333' : 'none';
+      }
       sw.onclick = function() { selectColor(color.hex); };
       container.appendChild(sw);
     });
+    /* Séparateur avant le color picker custom */
+    const sep = document.createElement('div');
+    sep.style.cssText = 'width:1px;height:32px;background:var(--border,#ddd);margin:0 4px;align-self:center;flex-shrink:0';
+    container.appendChild(sep);
     const custom = document.createElement('input');
     custom.type = 'color';
     custom.className = 'color-custom-input';
-    custom.value = cvData.accentColor || '#2563EB';
+    custom.value = (cvData.accentColor||'#2563EB').startsWith('#') ? cvData.accentColor : '#2563EB';
+    custom.title = 'Couleur personnalisée';
     custom.oninput = function(e) { selectColor(e.target.value); };
     container.appendChild(custom);
   });
@@ -782,7 +805,15 @@ function renderColorPickers(containerId) {
 function selectColor(hex) {
   cvData.accentColor = hex;
   document.querySelectorAll('.color-swatch').forEach(function(sw) {
-    sw.classList.toggle('active', sw.title === (ACCENT_COLORS.find(function(c){return c.hex===hex;})||{}).name);
+    const match = sw.style.background === hex || sw.title === (ACCENT_COLORS.find(function(c){return c.hex===hex;})||{}).name;
+    sw.classList.toggle('active', match);
+    if (match && sw.style.background && sw.style.background.includes('gradient')) {
+      sw.style.border = '2.5px solid #fff';
+      sw.style.boxShadow = '0 0 0 2px #333';
+    } else if (!match && sw.style.background && sw.style.background.includes('gradient')) {
+      sw.style.border = '2px solid rgba(255,255,255,0.3)';
+      sw.style.boxShadow = 'none';
+    }
   });
   updatePreview();
   saveData();
