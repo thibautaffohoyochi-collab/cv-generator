@@ -1586,45 +1586,82 @@ function resetSettings() {
 /* ----------------------------------------------------------
    TRADUCTION EN
    ---------------------------------------------------------- */
-const FR_EN = {
-  'Graphiste Designer':'Graphic Designer','Community Manager':'Community Manager',
-  'Formateur':'Trainer','Identité visuelle':'Visual Identity','Mise en page':'Layout',
-  'Création de contenu':'Content Creation','Réseaux sociaux':'Social Media',
-  'Intelligence Artificielle':'Artificial Intelligence','Conception':'Design',
-  'Gestion':'Management','Branding':'Branding','Licence':'Bachelor\'s Degree',
-  'Courant':'Fluent','Natif':'Native','Avancé':'Advanced',
-  'Intermédiaire':'Intermediate','Débutant':'Beginner',
-  'Septembre':'September','Juin':'June','Janvier':'January','Février':'February',
-  'Mars':'March','Avril':'April','Mai':'May','Juillet':'July',
-  'Août':'August','Octobre':'October','Novembre':'November','Décembre':'December'
-};
 
-function translateText(text) {
-  if (!text) return '';
-  let r = text;
-  Object.entries(FR_EN).sort(function(a,b){return b[0].length-a[0].length;}).forEach(function(entry) {
-    r = r.replace(new RegExp(entry[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), entry[1]);
-  });
-  return r;
+/* Traduction via MyMemory API (gratuit, sans clé) */
+async function translateTextAPI(text, targetLang) {
+  if (!text || !text.trim()) return text;
+  try {
+    const url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=fr|' + targetLang;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.responseStatus === 200 && json.responseData && json.responseData.translatedText) {
+      return json.responseData.translatedText;
+    }
+  } catch(e) {}
+  return text; // fallback : texte original
 }
 
-function translateCV() {
+async function translateCV() {
   const d = cvData;
-  translatedData = Object.assign({}, d, {
-    title:       translateText(d.title),
-    profile:     translateText(d.profile),
-    experiences: (d.experiences||[]).map(function(e){return Object.assign({},e,{role:translateText(e.role),desc:translateText(e.desc)});}),
-    education:   (d.education||[]).map(function(e){return Object.assign({},e,{degree:translateText(e.degree)});}),
-    certifications:(d.certifications||[]).map(function(c){return Object.assign({},c,{title:translateText(c.title)});}),
-    skills:      (d.skills||[]).map(function(s){return Object.assign({},s,{name:translateText(s.name)});}),
-    languages:   (d.languages||[]).map(function(l){return Object.assign({},l,{level:translateText(l.level)});})
-  });
+  const btn = document.getElementById('translateBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traduction en cours...'; }
+  showToast('Traduction en cours, patientez...', 'info');
 
-  const frEl = document.getElementById('translate-fr-preview');
-  const enEl = document.getElementById('translate-en-preview');
-  if (frEl) frEl.innerHTML = buildTextSummary(d, 'fr');
-  if (enEl) enEl.innerHTML = buildTextSummary(translatedData, 'en');
-  showToast('Traduction terminée !', 'success');
+  try {
+    /* Traduire tous les champs en parallèle */
+    const [title, profile] = await Promise.all([
+      translateTextAPI(d.title || '', 'en'),
+      translateTextAPI(d.profile || '', 'en')
+    ]);
+
+    const experiences = await Promise.all((d.experiences||[]).map(async function(e) {
+      const [role, desc] = await Promise.all([
+        translateTextAPI(e.role || '', 'en'),
+        translateTextAPI(e.desc || '', 'en')
+      ]);
+      return Object.assign({}, e, { role, desc });
+    }));
+
+    const education = await Promise.all((d.education||[]).map(async function(e) {
+      const degree = await translateTextAPI(e.degree || '', 'en');
+      return Object.assign({}, e, { degree });
+    }));
+
+    const certifications = await Promise.all((d.certifications||[]).map(async function(c) {
+      const ctitle = await translateTextAPI(c.title || '', 'en');
+      return Object.assign({}, c, { title: ctitle });
+    }));
+
+    const skills = await Promise.all((d.skills||[]).map(async function(s) {
+      const name = await translateTextAPI(s.name || '', 'en');
+      return Object.assign({}, s, { name });
+    }));
+
+    /* Niveaux de langue — dictionnaire rapide */
+    const levelMap = {
+      'natif':'Native','courant':'Fluent','avancé':'Advanced',
+      'intermédiaire':'Intermediate','débutant':'Beginner','bilingue':'Bilingual',
+      'professionnel':'Professional','notions':'Basic knowledge'
+    };
+    const languages = (d.languages||[]).map(function(l) {
+      const lvl = levelMap[(l.level||'').toLowerCase()] || l.level;
+      return Object.assign({}, l, { level: lvl });
+    });
+
+    translatedData = Object.assign({}, d, { title, profile, experiences, education, certifications, skills, languages });
+
+    const frEl = document.getElementById('translate-fr-preview');
+    const enEl = document.getElementById('translate-en-preview');
+    if (frEl) frEl.innerHTML = buildTextSummary(d, 'fr');
+    if (enEl) enEl.innerHTML = buildTextSummary(translatedData, 'en');
+
+    showToast('Traduction terminée ! 🎉', 'success');
+
+  } catch(err) {
+    showToast('Erreur de traduction : ' + err.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-language"></i> Traduire en anglais'; }
+  }
 }
 
 function buildTextSummary(d, lang) {
