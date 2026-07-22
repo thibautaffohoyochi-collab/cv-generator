@@ -3235,7 +3235,10 @@ function buildTemplate13(d, accent, fs) {
 
   return '<div class="cv-template-13" style="--cv-accent:'+accent+';'+fs+'">' +
     '<div class="cv-sidebar">' +
-      '<div class="cv-photo-wrapper">'+photoTag(d,'cv-photo')+'</div>' +
+      '<div class="cv-photo-wrapper">' +
+        (d.photo ? '<img src="'+d.photo+'" alt="Photo" style="width:90px;height:90px;min-width:90px;max-width:90px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid var(--cv-accent,#7c3aed);display:block;flex-shrink:0" />' :
+          '<div style="width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:36px;color:rgba(255,255,255,0.4)"><i class="fas fa-user"></i></div>') +
+      '</div>' +
       '<div class="cv-sidebar-section"><h3>Contact</h3>'+contacts+'</div>' +
       (skills?'<div class="cv-sidebar-section"><h3>Compétences</h3>'+skills+'</div>':'') +
       (tools?'<div class="cv-sidebar-section"><h3>Outils</h3>'+tools+'</div>':'') +
@@ -3291,7 +3294,7 @@ function buildTemplate14(d, accent, fs) {
 
   return '<div class="cv-template-14" style="--cv-accent:'+accent+';'+fs+'">' +
     '<div class="cv-header">' +
-      (d.photo ? photoTag(d,'cv-photo') : '') +
+      (d.photo ? '<img src="'+d.photo+'" alt="Photo" style="width:80px;height:80px;min-width:80px;max-width:80px;border-radius:4px;object-fit:cover;object-position:center top;flex-shrink:0;border:1px solid #ccc" />' : '') +
       '<div class="cv-header-info">' +
         '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
         '<p class="cv-title">'+(esc(d.title)||'Titre professionnel')+'</p>' +
