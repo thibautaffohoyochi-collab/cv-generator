@@ -1913,40 +1913,94 @@ function readImportFile(file) {
   const fname = file.name.toLowerCase();
   if (fname.endsWith('.json')) { showToast('Fichier JSON non accepté ici — utilisez la page Export pour importer un JSON', 'error'); return; }
   if (!fname.match(/\.(txt|pdf|doc|docx)$/)) { showToast('Format non supporté. Utilisez .txt, .pdf, .doc ou .docx', 'error'); return; }
+
+  const ta = document.getElementById('importCvText');
+  const dropZone = document.getElementById('importDropZone');
+  if (dropZone) dropZone.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--primary)"></i><p style="margin-top:10px">Lecture en cours...</p>';
+
   showToast('Lecture du fichier : ' + file.name, 'info');
+
+  if (fname.endsWith('.txt')) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      if (ta) ta.value = e.target.result || '';
+      resetDropZone();
+    };
+    reader.readAsText(file, 'UTF-8');
+    return;
+  }
+
+  if (fname.endsWith('.pdf')) {
+    /* Utiliser PDF.js pour extraire le texte proprement */
+    if (typeof pdfjsLib === 'undefined') {
+      /* Charger PDF.js dynamiquement */
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = function() {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        extractPdfText(file, ta);
+      };
+      script.onerror = function() {
+        /* Fallback si PDF.js ne charge pas */
+        if (ta) ta.value = 'PDF non lisible automatiquement.\n\nOuvrez votre PDF, sélectionnez tout (Ctrl+A), copiez (Ctrl+C) et collez ici (Ctrl+V).';
+        resetDropZone();
+        showToast('Copiez-collez le texte de votre PDF manuellement', 'warning');
+      };
+      document.head.appendChild(script);
+    } else {
+      extractPdfText(file, ta);
+    }
+    return;
+  }
+
+  /* Word / DOCX — extraction des chaînes lisibles */
   const reader = new FileReader();
   reader.onload = function(e) {
-    let raw = e.target.result || '';
-    let text = '';
-    if (fname.endsWith('.txt')) {
-      text = raw;
-    } else if (fname.endsWith('.pdf')) {
-      // Extract text from PDF BT...ET blocks
-      const btBlocks = raw.match(/BT[\s\S]*?ET/g) || [];
-      let extracted = '';
-      btBlocks.forEach(function(block) {
-        const matches = block.match(/\(([^)]{1,200})\)\s*Tj/g) || [];
-        matches.forEach(function(m) {
-          const txt = m.replace(/^\(/, '').replace(/\)\s*Tj$/, '').trim();
-          if (txt.length > 1 && /[a-zA-ZÀ-ÿ]/.test(txt)) extracted += txt + ' ';
-        });
-      });
-      if (extracted.length < 50) {
-        const strings = raw.match(/[A-Za-zÀ-ÿ0-9@._+\-]{3,80}/g) || [];
-        extracted = strings.filter(function(s){return /[a-zA-ZÀ-ÿ]/.test(s)&&!['obj','endobj','stream','endstream','xref','trailer'].includes(s.toLowerCase());}).join(' ');
-      }
-      text = extracted.trim();
-      if (text.length < 30) text = 'Le PDF ne contient pas de texte extractible.\nCollez manuellement le texte de votre CV dans la zone ci-dessous.';
-    } else {
-      const strings = raw.match(/[A-Za-zÀ-ÿ0-9\s@._+\-:,;()«»'"]{4,}/g) || [];
-      text = strings.filter(function(s){return s.trim().length>3&&/[a-zA-ZÀ-ÿ]{2,}/.test(s);}).join('\n').replace(/\n{3,}/g,'\n\n').trim();
-      if (text.length < 30) text = 'Fichier Word non lisible directement.\nConvertissez-le en .txt ou copiez-collez son contenu.';
-    }
-    const ta = document.getElementById('importCvText');
-    if (ta) ta.value = text || 'Aucun texte extractible — collez le contenu manuellement.';
+    const raw = e.target.result || '';
+    const strings = raw.match(/[A-Za-zÀ-ÿ0-9\s@._+\-:,;()«»'"]{4,}/g) || [];
+    let text = strings.filter(function(s){ return s.trim().length>3 && /[a-zA-ZÀ-ÿ]{2,}/.test(s); }).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+    if (text.length < 30) text = 'Fichier Word non lisible directement.\nConvertissez-le en .txt ou copiez-collez son contenu ici.';
+    if (ta) ta.value = text;
+    resetDropZone();
   };
-  if (fname.endsWith('.txt')) reader.readAsText(file, 'UTF-8');
-  else reader.readAsBinaryString(file);
+  reader.readAsBinaryString(file);
+}
+
+function extractPdfText(file, ta) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const typedArray = new Uint8Array(e.target.result);
+    pdfjsLib.getDocument({ data: typedArray }).promise.then(function(pdf) {
+      const pages = [];
+      for (let i = 1; i <= pdf.numPages; i++) pages.push(i);
+      return Promise.all(pages.map(function(n) {
+        return pdf.getPage(n).then(function(page) {
+          return page.getTextContent().then(function(content) {
+            return content.items.map(function(item) { return item.str; }).join(' ');
+          });
+        });
+      }));
+    }).then(function(pagesText) {
+      const text = pagesText.join('\n\n').replace(/ {3,}/g, ' ').replace(/\n{4,}/g, '\n\n').trim();
+      if (ta) ta.value = text.length > 20 ? text : 'Aucun texte extractible — le PDF est peut-être une image. Copiez-collez le texte manuellement.';
+      resetDropZone();
+      showToast('PDF lu avec succès — ' + text.split(/\s+/).length + ' mots extraits', 'success');
+    }).catch(function() {
+      if (ta) ta.value = 'Erreur de lecture PDF.\n\nOuvrez votre PDF, sélectionnez tout (Ctrl+A), copiez et collez ici.';
+      resetDropZone();
+      showToast('Copiez-collez le texte de votre PDF manuellement', 'warning');
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function resetDropZone() {
+  const dropZone = document.getElementById('importDropZone');
+  if (dropZone) dropZone.innerHTML =
+    '<i class="fas fa-file-arrow-up" style="font-size:48px;color:var(--primary);margin-bottom:12px;display:block"></i>' +
+    '<h4 style="margin-bottom:6px">Glissez votre CV ici ou cliquez pour choisir</h4>' +
+    '<p style="font-size:12px;color:var(--text-muted)">Formats acceptés : <strong>.txt</strong> &nbsp;·&nbsp; <strong>.pdf</strong> &nbsp;·&nbsp; <strong>.doc / .docx</strong></p>' +
+    '<input type="file" id="importCvFile" accept=".txt,.pdf,.doc,.docx" style="display:none" onchange="handleImportFileSelect(event)" />';
 }
 
 function parseImportedCV() {
