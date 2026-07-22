@@ -2984,11 +2984,7 @@ function buildTemplate11(d, accent, fs) {
   if (d.portfolio) contacts.push('<span><i class="fas fa-globe"></i> ' + esc(d.portfolio) + '</span>');
 
   /* Avertissement si photo présente — règle Canada */
-  var photoWarning = d.photo
-    ? '<div style="background:#fff8e1;border:1px solid #f59e0b;border-left:4px solid #f59e0b;padding:6px 12px;font-size:10.5px;color:#92400e;margin-bottom:10px;border-radius:4px;font-family:Arial,sans-serif">' +
-      '<strong>⚠️ Règle Canada :</strong> La photo n\'est pas recommandée sur un CV nord-américain. Elle peut entraîner un rejet automatique par certains employeurs.' +
-      '</div>'
-    : '';
+  var photoWarning = '';
 
   var exps = (d.experiences||[]).map(function(e) {
     return '<div class="cv-na-exp-item">' +
@@ -3149,7 +3145,7 @@ function buildTemplate12(d, accent, fs) {
   return '<div class="cv-template-12" style="--cv-accent:' + accent + ';' + fs + '">' +
     /* HEADER BANDEAU */
     '<div class="cv-uk-header">' +
-      (d.photo ? photoTag(d, 'cv-photo') : '') +
+      (d.photo ? '<img src="' + d.photo + '" alt="Photo" style="width:72px;height:72px;min-width:72px;max-width:72px;border-radius:50%;object-fit:cover;object-position:center top;border:2.5px solid rgba(255,255,255,0.55);flex-shrink:0;display:block" />' : '') +
       '<div class="cv-uk-header-info">' +
         '<h1 class="cv-name">' + (esc(d.name) || 'Your Name') + '</h1>' +
         (d.title ? '<p class="cv-title">' + esc(d.title) + '</p>' : '') +
