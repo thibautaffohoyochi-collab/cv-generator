@@ -1,0 +1,292 @@
+/* ============================================
+   TEMPLATE 12 — UK / BRITISH CV
+   Style : élégant, structuré, 2 colonnes légères
+   Caractéristiques : photo optionnelle, Personal
+   Statement en haut, section Key Skills,
+   typographie Lato/Inter, bandeau accent discret
+   ============================================ */
+
+.cv-template-12 {
+  font-family: 'Lato', 'Inter', sans-serif;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: #fff;
+  color: #1e1e1e;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.12);
+  overflow: visible;
+}
+
+/* ---- HEADER ---- */
+.cv-template-12 .cv-uk-header {
+  background: var(--cv-accent, #1d4ed8);
+  color: #fff;
+  padding: 28px 32px 22px 32px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.cv-template-12 .cv-photo {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+
+.cv-template-12 .cv-uk-header-info {
+  flex: 1;
+}
+
+.cv-template-12 .cv-name {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.cv-template-12 .cv-title {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.82);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.cv-template-12 .cv-uk-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.88);
+}
+
+.cv-template-12 .cv-uk-contact span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cv-template-12 .cv-uk-contact a {
+  color: rgba(255,255,255,0.88);
+  text-decoration: none;
+}
+
+/* ---- BODY 2 COLONNES ---- */
+.cv-template-12 .cv-uk-body {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 0;
+  padding: 0;
+}
+
+.cv-template-12 .cv-uk-main {
+  padding: 22px 24px 22px 32px;
+  border-right: 1px solid #e8e8e8;
+}
+
+.cv-template-12 .cv-uk-side {
+  padding: 22px 22px 22px 18px;
+  background: #f9f9fb;
+}
+
+/* ---- SECTION TITLES ---- */
+.cv-template-12 .cv-uk-section-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--cv-accent, #1d4ed8);
+  border-bottom: 2px solid var(--cv-accent, #1d4ed8);
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  margin-top: 18px;
+}
+
+.cv-template-12 .cv-uk-main .cv-uk-section-title:first-child,
+.cv-template-12 .cv-uk-side .cv-uk-section-title:first-child {
+  margin-top: 0;
+}
+
+/* ---- PERSONAL STATEMENT ---- */
+.cv-template-12 .cv-uk-statement {
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: #2a2a2a;
+  background: #f0f4ff;
+  border-left: 3px solid var(--cv-accent, #1d4ed8);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 4px;
+}
+
+/* ---- EXPERIENCE ---- */
+.cv-template-12 .cv-experience-item {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cv-template-12 .cv-experience-item:last-child {
+  border-bottom: none;
+}
+
+.cv-template-12 .cv-uk-exp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1px;
+}
+
+.cv-template-12 .cv-exp-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cv-template-12 .cv-exp-date {
+  font-size: 10.5px;
+  color: #777;
+  font-style: italic;
+  background: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.cv-template-12 .cv-exp-company {
+  font-size: 11.5px;
+  color: var(--cv-accent, #1d4ed8);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.cv-template-12 .cv-exp-desc {
+  font-size: 11px;
+  color: #444;
+  line-height: 1.55;
+}
+
+/* ---- EDUCATION ---- */
+.cv-template-12 .cv-edu-item {
+  margin-bottom: 10px;
+}
+
+.cv-template-12 .cv-edu-degree {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cv-template-12 .cv-edu-school {
+  font-size: 11px;
+  color: #444;
+  font-style: italic;
+}
+
+.cv-template-12 .cv-edu-date {
+  font-size: 10.5px;
+  color: #888;
+}
+
+/* ---- SKILLS ---- */
+.cv-template-12 .cv-uk-skill-item {
+  margin-bottom: 7px;
+}
+
+.cv-template-12 .cv-uk-skill-name {
+  font-size: 11px;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cv-template-12 .cv-uk-skill-bar {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cv-template-12 .cv-uk-skill-fill {
+  height: 100%;
+  background: var(--cv-accent, #1d4ed8);
+  border-radius: 2px;
+}
+
+/* ---- KEY SKILLS (tags) ---- */
+.cv-template-12 .cv-uk-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cv-template-12 .cv-uk-tag {
+  font-size: 10.5px;
+  background: #e8eeff;
+  color: var(--cv-accent, #1d4ed8);
+  border: 1px solid rgba(29,78,216,0.2);
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ---- LANGUAGES ---- */
+.cv-template-12 .cv-uk-lang-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.cv-template-12 .cv-uk-lang-name {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.cv-template-12 .cv-uk-lang-level {
+  color: #666;
+  font-style: italic;
+}
+
+/* ---- CERTIFICATIONS ---- */
+.cv-template-12 .cv-uk-cert-item {
+  margin-bottom: 8px;
+}
+
+.cv-template-12 .cv-uk-cert-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.cv-template-12 .cv-uk-cert-org {
+  font-size: 10.5px;
+  color: #666;
+  font-style: italic;
+}
+
+/* ---- REFERENCES ---- */
+.cv-template-12 .cv-uk-ref-note {
+  font-size: 11px;
+  color: #777;
+  font-style: italic;
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #ccc;
+}
+
+/* ---- PRINT ---- */
+@media print {
+  .cv-template-12 {
+    box-shadow: none;
+  }
+}

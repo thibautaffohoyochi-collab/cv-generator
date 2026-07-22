@@ -92,7 +92,9 @@ const TEMPLATES = [
   { id:7,  name:'Élégant',      pro:true,  icon:'feather' },
   { id:8,  name:'Colorblock',   pro:true,  icon:'th-large' },
   { id:9,  name:'Compact',      pro:true,  icon:'compress' },
-  { id:10, name:'Gradient Pro', pro:true,  icon:'fire' }
+  { id:10, name:'Gradient Pro', pro:true,  icon:'fire' },
+  { id:11, name:'🇨🇦 North American', pro:true, icon:'flag' },
+  { id:12, name:'🇬🇧 UK / British',   pro:true, icon:'globe' }
 ];
 
 /* ----------------------------------------------------------
@@ -480,6 +482,8 @@ function buildCvHTML(data) {
     case 8:  return buildTemplate8(data, accent, fs);
     case 9:  return buildTemplate9(data, accent, fs);
     case 10: return buildTemplate10(data, accent, fs);
+    case 11: return buildTemplate11(data, accent, fs);
+    case 12: return buildTemplate12(data, accent, fs);
     default: return buildTemplate1(data, accent, fs);
   }
 }
@@ -1055,6 +1059,8 @@ function exportPDF() {
     '<link rel="stylesheet" href="' + getHref('link[href*="template8.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template9.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template10.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template11.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template12.css"]') + '">' +
     '<style>' + printCSS + '</style>' +
     '</head><body>' + html + '</body></html>'
   );
@@ -2955,6 +2961,199 @@ function buildTemplate10(d, accent, fs) {
         (ints?'<div class="cv-section"><h3 class="cv-section-title">Intérêts</h3>'+ints+'</div>':'') +
       '</div>' +
     '</div></div>';
+}
+
+/* ==========================================================
+   TEMPLATE 11 — NORTH AMERICAN RESUME
+   Style ATS-friendly, 1 colonne, sans photo obligatoire,
+   Summary en haut, expériences avec résultats chiffrés
+   ========================================================== */
+function buildTemplate11(d, accent, fs) {
+  /* Contact row en ligne */
+  var contacts = [];
+  if (d.email)     contacts.push('<span><i class="fas fa-envelope"></i> ' + esc(d.email) + '</span>');
+  if (d.phone)     contacts.push('<span><i class="fas fa-phone"></i> ' + esc(d.phone) + '</span>');
+  if (d.address)   contacts.push('<span><i class="fas fa-map-marker-alt"></i> ' + esc(d.address) + '</span>');
+  if (d.linkedin)  contacts.push('<span><i class="fab fa-linkedin"></i> ' + esc(d.linkedin) + '</span>');
+  if (d.portfolio) contacts.push('<span><i class="fas fa-globe"></i> ' + esc(d.portfolio) + '</span>');
+
+  var exps = (d.experiences||[]).map(function(e) {
+    return '<div class="cv-na-exp-item">' +
+      '<div class="cv-na-exp-header">' +
+        '<span class="cv-na-exp-role">' + esc(e.role) + '</span>' +
+        '<span class="cv-na-exp-date">' + esc(e.date) + '</span>' +
+      '</div>' +
+      '<div class="cv-na-exp-company">' + esc(e.company) + '</div>' +
+      (e.desc ? '<div class="cv-na-exp-desc">' + esc(e.desc) + '</div>' : '') +
+    '</div>';
+  }).join('');
+
+  var edu = (d.education||[]).map(function(e) {
+    return '<div class="cv-na-edu-item">' +
+      '<div class="cv-na-edu-left">' +
+        '<div class="cv-na-edu-degree">' + esc(e.degree) + '</div>' +
+        '<div class="cv-na-edu-school">' + esc(e.school) + '</div>' +
+      '</div>' +
+      '<div class="cv-na-edu-date">' + esc(e.date) + '</div>' +
+    '</div>';
+  }).join('');
+
+  var certs = (d.certifications||[]).map(function(c) {
+    return '<div class="cv-na-cert-item">' +
+      '<div>' +
+        '<span class="cv-na-cert-title">' + esc(c.title) + '</span>' +
+        (c.org ? ' <span class="cv-na-cert-org">· ' + esc(c.org) + '</span>' : '') +
+      '</div>' +
+      '<span style="color:#777;font-style:italic;font-size:10.5px">' + esc(c.year) + '</span>' +
+    '</div>';
+  }).join('');
+
+  var skills = (d.skills||[]).map(function(sk) {
+    return '<span class="cv-na-skill-tag">' + esc(sk.name) + '</span>';
+  }).join('');
+  var tools = (d.tools||[]).map(function(t) {
+    return '<span class="cv-na-skill-tag">' + esc(t) + '</span>';
+  }).join('');
+
+  var langs = (d.languages||[]).map(function(l) {
+    return '<div class="cv-na-lang-item">' +
+      '<span class="cv-na-lang-name">' + esc(l.name) + '</span>' +
+      '<span class="cv-na-lang-level"> — ' + esc(l.level) + '</span>' +
+    '</div>';
+  }).join('');
+
+  var refs = (d.references||[]).map(function(r) {
+    return '<div style="margin-bottom:6px;font-size:11px">' +
+      '<strong>' + esc(r.name) + '</strong>' +
+      (r.role ? ' · ' + esc(r.role) : '') +
+      (r.contact ? ' · ' + esc(r.contact) : '') +
+    '</div>';
+  }).join('');
+
+  return '<div class="cv-template-11" style="--cv-accent:' + accent + ';' + fs + '">' +
+    /* HEADER */
+    '<div class="cv-na-header">' +
+      '<h1 class="cv-name">' + (esc(d.name) || 'YOUR NAME') + '</h1>' +
+      (d.title ? '<p class="cv-title">' + esc(d.title) + '</p>' : '') +
+      (contacts.length ? '<div class="cv-na-contact">' + contacts.join('') + '</div>' : '') +
+    '</div>' +
+    /* SUMMARY */
+    (d.profile ? '<div class="cv-na-section"><div class="cv-na-section-title">Professional Summary</div><p class="cv-na-summary">' + esc(d.profile) + '</p></div>' : '') +
+    /* EXPERIENCE */
+    (exps ? '<div class="cv-na-section"><div class="cv-na-section-title">Work Experience</div>' + exps + '</div>' : '') +
+    /* EDUCATION */
+    (edu ? '<div class="cv-na-section"><div class="cv-na-section-title">Education</div>' + edu + '</div>' : '') +
+    /* CERTIFICATIONS */
+    (certs ? '<div class="cv-na-section"><div class="cv-na-section-title">Certifications</div>' + certs + '</div>' : '') +
+    /* SKILLS */
+    ((skills||tools) ? '<div class="cv-na-section"><div class="cv-na-section-title">Skills & Tools</div><div class="cv-na-skills-grid">' + skills + tools + '</div></div>' : '') +
+    /* LANGUAGES */
+    (langs ? '<div class="cv-na-section"><div class="cv-na-section-title">Languages</div><div class="cv-na-lang-row">' + langs + '</div></div>' : '') +
+    /* REFERENCES */
+    (refs ? '<div class="cv-na-section"><div class="cv-na-section-title">References</div>' + refs + '</div>' : '') +
+    (!refs ? '<div class="cv-na-section"><div class="cv-na-section-title">References</div><p class="cv-na-refs">Available upon request.</p></div>' : '') +
+  '</div>';
+}
+
+/* ==========================================================
+   TEMPLATE 12 — UK / BRITISH CV
+   Style structuré 2 colonnes, bandeau accent en haut,
+   Personal Statement, Key Skills dans la sidebar
+   ========================================================== */
+function buildTemplate12(d, accent, fs) {
+  var contacts = [];
+  if (d.email)     contacts.push('<span><i class="fas fa-envelope"></i> ' + esc(d.email) + '</span>');
+  if (d.phone)     contacts.push('<span><i class="fas fa-phone"></i> ' + esc(d.phone) + '</span>');
+  if (d.address)   contacts.push('<span><i class="fas fa-map-marker-alt"></i> ' + esc(d.address) + '</span>');
+  if (d.linkedin)  contacts.push('<span><i class="fab fa-linkedin"></i> ' + esc(d.linkedin) + '</span>');
+  if (d.portfolio) contacts.push('<span><i class="fas fa-globe"></i> ' + esc(d.portfolio) + '</span>');
+
+  var exps = (d.experiences||[]).map(function(e) {
+    return '<div class="cv-experience-item">' +
+      '<div class="cv-uk-exp-top">' +
+        '<span class="cv-exp-title">' + esc(e.role) + '</span>' +
+        '<span class="cv-exp-date">' + esc(e.date) + '</span>' +
+      '</div>' +
+      '<div class="cv-exp-company">' + esc(e.company) + '</div>' +
+      (e.desc ? '<p class="cv-exp-desc">' + esc(e.desc) + '</p>' : '') +
+    '</div>';
+  }).join('');
+
+  var edu = (d.education||[]).map(function(e) {
+    return '<div class="cv-edu-item">' +
+      '<div class="cv-edu-degree">' + esc(e.degree) + '</div>' +
+      '<div class="cv-edu-school">' + esc(e.school) + '</div>' +
+      '<div class="cv-edu-date">' + esc(e.date) + '</div>' +
+    '</div>';
+  }).join('');
+
+  var certs = (d.certifications||[]).map(function(c) {
+    return '<div class="cv-uk-cert-item">' +
+      '<div class="cv-uk-cert-title">' + esc(c.title) + '</div>' +
+      '<div class="cv-uk-cert-org">' + (c.org ? esc(c.org) + ' · ' : '') + esc(c.year) + '</div>' +
+    '</div>';
+  }).join('');
+
+  var skills = (d.skills||[]).map(function(sk) {
+    return '<div class="cv-uk-skill-item">' +
+      '<div class="cv-uk-skill-name"><span>' + esc(sk.name) + '</span><span>' + sk.pct + '%</span></div>' +
+      '<div class="cv-uk-skill-bar"><div class="cv-uk-skill-fill" style="width:' + sk.pct + '%"></div></div>' +
+    '</div>';
+  }).join('');
+
+  var tools = (d.tools||[]).map(function(t) {
+    return '<span class="cv-uk-tag">' + esc(t) + '</span>';
+  }).join('');
+
+  var langs = (d.languages||[]).map(function(l) {
+    return '<div class="cv-uk-lang-item">' +
+      '<span class="cv-uk-lang-name">' + esc(l.name) + '</span>' +
+      '<span class="cv-uk-lang-level">' + esc(l.level) + '</span>' +
+    '</div>';
+  }).join('');
+
+  var interests = (d.interests||[]).map(function(it) {
+    return '<span class="cv-uk-tag">' + esc(it) + '</span>';
+  }).join('');
+
+  var refs = (d.references||[]).map(function(r) {
+    return '<div style="margin-bottom:8px;font-size:11px">' +
+      '<strong>' + esc(r.name) + '</strong>' +
+      (r.role ? '<br><span style="color:#555">' + esc(r.role) + '</span>' : '') +
+      (r.contact ? '<br><span style="color:#888">' + esc(r.contact) + '</span>' : '') +
+    '</div>';
+  }).join('');
+
+  return '<div class="cv-template-12" style="--cv-accent:' + accent + ';' + fs + '">' +
+    /* HEADER BANDEAU */
+    '<div class="cv-uk-header">' +
+      (d.photo ? photoTag(d, 'cv-photo') : '') +
+      '<div class="cv-uk-header-info">' +
+        '<h1 class="cv-name">' + (esc(d.name) || 'Your Name') + '</h1>' +
+        (d.title ? '<p class="cv-title">' + esc(d.title) + '</p>' : '') +
+        (contacts.length ? '<div class="cv-uk-contact">' + contacts.join('') + '</div>' : '') +
+      '</div>' +
+    '</div>' +
+    /* BODY 2 COLONNES */
+    '<div class="cv-uk-body">' +
+      /* MAIN */
+      '<div class="cv-uk-main">' +
+        (d.profile ? '<div class="cv-uk-section-title">Personal Statement</div><div class="cv-uk-statement">' + esc(d.profile) + '</div>' : '') +
+        (exps ? '<div class="cv-uk-section-title">Work Experience</div>' + exps : '') +
+        (edu ? '<div class="cv-uk-section-title">Education</div>' + edu : '') +
+        (certs ? '<div class="cv-uk-section-title">Qualifications & Certifications</div>' + certs : '') +
+        (refs ? '<div class="cv-uk-section-title">References</div>' + refs : '') +
+        (!refs ? '<div class="cv-uk-section-title">References</div><div class="cv-uk-ref-note">References available upon request.</div>' : '') +
+      '</div>' +
+      /* SIDEBAR */
+      '<div class="cv-uk-side">' +
+        (skills ? '<div class="cv-uk-section-title">Key Skills</div>' + skills : '') +
+        (tools ? '<div class="cv-uk-section-title">Tools & Technologies</div><div class="cv-uk-tags">' + tools + '</div>' : '') +
+        (langs ? '<div class="cv-uk-section-title">Languages</div>' + langs : '') +
+        (interests ? '<div class="cv-uk-section-title">Interests</div><div class="cv-uk-tags">' + interests + '</div>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
 }
 
 /* ==========================================================
