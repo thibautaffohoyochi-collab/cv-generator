@@ -1051,33 +1051,81 @@ function exportPDF() {
   */
   const printCSS = [
     '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
-    'html, body { background: #fff; }',
-    /* Format A4 sans marges navigateur */
+    'html, body { background: #fff; width: 210mm; }',
     '@page { size: 210mm 297mm; margin: 0; }',
-    /* Forcer les couleurs d'arrière-plan */
-    '@media print {',
-    '  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }',
-    '  /* Éviter les coupures au milieu des blocs importants */',
-    '  .cv-experience-item, .cv-edu-item, .cv-ref-item, .cv-section { page-break-inside: avoid; break-inside: avoid; }',
-    '  .cv-section-title, h2, h3 { page-break-after: avoid; break-after: avoid; }',
-    '}',
-    /* Templates avec grille fixe (sidebar) — 1ère page A4 exacte,
-       si trop de contenu la colonne principale scroll sur page 2 */
-    '.cv-template-1, .cv-template-5, .cv-template-6, .cv-template-7, .cv-template-8, .cv-template-10 {',
+
+    /* ── Couleurs forcées ── */
+    '* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }',
+
+    /* ── Tous les templates : largeur A4, min 1 page ── */
+    '[class^="cv-template-"] {',
     '  width: 210mm !important;',
-    '  min-height: 297mm !important;',
     '  max-width: 210mm !important;',
+    '  min-height: 297mm;',
+    '  margin: 0 !important;',
+    '  box-shadow: none !important;',
     '}',
-    /* Templates 1 colonne — idem */
-    '.cv-template-2, .cv-template-3, .cv-template-4, .cv-template-9 {',
-    '  width: 210mm !important;',
-    '  min-height: 297mm !important;',
-    '  max-width: 210mm !important;',
+
+    /* ── Templates sidebar (grille 2 col) ──
+       La sidebar devient position sticky sur chaque page.
+       Le main déborde naturellement sur page 2. */
+    '.cv-template-1, .cv-template-5, .cv-template-6,',
+    '.cv-template-7, .cv-template-8, .cv-template-10,',
+    '.cv-template-12, .cv-template-13 {',
+    '  display: grid;',
+    '  grid-template-columns: inherit;', /* garde les colonnes originales */
+    '  align-items: start;',
     '}',
-    /* La sidebar ne doit pas se couper sur 2 pages */
-    '.cv-sidebar { page-break-inside: avoid; break-inside: avoid; }',
-    /* Le contenu principal peut s'étaler sur plusieurs pages */
-    '.cv-main, .cv-left, .cv-body { overflow: visible !important; }',
+
+    /* Sidebar : se répète en haut de chaque page */
+    '.cv-template-1 .cv-sidebar,',
+    '.cv-template-5 .cv-sidebar,',
+    '.cv-template-6 .cv-sidebar,',
+    '.cv-template-7 .cv-sidebar,',
+    '.cv-template-8 .cv-sidebar,',
+    '.cv-template-10 .cv-sidebar,',
+    '.cv-template-12 .cv-uk-side,',
+    '.cv-template-13 .cv-sidebar {',
+    '  position: sticky;',
+    '  top: 0;',
+    '  align-self: start;',
+    '  min-height: 297mm;',
+    '  overflow: visible;',
+    '}',
+
+    /* Main : peut déborder sur page 2 */
+    '.cv-sidebar + div, .cv-main, .cv-uk-main, .cv-left, .cv-body, .cv-right {',
+    '  overflow: visible !important;',
+    '  height: auto !important;',
+    '  min-height: 0 !important;',
+    '}',
+
+    /* ── Éviter les coupures au milieu des blocs ── */
+    '.cv-experience-item, .cv-edu-item, .cv-ref-item, .cv-cert-item {',
+    '  page-break-inside: avoid;',
+    '  break-inside: avoid;',
+    '}',
+    '.cv-section, .cv-na-section, .cv-uk-section-title + div {',
+    '  page-break-inside: avoid;',
+    '  break-inside: avoid;',
+    '}',
+    '.cv-section-title, .cv-na-section-title, .cv-uk-section-title, h2, h3 {',
+    '  page-break-after: avoid;',
+    '  break-after: avoid;',
+    '}',
+
+    /* ── Templates 1 colonne : flux naturel ── */
+    '.cv-template-2, .cv-template-3, .cv-template-4,',
+    '.cv-template-9, .cv-template-11, .cv-template-14 {',
+    '  display: block !important;',
+    '  overflow: visible !important;',
+    '}',
+
+    /* ── Template Tech (dark) : fond forcé ── */
+    '.cv-template-15 {',
+    '  background: #0f1117 !important;',
+    '  color: #e2e8f0 !important;',
+    '}',
   ].join('\n');
 
   win.document.write(
