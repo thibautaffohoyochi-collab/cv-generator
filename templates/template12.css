@@ -21,18 +21,38 @@
 .cv-template-12 .cv-uk-header {
   background: var(--cv-accent, #1d4ed8);
   color: #fff;
-  padding: 28px 32px 22px 32px;
+  padding: 22px 28px 18px 28px;
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 20px;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .cv-template-12 .cv-photo {
-  width: 78px;
-  height: 78px;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  min-height: 72px !important;
+  max-height: 72px !important;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255,255,255,0.5);
+  object-position: center top;
+  border: 2.5px solid rgba(255,255,255,0.55);
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Empêcher tout autre img dans le header de déborder */
+.cv-template-12 .cv-uk-header img {
+  width: 72px !important;
+  height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
   flex-shrink: 0;
 }
 
