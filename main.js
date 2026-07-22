@@ -1310,61 +1310,135 @@ function exportCoverLetterPDF() {
    ---------------------------------------------------------- */
 function analyzeCV() {
   const d = cvData;
-  const criteria = [
-    { label:'Nom & Titre',   icon:'user',           weight:10, score:(d.name?5:0)+(d.title?5:0),          tip:'Assurez un nom complet et un titre professionnel précis.' },
-    { label:'Coordonnées',   icon:'address-card',   weight:10, score:(d.email?3:0)+(d.phone?3:0)+(d.address?2:0)+(d.linkedin?1:0)+(d.portfolio?1:0), tip:'Ajoutez LinkedIn et portfolio pour compléter.' },
-    { label:'Profil',        icon:'align-left',     weight:15, score:!d.profile?0:d.profile.length>=300?15:d.profile.length>=150?10:5, tip:'150 à 400 caractères, précis et impactant.' },
-    { label:'Photo',         icon:'camera',         weight:5,  score:d.photo?5:0, tip:'Une photo professionnelle augmente vos chances.' },
-    { label:'Expériences',   icon:'briefcase',      weight:25, score:Math.min(25,(d.experiences||[]).length*5+(d.experiences||[]).filter(function(e){return e.desc&&e.desc.length>50;}).length*3), tip:'Décrivez chaque mission avec des résultats concrets.' },
-    { label:'Formation',     icon:'graduation-cap', weight:10, score:Math.min(10,(d.education||[]).length*4+(d.certifications||[]).length*2), tip:'Ajoutez certifications et formations.' },
-    { label:'Compétences',   icon:'star',           weight:15, score:(d.skills||[]).length>=6?10:(d.skills||[]).length>=3?6:(d.skills||[]).length>0?3:0, tip:'6 à 10 compétences clés.' },
-    { label:'Outils',        icon:'tools',          weight:5,  score:(d.tools||[]).length>=3?5:(d.tools||[]).length>0?3:0, tip:'Listez tous vos outils.' },
-    { label:'Langues',       icon:'language',       weight:5,  score:(d.languages||[]).length>=2?5:(d.languages||[]).length===1?3:0, tip:'Ajoutez toutes vos langues.' }
-  ];
-  const total = Math.min(100, criteria.reduce(function(a,c) { return a+c.score; }, 0));
 
-  // Animate ring
+  /* ── Critères enrichis avec détection de qualité ── */
+  const hasNumbers = function(text) { return /\d+/.test(text||''); };
+  const hasActionVerbs = function(text) {
+    const verbs = ['développé','créé','géré','dirigé','optimisé','augmenté','réduit','mis en place','implémenté','conçu','réalisé','piloté','coordonné','analysé','développed','created','managed','increased','reduced','implemented','designed'];
+    return verbs.some(function(v){ return (text||'').toLowerCase().includes(v); });
+  };
+  const avgDescLength = (d.experiences||[]).reduce(function(a,e){ return a+(e.desc?e.desc.length:0); },0) / Math.max(1,(d.experiences||[]).length);
+
+  const criteria = [
+    {
+      label:'Nom & Titre professionnel', icon:'user', weight:10,
+      score: (d.name && d.name.trim().split(' ').length >= 2 ? 6 : d.name ? 4 : 0) + (d.title && d.title.length > 5 ? 4 : d.title ? 2 : 0),
+      tip: 'Nom complet (prénom + nom) et titre précis comme "Développeur Web React" ou "Graphiste Designer".'
+    },
+    {
+      label:'Coordonnées complètes', icon:'address-card', weight:10,
+      score: (d.email?3:0)+(d.phone?3:0)+(d.address?1:0)+(d.linkedin?2:0)+(d.portfolio?1:0),
+      tip: 'LinkedIn est très important — les recruteurs le vérifient. Ajoutez aussi un portfolio si possible.'
+    },
+    {
+      label:'Profil / Résumé', icon:'align-left', weight:15,
+      score: !d.profile ? 0 : d.profile.length >= 350 ? 15 : d.profile.length >= 200 ? 12 : d.profile.length >= 100 ? 7 : 3,
+      tip: 'Idéal : 200-400 caractères. Mentionnez vos années d\'expérience, domaine et valeur ajoutée.'
+    },
+    {
+      label:'Photo professionnelle', icon:'camera', weight:5,
+      score: d.photo ? 5 : 0,
+      tip: 'Une photo professionnelle augmente de 30% vos chances d\'être retenu (sauf format canadien).'
+    },
+    {
+      label:'Expériences professionnelles', icon:'briefcase', weight:25,
+      score: Math.min(25,
+        (d.experiences||[]).length * 4 +
+        (d.experiences||[]).filter(function(e){ return e.desc && e.desc.length > 80; }).length * 3 +
+        (hasNumbers((d.experiences||[]).map(function(e){return e.desc;}).join(' ')) ? 3 : 0) +
+        (hasActionVerbs((d.experiences||[]).map(function(e){return e.desc;}).join(' ')) ? 2 : 0)
+      ),
+      tip: avgDescLength < 80
+        ? 'Décrivez chaque mission avec des chiffres concrets (ex: "+30% de ventes", "5 projets livrés").'
+        : hasNumbers((d.experiences||[]).map(function(e){return e.desc;}).join(' '))
+          ? 'Bonne utilisation des chiffres ! Ajoutez des verbes d\'action forts (développé, optimisé...).'
+          : 'Ajoutez des métriques chiffrées dans vos descriptions (+20%, 3 clients, 5 mois...).'
+    },
+    {
+      label:'Formation & Certifications', icon:'graduation-cap', weight:10,
+      score: Math.min(10, (d.education||[]).length*4 + (d.certifications||[]).length*3),
+      tip: 'Les certifications Google, Meta, Coursera sont très appréciées. Ajoutez-les même récentes.'
+    },
+    {
+      label:'Compétences (6 à 12)', icon:'star', weight:15,
+      score: (d.skills||[]).length >= 8 ? 15 : (d.skills||[]).length >= 5 ? 11 : (d.skills||[]).length >= 3 ? 7 : (d.skills||[]).length > 0 ? 3 : 0,
+      tip: 'Visez 6 à 12 compétences clés, triées par niveau. Évitez les compétences trop génériques.'
+    },
+    {
+      label:'Outils & Logiciels', icon:'tools', weight:5,
+      score: (d.tools||[]).length >= 5 ? 5 : (d.tools||[]).length >= 3 ? 4 : (d.tools||[]).length > 0 ? 2 : 0,
+      tip: 'Listez vos outils spécifiques : Canva, Figma, Excel, Trello, Photoshop...'
+    },
+    {
+      label:'Langues parlées', icon:'language', weight:5,
+      score: (d.languages||[]).length >= 3 ? 5 : (d.languages||[]).length === 2 ? 4 : (d.languages||[]).length === 1 ? 2 : 0,
+      tip: 'L\'anglais est un atout majeur. Ajoutez toutes vos langues avec le niveau exact.'
+    }
+  ];
+
+  const total = Math.min(100, criteria.reduce(function(a,c){ return a+c.score; }, 0));
+
+  /* ── Animation du ring ── */
   const circle = document.getElementById('scoreRingCircle');
   if (circle) {
     circle.style.stroke = total>=80?'#10b981':total>=60?'#f59e0b':'#ef4444';
-    setTimeout(function() { circle.style.strokeDashoffset = String(314 - (314 * total / 100)); }, 100);
+    setTimeout(function(){ circle.style.strokeDashoffset = String(314 - (314 * total / 100)); }, 100);
   }
 
-  // Animate counter
+  /* ── Compteur animé ── */
   const scoreEl = document.getElementById('scoreValue');
   if (scoreEl) {
     let cur = 0;
-    const timer = setInterval(function() {
-      cur = Math.min(total, cur + total/40);
+    const timer = setInterval(function(){
+      cur = Math.min(total, cur + Math.ceil(total/30));
       scoreEl.textContent = String(Math.round(cur));
       if (cur >= total) clearInterval(timer);
-    }, 30);
+    }, 25);
   }
 
-  const grade = total>=85?'🏆 Excellent CV !':total>=70?'👍 Bon CV':total>=50?'⚠️ CV à améliorer':'🔴 CV incomplet';
+  /* ── Grade et sous-titre ── */
+  const grade = total>=90?'🏆 CV Exceptionnel !':total>=80?'🌟 Excellent CV !':total>=70?'👍 Très bon CV':total>=55?'⚠️ CV à améliorer':total>=35?'🔶 CV incomplet':'🔴 CV très incomplet';
+  const advice = total>=80?'Votre CV est prêt pour candidater !':total>=60?'Quelques améliorations pour maximiser vos chances.':'Suivez les recommandations ci-dessous pour booster votre score.';
   setEl('scoreTitle', grade);
-  setEl('scoreSubtitle', 'Score global : ' + total + '/100');
+  setEl('scoreSubtitle', 'Score : ' + total + '/100 — ' + advice);
 
+  /* ── Critères détaillés ── */
   const container = document.getElementById('scoreCriteria');
   if (container) {
-    container.innerHTML = criteria.map(function(c) {
+    container.innerHTML = criteria.map(function(c){
       const pct = Math.round((c.score/c.weight)*100);
       const color = pct>=80?'var(--success)':pct>=50?'var(--warning)':'var(--danger)';
-      return '<div class="card"><div class="card-body" style="padding:16px">' +
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
-          '<div style="width:36px;height:36px;border-radius:8px;background:'+color+'20;display:flex;align-items:center;justify-content:center;color:'+color+'"><i class="fas fa-'+c.icon+'"></i></div>' +
-          '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+c.label+'</div><div style="font-size:11px;color:var(--text-secondary)">'+c.score+'/'+c.weight+' pts</div></div>' +
-          '<span style="font-size:18px;font-weight:800;color:'+color+'">'+pct+'%</span>' +
+      return '<div class="card"><div class="card-body" style="padding:14px 16px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+          '<div style="width:34px;height:34px;border-radius:8px;background:'+color+'18;display:flex;align-items:center;justify-content:center;color:'+color+';flex-shrink:0"><i class="fas fa-'+c.icon+'"></i></div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.label+'</div>' +
+            '<div style="font-size:11px;color:var(--text-secondary)">'+c.score+' / '+c.weight+' pts</div>' +
+          '</div>' +
+          '<span style="font-size:17px;font-weight:800;color:'+color+';flex-shrink:0">'+pct+'%</span>' +
         '</div>' +
-        '<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px"></div></div>' +
-        (pct<100?'<p style="font-size:11px;color:var(--text-secondary);margin-top:8px;margin-bottom:0"><i class="fas fa-info-circle" style="color:var(--primary)"></i> '+c.tip+'</p>':'') +
+        '<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">' +
+          '<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width .8s ease"></div>' +
+        '</div>' +
+        (pct<100 ? '<p style="font-size:11px;color:var(--text-secondary);margin:7px 0 0;line-height:1.5"><i class="fas fa-lightbulb" style="color:var(--warning);margin-right:4px"></i>'+c.tip+'</p>' : '<p style="font-size:11px;color:var(--success);margin:7px 0 0"><i class="fas fa-check-circle" style="margin-right:4px"></i>Parfait !</p>') +
       '</div></div>';
     }).join('');
   }
 
-  const recs = criteria.filter(function(c) { return c.score<c.weight; }).map(function(c) {
-    return '<div class="tip-item" style="margin-bottom:10px"><i class="fas fa-arrow-right" style="color:var(--primary);flex-shrink:0"></i><span class="tip-text"><strong>'+c.label+':</strong> '+c.tip+'</span></div>';
-  });
+  /* ── Recommandations prioritaires (top 3) ── */
+  const recs = criteria
+    .filter(function(c){ return c.score < c.weight; })
+    .sort(function(a,b){ return (b.weight-b.score)-(a.weight-a.score); })
+    .slice(0,5)
+    .map(function(c, i){
+      const missing = c.weight - c.score;
+      return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--bg-input);border-radius:8px;margin-bottom:8px">' +
+        '<div style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">'+(i+1)+'</div>' +
+        '<div><strong style="font-size:12px">'+c.label+'</strong> <span style="font-size:11px;color:var(--primary);font-weight:700">(+'+missing+' pts possibles)</span><br>' +
+        '<span style="font-size:11px;color:var(--text-secondary)">'+c.tip+'</span></div>' +
+      '</div>';
+    });
+
   const recCard = document.getElementById('scoreRecommendations');
   const recList = document.getElementById('scoreRecList');
   if (recCard) recCard.style.display = recs.length ? 'block' : 'none';
