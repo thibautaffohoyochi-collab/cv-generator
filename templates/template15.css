@@ -1,0 +1,359 @@
+/* ============================================
+   TEMPLATE 15 — TECH / DÉVELOPPEUR
+   Style : dark header, police monospace,
+   badges compétences style GitHub/terminal,
+   pour développeurs, ingénieurs, data scientists
+   ============================================ */
+
+.cv-template-15 {
+  font-family: 'Inter', 'Poppins', sans-serif;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: #0f1117;
+  color: #e2e8f0;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  overflow: visible;
+}
+
+/* ---- HEADER TERMINAL ---- */
+.cv-template-15 .cv-tech-header {
+  background: #161b22;
+  padding: 28px 30px 22px 30px;
+  border-bottom: 1px solid #30363d;
+  position: relative;
+  overflow: hidden;
+}
+
+.cv-template-15 .cv-tech-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cv-accent, #238636), color-mix(in srgb, var(--cv-accent, #238636) 50%, #58a6ff));
+}
+
+/* Dots style macOS terminal */
+.cv-template-15 .cv-tech-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.cv-template-15 .cv-tech-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.cv-template-15 .cv-tech-dot.red   { background: #ff5f57; }
+.cv-template-15 .cv-tech-dot.yellow{ background: #febc2e; }
+.cv-template-15 .cv-tech-dot.green { background: #28c840; }
+
+.cv-template-15 .cv-tech-header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cv-template-15 .cv-photo {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--cv-accent, #238636);
+  flex-shrink: 0;
+}
+
+.cv-template-15 .cv-photo i {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #21262d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #58a6ff;
+  border: 2px solid #30363d;
+}
+
+.cv-template-15 .cv-tech-header-info { flex: 1; }
+
+.cv-template-15 .cv-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #e6edf3;
+  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+}
+
+.cv-template-15 .cv-title {
+  font-size: 12px;
+  color: var(--cv-accent, #3fb950);
+  font-family: 'Courier New', monospace;
+  margin-bottom: 10px;
+}
+
+.cv-template-15 .cv-title::before { content: '$ '; opacity: 0.5; }
+
+.cv-template-15 .cv-tech-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 10.5px;
+  color: #8b949e;
+  font-family: 'Courier New', monospace;
+}
+
+.cv-template-15 .cv-tech-contact span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cv-template-15 .cv-tech-contact i {
+  color: var(--cv-accent, #3fb950);
+}
+
+/* ---- BODY 2 COLONNES ---- */
+.cv-template-15 .cv-tech-body {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+}
+
+/* ---- MAIN ---- */
+.cv-template-15 .cv-tech-main {
+  padding: 20px 22px 20px 28px;
+  border-right: 1px solid #21262d;
+}
+
+/* ---- SIDEBAR ---- */
+.cv-template-15 .cv-tech-side {
+  padding: 20px 18px;
+  background: #0d1117;
+}
+
+/* ---- SECTION TITLES ---- */
+.cv-template-15 .cv-tech-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #8b949e;
+  border-bottom: 1px solid #21262d;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+  margin-top: 18px;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cv-template-15 .cv-tech-section-title::before {
+  content: '#';
+  color: var(--cv-accent, #3fb950);
+  font-size: 13px;
+}
+
+.cv-template-15 .cv-tech-main .cv-tech-section-title:first-child,
+.cv-template-15 .cv-tech-side .cv-tech-section-title:first-child {
+  margin-top: 0;
+}
+
+/* ---- PROFIL ---- */
+.cv-template-15 .cv-profile-text {
+  font-size: 11px;
+  line-height: 1.65;
+  color: #8b949e;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-left: 3px solid var(--cv-accent, #238636);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-family: 'Courier New', monospace;
+}
+
+/* ---- EXPÉRIENCES ---- */
+.cv-template-15 .cv-experience-item {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  border-top: 2px solid var(--cv-accent, #238636);
+}
+
+.cv-template-15 .cv-tech-exp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.cv-template-15 .cv-exp-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.cv-template-15 .cv-exp-date {
+  font-size: 10px;
+  color: var(--cv-accent, #3fb950);
+  font-family: 'Courier New', monospace;
+  background: rgba(63,185,80,0.1);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.cv-template-15 .cv-exp-company {
+  font-size: 11px;
+  color: #58a6ff;
+  margin-bottom: 5px;
+}
+
+.cv-template-15 .cv-exp-desc {
+  font-size: 10.5px;
+  color: #8b949e;
+  line-height: 1.5;
+}
+
+/* ---- EDUCATION ---- */
+.cv-template-15 .cv-edu-item {
+  margin-bottom: 10px;
+  padding-left: 12px;
+  border-left: 2px solid #30363d;
+}
+
+.cv-template-15 .cv-edu-school {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.cv-template-15 .cv-edu-degree {
+  font-size: 10.5px;
+  color: #8b949e;
+}
+
+.cv-template-15 .cv-edu-date {
+  font-size: 10px;
+  color: var(--cv-accent, #3fb950);
+  font-family: 'Courier New', monospace;
+}
+
+/* ---- COMPÉTENCES (barres style GitHub) ---- */
+.cv-template-15 .cv-skill-item {
+  margin-bottom: 8px;
+}
+
+.cv-template-15 .cv-skill-name {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #c9d1d9;
+  margin-bottom: 3px;
+}
+
+.cv-template-15 .cv-skill-bar {
+  height: 4px;
+  background: #21262d;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cv-template-15 .cv-skill-fill {
+  height: 100%;
+  background: var(--cv-accent, #238636);
+  border-radius: 2px;
+}
+
+/* ---- OUTILS (badges style GitHub topics) ---- */
+.cv-template-15 .cv-tool-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  background: rgba(56,139,253,0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(56,139,253,0.3);
+  padding: 2px 9px;
+  border-radius: 20px;
+  margin: 0 3px 4px 0;
+  font-family: 'Courier New', monospace;
+}
+
+/* ---- LANGUES ---- */
+.cv-template-15 .cv-lang-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #21262d;
+}
+
+.cv-template-15 .cv-lang-item > span:first-child {
+  color: #c9d1d9;
+  font-weight: 600;
+}
+
+.cv-template-15 .cv-lang-level {
+  color: var(--cv-accent, #3fb950);
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+}
+
+/* ---- CERTIFICATIONS ---- */
+.cv-template-15 .cv-cert-item {
+  margin-bottom: 8px;
+}
+
+.cv-template-15 .cv-cert-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.cv-template-15 .cv-cert-org {
+  font-size: 10px;
+  color: #8b949e;
+  font-family: 'Courier New', monospace;
+}
+
+/* ---- INTÉRÊTS ---- */
+.cv-template-15 .cv-interest-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  background: #21262d;
+  color: #8b949e;
+  border: 1px solid #30363d;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 3px 4px 0;
+}
+
+/* ---- RÉFÉRENCES ---- */
+.cv-template-15 .cv-ref-item {
+  font-size: 10.5px;
+  color: #8b949e;
+  margin-bottom: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+.cv-template-15 .cv-ref-name {
+  color: #e6edf3;
+  font-weight: 700;
+}
+
+.cv-template-15 .cv-ref-detail {
+  color: #8b949e;
+  font-size: 10px;
+}
+
+@media print {
+  .cv-template-15 {
+    box-shadow: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

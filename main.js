@@ -94,7 +94,10 @@ const TEMPLATES = [
   { id:9,  name:'Compact',      pro:true,  icon:'compress' },
   { id:10, name:'Gradient Pro', pro:true,  icon:'fire' },
   { id:11, name:'Resume Canadien 🇨🇦', pro:true, icon:'flag' },
-  { id:12, name:'CV Anglais UK 🇬🇧',   pro:true, icon:'globe' }
+  { id:12, name:'CV Anglais UK 🇬🇧',   pro:true, icon:'globe' },
+  { id:13, name:'Infographique',        pro:true, icon:'chart-pie' },
+  { id:14, name:'Classique Élégant',    pro:true, icon:'scroll' },
+  { id:15, name:'Tech / Dev 💻',        pro:true, icon:'code' }
 ];
 
 /* ----------------------------------------------------------
@@ -484,6 +487,9 @@ function buildCvHTML(data) {
     case 10: return buildTemplate10(data, accent, fs);
     case 11: return buildTemplate11(data, accent, fs);
     case 12: return buildTemplate12(data, accent, fs);
+    case 13: return buildTemplate13(data, accent, fs);
+    case 14: return buildTemplate14(data, accent, fs);
+    case 15: return buildTemplate15(data, accent, fs);
     default: return buildTemplate1(data, accent, fs);
   }
 }
@@ -1061,6 +1067,9 @@ function exportPDF() {
     '<link rel="stylesheet" href="' + getHref('link[href*="template10.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template11.css"]') + '">' +
     '<link rel="stylesheet" href="' + getHref('link[href*="template12.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template13.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template14.css"]') + '">' +
+    '<link rel="stylesheet" href="' + getHref('link[href*="template15.css"]') + '">' +
     '<style>' + printCSS + '</style>' +
     '</head><body>' + html + '</body></html>'
   );
@@ -3169,6 +3178,203 @@ function buildTemplate12(d, accent, fs) {
         (tools ? '<div class="cv-uk-section-title">Tools & Technologies</div><div class="cv-uk-tags">' + tools + '</div>' : '') +
         (langs ? '<div class="cv-uk-section-title">Languages</div>' + langs : '') +
         (interests ? '<div class="cv-uk-section-title">Interests</div><div class="cv-uk-tags">' + interests + '</div>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ==========================================================
+   TEMPLATE 13 — INFOGRAPHIQUE / VISUAL
+   Sidebar sombre avec graphiques circulaires SVG
+   ========================================================== */
+function buildTemplate13(d, accent, fs) {
+  /* Cercles SVG pour compétences */
+  var skills = (d.skills||[]).map(function(sk) {
+    var r = 14; var circ = 2 * Math.PI * r;
+    var dash = circ - (sk.pct / 100) * circ;
+    return '<div class="cv-skill-circle-item">' +
+      '<div class="cv-skill-circle">' +
+        '<svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="' + r + '"/>' +
+        '<circle class="fill" cx="18" cy="18" r="' + r + '" stroke-dasharray="' + circ.toFixed(1) + '" stroke-dashoffset="' + dash.toFixed(1) + '"/></svg>' +
+        '<div class="pct-text">' + sk.pct + '</div>' +
+      '</div>' +
+      '<span class="cv-skill-circle-name">' + esc(sk.name) + '</span>' +
+    '</div>';
+  }).join('');
+
+  var tools = (d.tools||[]).map(function(t) { return '<span class="cv-tool-tag">'+esc(t)+'</span>'; }).join('');
+  var langs = (d.languages||[]).map(function(l) {
+    return '<div class="cv-lang-item"><span>'+esc(l.name)+'</span><div class="cv-lang-bar"><div class="cv-lang-fill" style="width:'+(l.pct||60)+'%"></div></div></div>';
+  }).join('');
+  var interests = (d.interests||[]).map(function(it) { return '<span class="cv-interest-tag">'+esc(it)+'</span>'; }).join('');
+
+  var contacts = '';
+  if (d.email)     contacts += '<div class="cv-contact-item"><i class="fas fa-envelope"></i>'+esc(d.email)+'</div>';
+  if (d.phone)     contacts += '<div class="cv-contact-item"><i class="fas fa-phone"></i>'+esc(d.phone)+'</div>';
+  if (d.address)   contacts += '<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i>'+esc(d.address)+'</div>';
+  if (d.linkedin)  contacts += '<div class="cv-contact-item"><i class="fab fa-linkedin"></i>'+esc(d.linkedin)+'</div>';
+  if (d.portfolio) contacts += '<div class="cv-contact-item"><i class="fas fa-globe"></i>'+esc(d.portfolio)+'</div>';
+
+  var exps = (d.experiences||[]).map(function(e) {
+    return '<div class="cv-experience-item">' +
+      '<div class="cv-exp-header"><span class="cv-exp-title">'+esc(e.role)+'</span><span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
+      '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
+      (e.desc?'<p class="cv-exp-desc">'+esc(e.desc)+'</p>':'') +
+    '</div>';
+  }).join('');
+
+  var edu = (d.education||[]).map(function(e) {
+    return '<div class="cv-edu-item"><p class="cv-edu-school">'+esc(e.school)+'</p><p class="cv-edu-degree">'+esc(e.degree)+'</p><p class="cv-edu-date">'+esc(e.date)+'</p></div>';
+  }).join('');
+  var certs = (d.certifications||[]).map(function(c) {
+    return '<div class="cv-edu-item"><p class="cv-edu-school">'+esc(c.year)+(c.org?' · '+esc(c.org):'')+'</p><p class="cv-edu-degree">'+esc(c.title)+'</p></div>';
+  }).join('');
+  var refs = (d.references||[]).map(function(r) {
+    return '<div class="cv-ref-item"><p class="cv-ref-name">'+esc(r.name)+'</p><p class="cv-ref-detail">'+esc(r.role)+' · '+esc(r.contact)+'</p></div>';
+  }).join('');
+
+  return '<div class="cv-template-13" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-sidebar">' +
+      '<div class="cv-photo-wrapper">'+photoTag(d,'cv-photo')+'</div>' +
+      '<div class="cv-sidebar-section"><h3>Contact</h3>'+contacts+'</div>' +
+      (skills?'<div class="cv-sidebar-section"><h3>Compétences</h3>'+skills+'</div>':'') +
+      (tools?'<div class="cv-sidebar-section"><h3>Outils</h3>'+tools+'</div>':'') +
+      (langs?'<div class="cv-sidebar-section"><h3>Langues</h3>'+langs+'</div>':'') +
+      (interests?'<div class="cv-sidebar-section"><h3>Intérêts</h3>'+interests+'</div>':'') +
+    '</div>' +
+    '<div class="cv-main">' +
+      '<div class="cv-header"><h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1><p class="cv-title">'+(esc(d.title)||'Titre')+'</p></div>' +
+      (d.profile?'<div><h2 class="cv-section-title">Profil</h2><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+      (exps?'<div><h2 class="cv-section-title">Expériences</h2>'+exps+'</div>':'') +
+      (edu||certs?'<div><h2 class="cv-section-title">Formation</h2>'+edu+certs+'</div>':'') +
+      (refs?'<div><h2 class="cv-section-title">Références</h2>'+refs+'</div>':'') +
+    '</div></div>';
+}
+
+/* ==========================================================
+   TEMPLATE 14 — CLASSIQUE ÉLÉGANT
+   Ultra-sobre, serif, pour professions formelles
+   ========================================================== */
+function buildTemplate14(d, accent, fs) {
+  var contacts = '';
+  if (d.email)     contacts += '<span class="cv-contact-item"><i class="fas fa-envelope"></i>'+esc(d.email)+'</span>';
+  if (d.phone)     contacts += '<span class="cv-contact-item"><i class="fas fa-phone"></i>'+esc(d.phone)+'</span>';
+  if (d.address)   contacts += '<span class="cv-contact-item"><i class="fas fa-map-marker-alt"></i>'+esc(d.address)+'</span>';
+  if (d.linkedin)  contacts += '<span class="cv-contact-item"><i class="fab fa-linkedin"></i>'+esc(d.linkedin)+'</span>';
+  if (d.portfolio) contacts += '<span class="cv-contact-item"><i class="fas fa-globe"></i>'+esc(d.portfolio)+'</span>';
+
+  var exps = (d.experiences||[]).map(function(e) {
+    return '<div class="cv-experience-item">' +
+      '<div class="cv-exp-date">'+esc(e.date)+'</div>' +
+      '<div class="cv-exp-body"><p class="cv-exp-title">'+esc(e.role)+'</p><p class="cv-exp-company">'+esc(e.company)+'</p><p class="cv-exp-desc">'+esc(e.desc)+'</p></div>' +
+    '</div>';
+  }).join('');
+
+  var edu = (d.education||[]).map(function(e) {
+    return '<div class="cv-edu-item"><div class="cv-edu-date">'+esc(e.date)+'</div><div><p class="cv-edu-school">'+esc(e.school)+'</p><p class="cv-edu-degree">'+esc(e.degree)+'</p></div></div>';
+  }).join('');
+  var certs = (d.certifications||[]).map(function(c) {
+    return '<div class="cv-edu-item"><div class="cv-edu-date">'+esc(c.year)+'</div><div><p class="cv-edu-school">'+esc(c.title)+'</p><p class="cv-edu-degree">'+(c.org?esc(c.org):'')+'</p></div></div>';
+  }).join('');
+
+  var skills = (d.skills||[]).map(function(sk) {
+    return '<div class="cv-skill-item"><div class="cv-skill-name"><span>'+esc(sk.name)+'</span><span>'+sk.pct+'%</span></div><div class="cv-skill-bar"><div class="cv-skill-fill" style="width:'+sk.pct+'%"></div></div></div>';
+  }).join('');
+  var tools = (d.tools||[]).map(function(t) { return '<span class="cv-tool-tag">'+esc(t)+'</span>'; }).join('');
+  var langs = (d.languages||[]).map(function(l) {
+    return '<div class="cv-lang-item"><span>'+esc(l.name)+'</span><span class="cv-lang-level">'+esc(l.level)+'</span></div>';
+  }).join('');
+  var refs = (d.references||[]).map(function(r) {
+    return '<div class="cv-ref-item"><p class="cv-ref-name">'+esc(r.name)+'</p><p class="cv-ref-detail">'+esc(r.role)+' · '+esc(r.contact)+'</p></div>';
+  }).join('');
+  var interests = (d.interests||[]).map(function(it) { return '<span class="cv-tool-tag">'+esc(it)+'</span>'; }).join('');
+
+  return '<div class="cv-template-14" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-header">' +
+      (d.photo ? photoTag(d,'cv-photo') : '') +
+      '<div class="cv-header-info">' +
+        '<h1 class="cv-name">'+(esc(d.name)||'Votre Nom')+'</h1>' +
+        '<p class="cv-title">'+(esc(d.title)||'Titre professionnel')+'</p>' +
+        (contacts?'<div class="cv-contact-row">'+contacts+'</div>':'') +
+      '</div>' +
+    '</div>' +
+    (d.profile?'<div class="cv-section"><h3 class="cv-section-title">Profil</h3><p class="cv-profile-text">'+esc(d.profile)+'</p></div>':'') +
+    (exps?'<div class="cv-section"><h3 class="cv-section-title">Expériences professionnelles</h3>'+exps+'</div>':'') +
+    (edu||certs?'<div class="cv-section"><h3 class="cv-section-title">Formation & Diplômes</h3>'+edu+certs+'</div>':'') +
+    ((skills||tools||langs)?
+      '<div class="cv-section"><h3 class="cv-section-title">Compétences & Langues</h3><div class="cv-two-col">' +
+        (skills||tools?'<div>'+(skills?skills:'')+(tools?'<div style="margin-top:8px">'+tools+'</div>':'')+'</div>':'') +
+        (langs?'<div>'+langs+'</div>':'') +
+      '</div></div>':'') +
+    (refs?'<div class="cv-section"><h3 class="cv-section-title">Références</h3>'+refs+'</div>':'') +
+    (interests?'<div class="cv-section"><h3 class="cv-section-title">Centres d\'intérêt</h3>'+interests+'</div>':'') +
+  '</div>';
+}
+
+/* ==========================================================
+   TEMPLATE 15 — TECH / DEV 💻
+   Dark theme, terminal style, badges GitHub
+   ========================================================== */
+function buildTemplate15(d, accent, fs) {
+  var contacts = '';
+  if (d.email)     contacts += '<span><i class="fas fa-envelope"></i>'+esc(d.email)+'</span>';
+  if (d.phone)     contacts += '<span><i class="fas fa-phone"></i>'+esc(d.phone)+'</span>';
+  if (d.address)   contacts += '<span><i class="fas fa-map-marker-alt"></i>'+esc(d.address)+'</span>';
+  if (d.linkedin)  contacts += '<span><i class="fab fa-linkedin"></i>'+esc(d.linkedin)+'</span>';
+  if (d.portfolio) contacts += '<span><i class="fas fa-globe"></i>'+esc(d.portfolio)+'</span>';
+
+  var exps = (d.experiences||[]).map(function(e) {
+    return '<div class="cv-experience-item">' +
+      '<div class="cv-tech-exp-top"><span class="cv-exp-title">'+esc(e.role)+'</span><span class="cv-exp-date">'+esc(e.date)+'</span></div>' +
+      '<p class="cv-exp-company">'+esc(e.company)+'</p>' +
+      (e.desc?'<p class="cv-exp-desc">'+esc(e.desc)+'</p>':'') +
+    '</div>';
+  }).join('');
+
+  var edu = (d.education||[]).map(function(e) {
+    return '<div class="cv-edu-item"><p class="cv-edu-school">'+esc(e.school)+'</p><p class="cv-edu-degree">'+esc(e.degree)+'</p><p class="cv-edu-date">'+esc(e.date)+'</p></div>';
+  }).join('');
+  var certs = (d.certifications||[]).map(function(c) {
+    return '<div class="cv-cert-item"><p class="cv-cert-title">'+esc(c.title)+'</p><p class="cv-cert-org">'+(c.org?esc(c.org)+' · ':'')+esc(c.year)+'</p></div>';
+  }).join('');
+
+  var skills = (d.skills||[]).map(function(sk) {
+    return '<div class="cv-skill-item"><div class="cv-skill-name"><span>'+esc(sk.name)+'</span><span>'+sk.pct+'%</span></div><div class="cv-skill-bar"><div class="cv-skill-fill" style="width:'+sk.pct+'%"></div></div></div>';
+  }).join('');
+  var tools = (d.tools||[]).map(function(t) { return '<span class="cv-tool-tag">'+esc(t)+'</span>'; }).join('');
+  var langs = (d.languages||[]).map(function(l) {
+    return '<div class="cv-lang-item"><span>'+esc(l.name)+'</span><span class="cv-lang-level">'+esc(l.level)+'</span></div>';
+  }).join('');
+  var interests = (d.interests||[]).map(function(it) { return '<span class="cv-interest-tag">'+esc(it)+'</span>'; }).join('');
+  var refs = (d.references||[]).map(function(r) {
+    return '<div class="cv-ref-item"><p class="cv-ref-name">'+esc(r.name)+'</p><p class="cv-ref-detail">'+esc(r.role)+' · '+esc(r.contact)+'</p></div>';
+  }).join('');
+
+  return '<div class="cv-template-15" style="--cv-accent:'+accent+';'+fs+'">' +
+    '<div class="cv-tech-header">' +
+      '<div class="cv-tech-dots"><div class="cv-tech-dot red"></div><div class="cv-tech-dot yellow"></div><div class="cv-tech-dot green"></div></div>' +
+      '<div class="cv-tech-header-content">' +
+        (d.photo ? '<img src="'+d.photo+'" alt="Photo" class="cv-photo" style="width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0" />' : '') +
+        '<div class="cv-tech-header-info">' +
+          '<h1 class="cv-name">'+(esc(d.name)||'Your Name')+'</h1>' +
+          '<p class="cv-title">'+(esc(d.title)||'Software Developer')+'</p>' +
+          (contacts?'<div class="cv-tech-contact">'+contacts+'</div>':'') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="cv-tech-body">' +
+      '<div class="cv-tech-main">' +
+        (d.profile?'<div class="cv-tech-section-title">About</div><p class="cv-profile-text">'+esc(d.profile)+'</p>':'') +
+        (exps?'<div class="cv-tech-section-title">Experience</div>'+exps:'') +
+        (edu?'<div class="cv-tech-section-title">Education</div>'+edu:'') +
+        (certs?'<div class="cv-tech-section-title">Certifications</div>'+certs:'') +
+        (refs?'<div class="cv-tech-section-title">References</div>'+refs:'') +
+      '</div>' +
+      '<div class="cv-tech-side">' +
+        (skills?'<div class="cv-tech-section-title">Skills</div>'+skills:'') +
+        (tools?'<div class="cv-tech-section-title">Stack</div>'+tools:'') +
+        (langs?'<div class="cv-tech-section-title">Languages</div>'+langs:'') +
+        (interests?'<div class="cv-tech-section-title">Interests</div>'+interests:'') +
       '</div>' +
     '</div>' +
   '</div>';
