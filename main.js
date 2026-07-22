@@ -93,8 +93,8 @@ const TEMPLATES = [
   { id:8,  name:'Colorblock',   pro:true,  icon:'th-large' },
   { id:9,  name:'Compact',      pro:true,  icon:'compress' },
   { id:10, name:'Gradient Pro', pro:true,  icon:'fire' },
-  { id:11, name:'🇨🇦 North American', pro:true, icon:'flag' },
-  { id:12, name:'🇬🇧 UK / British',   pro:true, icon:'globe' }
+  { id:11, name:'Resume Canadien 🇨🇦', pro:true, icon:'flag' },
+  { id:12, name:'CV Anglais UK 🇬🇧',   pro:true, icon:'globe' }
 ];
 
 /* ----------------------------------------------------------
@@ -2964,18 +2964,31 @@ function buildTemplate10(d, accent, fs) {
 }
 
 /* ==========================================================
-   TEMPLATE 11 — NORTH AMERICAN RESUME
-   Style ATS-friendly, 1 colonne, sans photo obligatoire,
-   Summary en haut, expériences avec résultats chiffrés
+   TEMPLATE 11 — RESUME CANADIEN 🇨🇦
+   Règles Canada/Amérique du Nord :
+   ✅ Pas de photo (discrimination à l'embauche illégale)
+   ✅ Pas d'âge, ni date de naissance
+   ✅ Pas de nationalité / situation familiale
+   ✅ Sections en anglais (Professional Summary, Work Experience...)
+   ✅ 1 page recommandée (max 2 pour seniors)
+   ✅ Format ATS-friendly (lisible par les robots de tri)
+   ✅ Expériences avec résultats chiffrés si possible
    ========================================================== */
 function buildTemplate11(d, accent, fs) {
-  /* Contact row en ligne */
+  /* Règle Canada : PAS de photo, PAS d'âge, PAS de nationalité */
   var contacts = [];
   if (d.email)     contacts.push('<span><i class="fas fa-envelope"></i> ' + esc(d.email) + '</span>');
   if (d.phone)     contacts.push('<span><i class="fas fa-phone"></i> ' + esc(d.phone) + '</span>');
   if (d.address)   contacts.push('<span><i class="fas fa-map-marker-alt"></i> ' + esc(d.address) + '</span>');
   if (d.linkedin)  contacts.push('<span><i class="fab fa-linkedin"></i> ' + esc(d.linkedin) + '</span>');
   if (d.portfolio) contacts.push('<span><i class="fas fa-globe"></i> ' + esc(d.portfolio) + '</span>');
+
+  /* Avertissement si photo présente — règle Canada */
+  var photoWarning = d.photo
+    ? '<div style="background:#fff8e1;border:1px solid #f59e0b;border-left:4px solid #f59e0b;padding:6px 12px;font-size:10.5px;color:#92400e;margin-bottom:10px;border-radius:4px;font-family:Arial,sans-serif">' +
+      '<strong>⚠️ Règle Canada :</strong> La photo n\'est pas recommandée sur un CV nord-américain. Elle peut entraîner un rejet automatique par certains employeurs.' +
+      '</div>'
+    : '';
 
   var exps = (d.experiences||[]).map(function(e) {
     return '<div class="cv-na-exp-item">' +
@@ -3031,12 +3044,14 @@ function buildTemplate11(d, accent, fs) {
   }).join('');
 
   return '<div class="cv-template-11" style="--cv-accent:' + accent + ';' + fs + '">' +
-    /* HEADER */
+    /* HEADER — Canada : pas de photo */
     '<div class="cv-na-header">' +
       '<h1 class="cv-name">' + (esc(d.name) || 'YOUR NAME') + '</h1>' +
       (d.title ? '<p class="cv-title">' + esc(d.title) + '</p>' : '') +
       (contacts.length ? '<div class="cv-na-contact">' + contacts.join('') + '</div>' : '') +
     '</div>' +
+    /* Avertissement photo si présente */
+    photoWarning +
     /* SUMMARY */
     (d.profile ? '<div class="cv-na-section"><div class="cv-na-section-title">Professional Summary</div><p class="cv-na-summary">' + esc(d.profile) + '</p></div>' : '') +
     /* EXPERIENCE */
@@ -3056,9 +3071,16 @@ function buildTemplate11(d, accent, fs) {
 }
 
 /* ==========================================================
-   TEMPLATE 12 — UK / BRITISH CV
-   Style structuré 2 colonnes, bandeau accent en haut,
-   Personal Statement, Key Skills dans la sidebar
+   TEMPLATE 12 — CV ANGLAIS UK 🇬🇧
+   Règles Royaume-Uni / British CV :
+   ✅ Photo optionnelle (légale mais pas obligatoire)
+   ✅ Personal Statement en haut (3-4 lignes, 1ère personne)
+   ✅ Sections en anglais : Work Experience, Education...
+   ✅ 2 pages acceptées (contrairement au Canada)
+   ✅ Inclure les certifications et qualifications
+   ✅ "References available upon request" en bas
+   ✅ Format date : Month YYYY (ex: June 2022)
+   ✅ Adresse postale recommandée (pas de numéro complet)
    ========================================================== */
 function buildTemplate12(d, accent, fs) {
   var contacts = [];
