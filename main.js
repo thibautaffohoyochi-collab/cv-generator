@@ -1981,10 +1981,28 @@ function extractPdfText(file, ta) {
         });
       }));
     }).then(function(pagesText) {
-      const text = pagesText.join('\n\n').replace(/ {3,}/g, ' ').replace(/\n{4,}/g, '\n\n').trim();
-      if (ta) ta.value = text.length > 20 ? text : 'Aucun texte extractible — le PDF est peut-être une image. Copiez-collez le texte manuellement.';
+      let text = pagesText.join('\n\n');
+
+      /* Nettoyer les artefacts PDF structurels (StructElem, tags Canva, etc.) */
+      text = text
+        .replace(/\b(StructElem|StructTreeRoot|ParentTree|ParentTreeNextKey|Marked|Suspects|DisplayDocTitle|StructParents|BleedBox|TrimBox|CropBox|Rotate|Annots|ProcSet|ImageB|ImageC|ImageI|ExtGState|XObject|MediaBox|Contents|Tabs|Parent|PGD|BBox|Pg|OBJR|MCR|MCID|Ref|StdCF|CFM|AuthEvent|Length|Filter|FlateDecode|ASCIIHexDecode|ASCII85Decode)\b\s*/g, '')
+        .replace(/\bType\s+\w+\s*/g, '')
+        .replace(/\b(true|false|null|obj|endobj|stream|endstream|xref|trailer|startxref|FontDescriptor|FontFile|Widths|FirstChar|LastChar|Encoding|ToUnicode|BaseFont|Subtype|Resources)\b\s*/g, '')
+        .replace(/\b[0-9A-F]{8,}\b/g, '')   /* hex IDs */
+        .replace(/\b\d{5,}\b/g, '')           /* long numbers */
+        .replace(/[ \t]{3,}/g, ' ')
+        .replace(/\n{4,}/g, '\n\n')
+        .trim();
+
+      /* Détecter si le texte est encore corrompu */
+      const badWords = (text.match(/\b(StructElem|XObject|ProcSet|FontDescriptor|endobj)\b/g)||[]).length;
+      if (text.length < 50 || badWords > 3) {
+        text = 'Ce PDF contient des éléments non extractibles automatiquement.\n\nPour importer votre CV :\n1. Ouvrez le PDF dans Chrome ou Edge\n2. Appuyez Ctrl+A (tout sélectionner)\n3. Copiez avec Ctrl+C\n4. Collez ici avec Ctrl+V\n5. Cliquez "Analyser & Transformer"';
+      }
+
+      if (ta) ta.value = text;
       resetDropZone();
-      showToast('PDF lu avec succès — ' + text.split(/\s+/).length + ' mots extraits', 'success');
+      showToast('PDF traité — vérifiez le texte extrait puis cliquez Analyser', 'success');
     }).catch(function() {
       if (ta) ta.value = 'Erreur de lecture PDF.\n\nOuvrez votre PDF, sélectionnez tout (Ctrl+A), copiez et collez ici.';
       resetDropZone();
